@@ -12,16 +12,24 @@ namespace Tester
 
             var source =
 @"
-                float DoStuff()
+                int angle = 100500;
+
+                event void _update()
                 {
-                    float a = (100 + 2.2) / 12 - 3;
+                    // GetComponent<T> это системная функция, ее вызов превращается в определение глобальной переменной
+                    // заданного типа, у которого инициализирующее значение это this. При этом это не обязательно компонент - это может быть любой тип у которого дефолтное значение
+                    // может быть this
+                    UnityEngineTransform thisTransform = GetComponent<UnityEngineTransform>();
 
+            
+                    // ToDo: Надо сделать оператор new, т.к. у многих типов есть методы конструкторы.
+                    // возможно метод new const не нужен вообще, т.к. начальные значения нужны только для примитивных типов (литералы), остальное все можно создавать через
+                    // вызовы конструкторов
 
-                    ComplexType test = new    const ComplexType(100, 20, new 
-
-const ComplexType2(""чего то там""));
-
-                    return a;
+                    thisTransform.Rotate(
+                        new UnityEngineVector3((float)0, (float)1, (float)0),
+                        (float)angle
+                    );
                 }
 ";
 

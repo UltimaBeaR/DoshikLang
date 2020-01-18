@@ -83,20 +83,20 @@ namespace DoshikLangCompiler
             var parser = new DoshikParser(tokenStream);
 
             var compilationUnit = parser.compilationUnit();
-            var expressionToCalculate = compilationUnit
-                .memberDeclaration()[0]
-                .methodDeclaration()
-                .block()
-                .blockStatement()[0]
-                .localVariableDeclaration()
-                .variableDeclarators()
-                .variableDeclarator()[0]
-                .variableInitializer()
-                .expression();
+            //var expressionToCalculate = compilationUnit
+            //    .memberDeclaration()[0]
+            //    .methodDeclaration()
+            //    .block()
+            //    .blockStatement()[0]
+            //    .localVariableDeclaration()
+            //    .variableDeclarators()
+            //    .variableDeclarator()[0]
+            //    .variableInitializer()
+            //    .expression();
 
-            var visitor = new TestVisitor();
+            //var visitor = new TestVisitor();
 
-            var obj = expressionToCalculate.Accept(visitor);
+            //var obj = expressionToCalculate.Accept(visitor);
 
 
 

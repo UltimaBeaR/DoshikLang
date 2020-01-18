@@ -383,6 +383,18 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMethodCallParam([NotNull] DoshikParser.MethodCallParamContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="DoshikParser.newCall"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterNewCall([NotNull] DoshikParser.NewCallContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DoshikParser.newCall"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitNewCall([NotNull] DoshikParser.NewCallContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -456,6 +468,20 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitPrimaryExpression([NotNull] DoshikParser.PrimaryExpressionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>newCallExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterNewCallExpression([NotNull] DoshikParser.NewCallExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>newCallExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitNewCallExpression([NotNull] DoshikParser.NewCallExpressionContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>dotExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

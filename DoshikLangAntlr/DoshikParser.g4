@@ -127,7 +127,7 @@ expressionList
     : expression (',' expression)*
     ;
 
-methodCall: IDENTIFIER '(' methodCallParams? ')';
+methodCall: IDENTIFIER typeArguments? '(' methodCallParams? ')';
 
 methodCallParams
     : methodCallParam (',' methodCallParam)*
@@ -136,6 +136,8 @@ methodCallParams
 methodCallParam:
     expression
     | OUT outVariableName=IDENTIFIER;
+
+newCall: NEW typeType '(' methodCallParams? ')';
 
 newConstCall: NEWCONST typeType '(' newConstCallParams? ')';
 
@@ -162,6 +164,7 @@ expression
     | expression '[' expression ']'                                                         # bracketsExpression
     | methodCall                                                                            # methodCallExpression
     | newConstCall                                                                          # newConstCallExpression
+    | newCall                                                                               # newCallExpression
     | '(' typeType ')' expression                                                           # typecastExpression
     | expression postfix=('++' | '--')                                                      # unaryPostfixExpression
     | prefix=('+'|'-'|'++'|'--') expression                                                 # unaryPrefixExpression
