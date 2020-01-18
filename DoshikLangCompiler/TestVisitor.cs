@@ -1,7 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace DoshikLangCompiler
 {

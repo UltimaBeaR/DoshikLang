@@ -62,23 +62,11 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.variableDeclarators"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVariableDeclarators([NotNull] DoshikParser.VariableDeclaratorsContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.variableDeclarator"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.variableDeclaratorId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitVariableDeclaratorId([NotNull] DoshikParser.VariableDeclaratorIdContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.variableInitializer"/>.
 	/// </summary>
@@ -169,12 +157,6 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitForInit([NotNull] DoshikParser.ForInitContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.enhancedForControl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEnhancedForControl([NotNull] DoshikParser.EnhancedForControlContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.parExpression"/>.
 	/// </summary>

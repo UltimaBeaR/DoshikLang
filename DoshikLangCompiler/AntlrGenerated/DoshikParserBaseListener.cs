@@ -95,18 +95,6 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclarators"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterVariableDeclarators([NotNull] DoshikParser.VariableDeclaratorsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.variableDeclarators"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitVariableDeclarators([NotNull] DoshikParser.VariableDeclaratorsContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclarator"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -118,18 +106,6 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclaratorId"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterVariableDeclaratorId([NotNull] DoshikParser.VariableDeclaratorIdContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.variableDeclaratorId"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitVariableDeclaratorId([NotNull] DoshikParser.VariableDeclaratorIdContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.variableInitializer"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -310,18 +286,6 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitForInit([NotNull] DoshikParser.ForInitContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.enhancedForControl"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEnhancedForControl([NotNull] DoshikParser.EnhancedForControlContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.enhancedForControl"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEnhancedForControl([NotNull] DoshikParser.EnhancedForControlContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.parExpression"/>.
 	/// <para>The default implementation does nothing.</para>

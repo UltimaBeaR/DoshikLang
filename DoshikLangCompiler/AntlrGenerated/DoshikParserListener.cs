@@ -81,16 +81,6 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclarators"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterVariableDeclarators([NotNull] DoshikParser.VariableDeclaratorsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.variableDeclarators"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitVariableDeclarators([NotNull] DoshikParser.VariableDeclaratorsContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclarator"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -100,16 +90,6 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.variableDeclaratorId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterVariableDeclaratorId([NotNull] DoshikParser.VariableDeclaratorIdContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.variableDeclaratorId"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitVariableDeclaratorId([NotNull] DoshikParser.VariableDeclaratorIdContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.variableInitializer"/>.
 	/// </summary>
@@ -260,16 +240,6 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitForInit([NotNull] DoshikParser.ForInitContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.enhancedForControl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterEnhancedForControl([NotNull] DoshikParser.EnhancedForControlContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.enhancedForControl"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitEnhancedForControl([NotNull] DoshikParser.EnhancedForControlContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.parExpression"/>.
 	/// </summary>

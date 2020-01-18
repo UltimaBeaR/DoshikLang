@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace DoshikLangCompiler
+namespace DoshikLangCompiler.Compilation
 {
     /// <summary>
     /// Описание входного апи (Типы и методы, которые можно использовать в коде дошика)

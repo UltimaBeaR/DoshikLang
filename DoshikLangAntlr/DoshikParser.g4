@@ -20,18 +20,12 @@ typeTypeOrVoid:
     ;
 
 fieldDeclaration
-    : (PUBLIC | PRIVATE)? typeType variableDeclarators ';'
-    ;
-
-variableDeclarators
-    : variableDeclarator (',' variableDeclarator)*
+    : (PUBLIC | PRIVATE)? typeType variableDeclarator ';'
     ;
 
 variableDeclarator
-    : variableDeclaratorId ('=' variableInitializer)?
+    : variableName=IDENTIFIER ('=' variableInitializer)?
     ;
-
-variableDeclaratorId: IDENTIFIER;
 
 variableInitializer
     : arrayInitializer
@@ -60,7 +54,7 @@ formalParameterList
     ;
 
 formalParameter
-    : OUT? typeType variableDeclaratorId
+    : OUT? typeType parameterName=IDENTIFIER
     ;
 
 literal
@@ -88,7 +82,7 @@ blockStatement
     ;
 
 localVariableDeclaration
-    : typeType variableDeclarators
+    : typeType variableDeclarator
     ;
 
 statement
@@ -103,18 +97,13 @@ statement
     | statementExpression=expression ';'
     ;
 
-forControl
-    : enhancedForControl
-    | forInit? ';' expression? ';' forUpdate=expressionList?
+forControl:
+    forInit? ';' expression? ';' forUpdate=expressionList?
     ;
 
 forInit
     : localVariableDeclaration
     | expressionList
-    ;
-
-enhancedForControl
-    : typeType variableDeclaratorId ':' expression
     ;
 
 // EXPRESSIONS

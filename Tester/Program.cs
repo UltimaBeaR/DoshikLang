@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DoshikLangCompiler.Compilation;
+using DoshikLangUnityEditor;
+using System;
+using System.Linq;
 
 namespace Tester
 {
@@ -12,36 +15,52 @@ namespace Tester
 
             var source =
 @"
-                int angle = 100500;
+float angle = 100500;
 
-                event void _update()
-                {
-                    // GetComponent<T> это системная функция, ее вызов превращается в определение глобальной переменной
-                    // заданного типа, у которого инициализирующее значение это this. При этом это не обязательно компонент - это может быть любой тип у которого дефолтное значение
-                    // может быть this
-                    UnityEngineTransform thisTransform = GetComponent<UnityEngineTransform>();
+event void _update()
+{
+    // GetComponent<T> это системная функция, ее вызов превращается в определение глобальной переменной
+    // заданного типа, у которого инициализирующее значение это this. При этом это не обязательно компонент - это может быть любой тип у которого дефолтное значение
+    // может быть this
+    UnityEngineTransform thisTransform = GetComponent<UnityEngineTransform>();
 
             
-                    // ToDo: Надо сделать оператор new, т.к. у многих типов есть методы конструкторы.
-                    // возможно метод new const не нужен вообще, т.к. начальные значения нужны только для примитивных типов (литералы), остальное все можно создавать через
-                    // вызовы конструкторов
+    // ToDo: Надо сделать оператор new, т.к. у многих типов есть методы конструкторы.
+    // возможно метод new const не нужен вообще, т.к. начальные значения нужны только для примитивных типов (литералы), остальное все можно создавать через
+    // вызовы конструкторов
 
-                    thisTransform.Rotate(
-                        new UnityEngineVector3((float)0, (float)1, (float)0),
-                        (float)angle
-                    );
-                }
+    thisTransform.Rotate(
+        new UnityEngineVector3((float)0, (float)1, (float)0),
+        (float)angle
+    );
+}
 ";
 
-            var compiler = new DoshikLangCompiler.Compiler();
+            Console.WriteLine(source);
+            Console.WriteLine();
+
+            var compiler = new Compiler();
+
+            var generator = new DoshikExternalApiGenerator
+            {
+                LogWarning = (text) => { Console.WriteLine("WARNING! " + text); }
+            };
+
+            Console.WriteLine("generating external api...");
+
+            // ToDo: можно засериалазировать сгенерированное апи куда нибудь и присваивать тут результат десериализации из файла, чтобы каждый раз не генерировать его, т.к. это долго
+            compiler.ExternalApi = generator.Generate();
 
             compiler.SourceCode = source;
+
+            Console.WriteLine("compiling...");
 
             var output = compiler.Compile();
 
 
-
+            Console.WriteLine("compiled. code:");
             Console.WriteLine(output.UdonAssemblyCode);
+
             Console.ReadLine();
 
 
@@ -62,12 +81,7 @@ namespace Tester
             // всегда само как то даункастится в этот тип? тогда возможно и во входных параметрах в heap будет определен IEnumerableT. Вобщем надо поисследовать
 
 
-            //var generator = new DoshikExternalApiGenerator
-            //{
-            //    LogWarning = (text) => { Console.WriteLine("WARNING! " + text); }
-            //};
-
-            //var api = generator.Generate();
+            
 
             //var allTypes = api.Types
             //    .OrderBy(x => x.ExternalName)
@@ -75,7 +89,8 @@ namespace Tester
 
             //TestLogger.Begin();
 
-            //foreach (var type in allTypes) {
+            //foreach (var type in allTypes)
+            //{
             //    TestLogger.LogLine("all_types", type.ExternalName);
             //}
 

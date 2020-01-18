@@ -1,9 +1,10 @@
 ﻿using Antlr4.Runtime;
+using DoshikLangCompiler.Compilation.Visitors;
 using DoshikLangCompiler.UAssemblyGeneration;
 using System;
 using System.Collections.Generic;
 
-namespace DoshikLangCompiler
+namespace DoshikLangCompiler.Compilation
 {
     public class Compiler
     {
@@ -63,14 +64,47 @@ namespace DoshikLangCompiler
         {
             var output = new CompilerOutput();
 
-            var assemblyBuilder = new UAssemblyBuilder();
+            var compilationContext = new CompilationContext()
+            {
+                ExternalApi = ExternalApi
+            };
 
-            Test(assemblyBuilder);
+            try
+            {
 
-            var code = assemblyBuilder.MakeCode(true);
+                var inputStream = new AntlrInputStream(SourceCode);
+                var lexer = new DoshikLexer(inputStream);
+                var tokenStream = new CommonTokenStream(lexer);
+                var parser = new DoshikParser(tokenStream);
 
-            output.UdonAssemblyCode = code.UdonAssemblyCode;
-            output.DefaultHeapValues = code.DefaultHeapValues;
+                var parseTree = parser.compilationUnit();
+
+                var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, parseTree);
+
+
+
+
+
+
+
+
+
+
+                var assemblyBuilder = new UAssemblyBuilder();
+
+
+
+                //Test(assemblyBuilder);
+
+                var code = assemblyBuilder.MakeCode(true);
+
+                output.UdonAssemblyCode = code.UdonAssemblyCode;
+                output.DefaultHeapValues = code.DefaultHeapValues;
+            }
+            catch (CompilationErrorException)
+            {
+                output.CompilationErrors = compilationContext.CompilationErrors;
+            }
 
             return output;
         }
@@ -145,5 +179,7 @@ namespace DoshikLangCompiler
         /// Начальные значения переменных, объявленных в heap. Во всяком случае сейчас их невозможно объявить в коде, только извне.
         /// </summary>
         public Dictionary<string, (object value, Type type)> DefaultHeapValues { get; set; }
+
+        public List<string> CompilationErrors { get; set; }
     }
 }
