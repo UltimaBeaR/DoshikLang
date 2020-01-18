@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>DoshikLangAntlr</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="javabuild\**" />
+    <EmbeddedResource Remove="javabuild\**" />
+    <None Remove="javabuild\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="DoshikLexer.g4" />
+    <None Remove="DoshikParser.g4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Include="DoshikLexer.g4" />
+    <Antlr4 Include="DoshikParser.g4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="Antlr4BuildTasks" Version="1.0.9" />
+    <PackageReference Include="System.CodeDom" Version="4.7.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(JAVA_HOME)'==''">
+    <JAVA_HOME>C:\Program Files\Java\jdk-11.0.1</JAVA_HOME>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Antlr4ToolPath)'==''">
+    <Antlr4ToolPath>C:\Program Files\Java\javalib\antlr-4.7.2-complete.jar</Antlr4ToolPath>
+  </PropertyGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikLexer.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParser.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserListener.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseListener.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;" />
+  </Target>
+
+</Project>

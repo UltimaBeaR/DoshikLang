@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DoshikLangCompiler\DoshikLangCompiler.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>..\ExternalDlls\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\ExternalDlls\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.ClientBindings">
+      <HintPath>..\ExternalDlls\VRC.Udon.ClientBindings.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.Common">
+      <HintPath>..\ExternalDlls\VRC.Udon.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.Compiler">
+      <HintPath>..\ExternalDlls\VRC.Udon.Compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.EditorBindings">
+      <HintPath>..\ExternalDlls\VRC.Udon.EditorBindings.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.Graph">
+      <HintPath>..\ExternalDlls\VRC.Udon.Graph.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.Security">
+      <HintPath>..\ExternalDlls\VRC.Udon.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.UAssembly">
+      <HintPath>..\ExternalDlls\VRC.Udon.UAssembly.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.VM">
+      <HintPath>..\ExternalDlls\VRC.Udon.VM.dll</HintPath>
+    </Reference>
+    <Reference Include="VRC.Udon.Wrapper">
+      <HintPath>..\ExternalDlls\VRC.Udon.Wrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="VRCCore-Editor">
+      <HintPath>..\ExternalDlls\VRCCore-Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="VRCCore-Standalone">
+      <HintPath>..\ExternalDlls\VRCCore-Standalone.dll</HintPath>
+    </Reference>
+    <Reference Include="VRCSDK3">
+      <HintPath>..\ExternalDlls\VRCSDK3.dll</HintPath>
+    </Reference>
+    <Reference Include="VRCSDK3-Editor">
+      <HintPath>..\ExternalDlls\VRCSDK3-Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="VRCSDKBase">
+      <HintPath>..\ExternalDlls\VRCSDKBase.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
