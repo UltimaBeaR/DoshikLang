@@ -71,7 +71,6 @@ namespace DoshikLangCompiler.Compilation
 
             try
             {
-
                 var inputStream = new AntlrInputStream(SourceCode);
                 var lexer = new DoshikLexer(inputStream);
                 var tokenStream = new CommonTokenStream(lexer);
@@ -81,22 +80,7 @@ namespace DoshikLangCompiler.Compilation
 
                 var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, parseTree);
 
-
-
-
-
-
-
-
-
-
-                var assemblyBuilder = new UAssemblyBuilder();
-
-
-
-                //Test(assemblyBuilder);
-
-                var code = assemblyBuilder.MakeCode(true);
+                var code = GenerateCode(compilationUnit);
 
                 output.UdonAssemblyCode = code.UdonAssemblyCode;
                 output.DefaultHeapValues = code.DefaultHeapValues;
@@ -109,62 +93,16 @@ namespace DoshikLangCompiler.Compilation
             return output;
         }
 
-        private void Test(UAssemblyBuilder assemblyBuilder)
+        private UAssemblyBuilderCode GenerateCode(CompilationUnit compilationUnit)
         {
-            var inputStream = new AntlrInputStream(SourceCode);
-            var lexer = new DoshikLexer(inputStream);
-            var tokenStream = new CommonTokenStream(lexer);
-            var parser = new DoshikParser(tokenStream);
+            var assemblyBuilder = new UAssemblyBuilder();
 
-            var compilationUnit = parser.compilationUnit();
-            //var expressionToCalculate = compilationUnit
-            //    .memberDeclaration()[0]
-            //    .methodDeclaration()
-            //    .block()
-            //    .blockStatement()[0]
-            //    .localVariableDeclaration()
-            //    .variableDeclarators()
-            //    .variableDeclarator()[0]
-            //    .variableInitializer()
-            //    .expression();
+            foreach (var variable in compilationUnit.Variables)
+            {
+                assemblyBuilder.AddVariable(variable.IsPublic, "global__" + variable.Name, variable.Type);
+            }
 
-            //var visitor = new TestVisitor();
-
-            //var obj = expressionToCalculate.Accept(visitor);
-
-
-
-
-
-
-
-            assemblyBuilder.AddVariable(false, "instance_0", "UnityEngineTransform", null, true);
-            assemblyBuilder.AddVariable(false, "axis_0", "UnityEngineVector3");
-            assemblyBuilder.AddVariable(false, "angle_0", "SystemSingle");
-            assemblyBuilder.AddVariable(false, "bool_test", "SystemBoolean");
-
-            assemblyBuilder.AddVariable(false, "array_test", "SystemInt32Array", new int[] { 1, 2, 3 });
-
-            var updateEvent = assemblyBuilder.AddOrGetEvent("_update");
-
-            updateEvent.PUSH_varableName("instance_0");
-            updateEvent.PUSH_varableName("axis_0").GlobalLabel = "test_label";
-            updateEvent.PUSH_varableName("angle_0");
-            
-
-            updateEvent.EXTERN_externMethodSignature("UnityEngineTransform.__Rotate__UnityEngineVector3_SystemSingle__SystemVoid");
-            updateEvent.JUMP_globalLabel("test_label");
-
-
-            updateEvent.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
-
-
-            var fixedUpdateEvent = assemblyBuilder.AddOrGetEvent("_fixedUpdate");
-
-            fixedUpdateEvent.PUSH_varableName("bool_test");
-            fixedUpdateEvent.JUMP_IF_FALSE_instructionOffset(-2);
-
-            fixedUpdateEvent.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
+            return assemblyBuilder.MakeCode(true);
         }
     }
 

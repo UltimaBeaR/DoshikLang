@@ -27,5 +27,7 @@ namespace DoshikLangCompiler.Compilation
         public bool IsPublic { get; set; }
 
         public string Type { get; set; }
+
+        public string Name { get; set; }
     }
 }

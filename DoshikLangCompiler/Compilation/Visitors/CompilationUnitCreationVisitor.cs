@@ -47,9 +47,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             variable.Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
 
+            variable.Name = (string)Visit(context.variableDeclarator());
+
             _compilationUnit.Variables.Add(variable);
 
             return null;
+        }
+
+        public override object VisitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context)
+        {
+            return context.variableName.Text;
         }
 
         public override object VisitMethodDeclaration([NotNull] DoshikParser.MethodDeclarationContext context)

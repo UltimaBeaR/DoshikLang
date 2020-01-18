@@ -17,6 +17,11 @@ namespace Tester
 @"
 float angle = 100500;
 
+
+public int test = 5;
+
+private string test2 = ""sdfasdfasdfsdf"";
+
 event void _update()
 {
     // GetComponent<T> это системная функция, ее вызов превращается в определение глобальной переменной
@@ -34,6 +39,9 @@ event void _update()
         (float)angle
     );
 }
+
+UnityEngineVector3 someVector;
+
 ";
 
             Console.WriteLine(source);
