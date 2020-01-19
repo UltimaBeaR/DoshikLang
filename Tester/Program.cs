@@ -1,7 +1,7 @@
 ﻿using DoshikLangCompiler.Compilation;
 using DoshikLangUnityEditor;
 using System;
-using System.Linq;
+using System.IO;
 
 namespace Tester
 {
@@ -9,40 +9,10 @@ namespace Tester
     {
         static void Main()
         {
+            var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\"));
+            var sourceFilePath = Path.Combine(projectDir, "test.doshik");
 
-
-
-
-            var source =
-@"
-float angle = 100500;
-
-
-public int test = 5;
-
-private string test2 = ""sdfasdfasdfsdf"";
-
-event void _update()
-{
-    // GetComponent<T> это системная функция, ее вызов превращается в определение глобальной переменной
-    // заданного типа, у которого инициализирующее значение это this. При этом это не обязательно компонент - это может быть любой тип у которого дефолтное значение
-    // может быть this
-    UnityEngineTransform thisTransform = GetComponent<UnityEngineTransform>();
-
-            
-    // ToDo: Надо сделать оператор new, т.к. у многих типов есть методы конструкторы.
-    // возможно метод new const не нужен вообще, т.к. начальные значения нужны только для примитивных типов (литералы), остальное все можно создавать через
-    // вызовы конструкторов
-
-    thisTransform.Rotate(
-        new UnityEngineVector3((float)0, (float)1, (float)0),
-        (float)angle
-    );
-}
-
-UnityEngineVector3 someVector;
-
-";
+            var source = File.ReadAllText(sourceFilePath);
 
             Console.WriteLine(source);
             Console.WriteLine();
@@ -65,9 +35,21 @@ UnityEngineVector3 someVector;
 
             var output = compiler.Compile();
 
+            if (output.CompilationErrors == null)
+            {
+                Console.WriteLine("compiled. code:");
+                Console.WriteLine();
+                Console.WriteLine(output.UdonAssemblyCode);
+            }
+            else
+            {
+                Console.WriteLine("compilation ERRORS:");
 
-            Console.WriteLine("compiled. code:");
-            Console.WriteLine(output.UdonAssemblyCode);
+                foreach (var error in output.CompilationErrors)
+                {
+                    Console.WriteLine(error);
+                }
+            }
 
             Console.ReadLine();
 

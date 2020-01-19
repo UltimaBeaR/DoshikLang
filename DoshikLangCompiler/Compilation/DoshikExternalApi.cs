@@ -27,9 +27,10 @@ namespace DoshikLangCompiler.Compilation
         public string CodeName { get; private set; }
 
         /// <summary>
-        /// Параметры события
+        /// Входные параметры (ключ - имя параметра, значение - тип параметра)
+        /// В графе это выходные параметры. То есть это выходные параметры события, но входные параметры обработчика события (по этому и названо входными параметрами).
         /// </summary>
-        public Dictionary<string, DoshikExternalApiType> Parameters { get; set; }
+        public List<DoshikExternalApiMethodParameter> InParameters { get; set; }
     }
 
     /// <summary>
@@ -127,7 +128,7 @@ namespace DoshikLangCompiler.Compilation
         /// Входные параметры (ключ - имя параметра, значение - тип параметра)
         /// Имена есть не всегда. Иногда "", иногда null
         /// </summary>
-        public Dictionary<string, DoshikExternalApiType> InParameters { get; set; }
+        public List<DoshikExternalApiMethodParameter> InParameters { get; set; }
 
         /// <summary>
         /// Основной выходной параметр. Может быть null, в случае если это void
@@ -137,7 +138,7 @@ namespace DoshikLangCompiler.Compilation
         /// <summary>
         /// Дополнительные выходные параметры (ref/out)
         /// </summary>
-        public Dictionary<string, DoshikExternalApiType> ExtraOutParameters { get; set; }
+        public List<DoshikExternalApiMethodParameter> ExtraOutParameters { get; set; }
 
         /// <summary>
         /// Если не static, значит кроме указанных параметров, первым параметром идет еще "instance" параметр типа Method.Type
@@ -159,5 +160,11 @@ namespace DoshikLangCompiler.Compilation
 
             return sb.ToString();
         }
+    }
+
+    public class DoshikExternalApiMethodParameter
+    {
+        public string Name { get; set; }
+        public DoshikExternalApiType Type { get; set; }
     }
 }

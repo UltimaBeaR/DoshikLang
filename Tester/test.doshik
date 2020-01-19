@@ -1,0 +1,23 @@
+float _angle = 10.5;
+public int test = 5;
+private string _test2 = "sdfasdfasdfsdf";
+bool _noInitialization;
+
+event void _update()
+{
+    // GetComponent<ComponentType> would be intrinsic global function returning hidden global immutable cached variable with initial value of "this" and type "ComponentType"
+    // ComponentType could only be in list of known types supporting "this" initial value (like UdonBehaviour, Unity3d components, etc)
+    // Type a = new Type(params) would be syntax sugar around static call Type a = Type.ctor(params)
+    // Type a = new const Type(const_params) would be special initialization syntax for types supporting this (Const_ graph nodes). Maby i won't be implementing this
+
+    UnityEngineTransform thisTransform = GetComponent<UnityEngineTransform>();    
+
+    thisTransform.Rotate(
+        new UnityEngineVector3((float)0, (float)1, (float)0),
+        _angle
+    );
+}
+
+event void _fixedUpdate()
+{
+}

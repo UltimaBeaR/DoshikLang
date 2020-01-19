@@ -3,6 +3,7 @@ using DoshikLangCompiler.Compilation.Visitors;
 using DoshikLangCompiler.UAssemblyGeneration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DoshikLangCompiler.Compilation
 {
@@ -59,7 +60,6 @@ namespace DoshikLangCompiler.Compilation
         /// </summary>
         public DoshikExternalApi ExternalApi { get; set; }
 
-
         public CompilerOutput Compile()
         {
             var output = new CompilerOutput();
@@ -76,9 +76,28 @@ namespace DoshikLangCompiler.Compilation
                 var tokenStream = new CommonTokenStream(lexer);
                 var parser = new DoshikParser(tokenStream);
 
-                var parseTree = parser.compilationUnit();
+                lexer.RemoveErrorListeners();
+                parser.RemoveErrorListeners();
 
-                var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, parseTree);
+                var lexerErrorListener = new LexerErrorListener();
+                var parserErrorListener = new ParserErrorListener();
+
+                lexer.AddErrorListener(lexerErrorListener);
+                parser.AddErrorListener(parserErrorListener);
+
+                var antlrCompilationUnit = parser.compilationUnit();
+
+                if (lexerErrorListener.Errors.Count > 0)
+                {
+                    compilationContext.ThrowCompilationError($"Error in lexer: { lexerErrorListener.Errors.First() }");
+                }
+
+                if (parserErrorListener.Errors.Count > 0)
+                {
+                    compilationContext.ThrowCompilationError($"Error in parser: { parserErrorListener.Errors.First() }");
+                }
+
+                var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, antlrCompilationUnit);
 
                 var code = GenerateCode(compilationUnit);
 
@@ -95,11 +114,31 @@ namespace DoshikLangCompiler.Compilation
 
         private UAssemblyBuilderCode GenerateCode(CompilationUnit compilationUnit)
         {
+            // Процесс генерации кода уже не должен валидировать исходный код (описываемый в структуре CompilationUnit)
+            // Процесс генерации кода просто генерирует assembly код под target платформу (в данном случае это всегда udon assembly)
+            // Все compile-time ошибки, которые могли быть должны быть обработаны ДО входа в этот метод.
+            // В этом случае весь код, кроме вызова этого метода можно будет переиспользовать для анализаторов языка. Например сделать language server для подсветки кода
+            // в vs code. Можно потом оформить библиотеку для создания CompilationUnit объекта отдельно и использовать ее тут же, просто послее нее будет вызываться эта генерация asm кода
+
             var assemblyBuilder = new UAssemblyBuilder();
 
-            foreach (var variable in compilationUnit.Variables)
+            foreach (var variable in compilationUnit.Variables.Values.OrderBy(x => !x.IsPublic).ThenBy(x => x.Name))
             {
                 assemblyBuilder.AddVariable(variable.IsPublic, "global__" + variable.Name, variable.Type);
+            }
+
+            // Сначала просто добавляем все ивенты, чтобы было их определение
+            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+            {
+                assemblyBuilder.AddOrGetEvent(eventHandler.Name);
+            }
+
+            // Генерируем код внутри каждого из ивентов, попутно генерируя переменные
+            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+            {
+                var eventBodyEmitter = assemblyBuilder.AddOrGetEvent(eventHandler.Name);
+
+                eventBodyEmitter.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
             }
 
             return assemblyBuilder.MakeCode(true);

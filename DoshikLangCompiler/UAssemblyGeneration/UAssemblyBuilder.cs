@@ -15,6 +15,8 @@ namespace DoshikLangCompiler.UAssemblyGeneration
 
         public const uint maxCodeAddress = 0xFFFFFF;
 
+        public IReadOnlyDictionary<string, UAssemblyEventBodyEmitter> Events { get { return _events; } }
+
         public UAssemblyBuilderCode MakeCode(bool humanReadable)
         {
             var code = new UAssemblyBuilderCode();

@@ -9,17 +9,36 @@ namespace DoshikLangCompiler.Compilation
     {
         public CompilationUnit()
         {
-            Variables = new List<Variable>();
-            Events = new List<EventDeclaration>();
+            Variables = new Dictionary<string, Variable>();
+            Events = new Dictionary<string, MethodDeclaration>();
         }
 
-        public List<Variable> Variables { get; private set; }
-        public List<EventDeclaration> Events { get; private set; }
+        public Dictionary<string, Variable> Variables { get; private set; }
+        public Dictionary<string, MethodDeclaration> Events { get; private set; }
     }
 
-    public class EventDeclaration
+    public class MethodDeclaration
     {
+        /// <summary>
+        /// Имя типа возвращаемого значения из ивента. Если это null, значит указан void тип
+        /// </summary>
+        public string ReturnTypeOrVoid { get; set; }
 
+        public string Name { get; set; }
+
+        // Является ли событие кастомным или определенным пользователем
+        public bool IsCustom { get; set; }
+
+        public List<MethodDeclarationParameter> Parameters { get; set; }
+
+        public DoshikParser.BlockContext AntlrBody { get; set; }
+    }
+
+    public class MethodDeclarationParameter
+    {
+        public bool IsOutput { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
     }
 
     public class Variable
@@ -29,5 +48,7 @@ namespace DoshikLangCompiler.Compilation
         public string Type { get; set; }
 
         public string Name { get; set; }
+
+        public DoshikParser.VariableInitializerContext AntlrInitializer { get; set; }
     }
 }

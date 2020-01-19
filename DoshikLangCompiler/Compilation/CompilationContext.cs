@@ -34,6 +34,11 @@ namespace DoshikLangCompiler.Compilation
             return ExternalApi.Types.FirstOrDefault(x => x.ExternalName == externalApiOrIntrinsicTypeName);
         }
 
+        public DoshikExternalApiEvent FindExternalApiEvent(string externalApiEventName)
+        {
+            return ExternalApi.Events.FirstOrDefault(x => x.ExternalName == externalApiEventName);
+        }
+
         public List<string> CompilationErrors { get; } = new List<string>();
     }
 }

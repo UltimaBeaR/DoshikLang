@@ -1,0 +1,25 @@
+{
+    "name": "doshik",
+    "displayName": "doshik",
+    "description": "doshik language syntax colorizing",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.41.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "doshiklang",
+            "aliases": ["Doshik", "doshiklang"],
+            "extensions": [".doshik"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "doshiklang",
+            "scopeName": "source.doshik",
+            "path": "./syntaxes/doshik.tmLanguage"
+        }]
+    }
+}

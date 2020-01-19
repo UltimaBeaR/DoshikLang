@@ -240,7 +240,11 @@ namespace DoshikLangUnityEditor
                     }
                     else
                     {
-                        apiMethodOverload.InParameters.Add(string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeInputParameterIdx.ToString()) : nodeParameter.Name, parameterApiType);
+                        apiMethodOverload.InParameters.Add(new DoshikExternalApiMethodParameter()
+                        {
+                            Name = string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeInputParameterIdx.ToString()) : nodeParameter.Name,
+                            Type = parameterApiType
+                        });
                     }
                 }
 
@@ -258,7 +262,11 @@ namespace DoshikLangUnityEditor
                     }
                     else
                     {
-                        apiMethodOverload.ExtraOutParameters.Add(string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeOutputParameterIdx.ToString()) : nodeParameter.Name, parameterApiType);
+                        apiMethodOverload.ExtraOutParameters.Add(new DoshikExternalApiMethodParameter()
+                        {
+                            Name = string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeOutputParameterIdx.ToString()) : nodeParameter.Name,
+                            Type = parameterApiType
+                        });
                     }
                 }
             }
@@ -288,9 +296,10 @@ namespace DoshikLangUnityEditor
                     continue;
                 }
 
-                var apiEvent = GetOrCreateApiEvent(api, externalEventName);
+                bool eventCreated;
+                var apiEvent = GetOrCreateApiEvent(api, externalEventName, out eventCreated);
 
-                if (apiEvent.Parameters.Count > 0)
+                if (!eventCreated)
                 {
                     LogWarning?.Invoke("event already defined");
                     continue;
@@ -302,7 +311,11 @@ namespace DoshikLangUnityEditor
 
                     var apiType = GetOrCreateApiType(api, nodeParameter.Type);
 
-                    apiEvent.Parameters.Add(string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeOutputParameterIdx.ToString()) : nodeParameter.Name, apiType);
+                    apiEvent.InParameters.Add(new DoshikExternalApiMethodParameter()
+                    {
+                        Name = string.IsNullOrEmpty(nodeParameter.Name) ? ("_" + nodeOutputParameterIdx.ToString()) : nodeParameter.Name,
+                        Type = apiType
+                    });
                 }
             }
         }
@@ -363,8 +376,8 @@ namespace DoshikLangUnityEditor
                 apiMethodOverload = new DoshikExternalApiTypeMethodOverload
                 {
                     ExternalName = externalName,
-                    InParameters = new Dictionary<string, DoshikExternalApiType>(),
-                    ExtraOutParameters = new Dictionary<string, DoshikExternalApiType>()
+                    InParameters = new List<DoshikExternalApiMethodParameter>(),
+                    ExtraOutParameters = new List<DoshikExternalApiMethodParameter>()
                 };
 
                 apiMethod.Overloads.Add(apiMethodOverload);
@@ -375,14 +388,23 @@ namespace DoshikLangUnityEditor
             return apiMethodOverload;
         }
 
-        private static DoshikExternalApiEvent GetOrCreateApiEvent(DoshikExternalApi api, string externalName)
+        private static DoshikExternalApiEvent GetOrCreateApiEvent(DoshikExternalApi api, string externalName, out bool created)
         {
+            created = false;
+
             var apiEvent = api.Events.Find(x => x.ExternalName == externalName);
 
             if (apiEvent == null)
             {
-                apiEvent = new DoshikExternalApiEvent { ExternalName = externalName, Parameters = new Dictionary<string, DoshikExternalApiType>() };
+                apiEvent = new DoshikExternalApiEvent
+                {
+                    ExternalName = externalName,
+                    InParameters = new List<DoshikExternalApiMethodParameter>()
+                };
+
                 api.Events.Add(apiEvent);
+
+                created = true;
             }
 
             return apiEvent;
