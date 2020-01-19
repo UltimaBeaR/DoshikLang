@@ -1,2 +1,2 @@
 # Extension installation
-Put extension folders to %USERPROFILE%\.vscode\extensions
+Put extension folders to ```%USERPROFILE%\.vscode\extensions```

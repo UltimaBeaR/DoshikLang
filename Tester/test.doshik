@@ -18,6 +18,21 @@ event void _update()
     );
 }
 
-event void _fixedUpdate()
+event void _onRenderImage(UnityEngineRenderTexture src, UnityEngineRenderTexture dest)
 {
+    int c = 3;
+
+    if (true)
+        UnityEngineDebug.Log("tessst");
+
+    int d;
+
+    {
+        int e = 18;
+    }
+
+    for (int i = 18; i < 500; i++)
+    {
+        int bb = 3;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using DoshikLangCompiler.Compilation.CodeRepresentation;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +21,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
         public override object VisitCompilationUnit([NotNull] DoshikParser.CompilationUnitContext context)
         {
             _compilationUnit = new CompilationUnit();
+            _compilationUnit.Scope.Owner = _compilationUnit;
+
+            // null так как это самый топовый scope
+            _compilationUnit.Scope.ParentScope = null;
 
             var memberDeclarations = context.memberDeclaration();
 
@@ -44,7 +49,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
         public override object VisitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context)
         {
-            var variable = new Variable();
+            var scope = _compilationUnit.Scope;
+
+            var variable = new CompilationUnitVariable();
 
             variable.IsPublic = context.PUBLIC() != null;
 
@@ -56,10 +63,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             variable.AntlrInitializer = variableInitializer;
 
-            if (_compilationUnit.Variables.ContainsKey(variable.Name))
+            if (scope.Variables.ContainsKey(variable.Name))
                 _compilationContext.ThrowCompilationError($"variable {variable.Name} is already defined");
 
-            _compilationUnit.Variables[variable.Name] = variable;
+            scope.Variables[variable.Name] = variable;
 
             return null;
         }
@@ -83,7 +90,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // Если это event
 
-            var eventDeclaration = new MethodDeclaration();
+            var eventDeclaration = new MethodDeclaration()
+            {
+                Parent = _compilationUnit
+            };
+            eventDeclaration.Parameters.Parent = eventDeclaration;
+
+            _currentMethodDeclaration = eventDeclaration;
+
+            eventDeclaration.Parameters.Scope.Owner = eventDeclaration.Parameters;
+            eventDeclaration.Parameters.Scope.ParentScope = _compilationUnit.Scope;
 
             eventDeclaration.ReturnTypeOrVoid = GetTypeNameVisitor.Apply(_compilationContext, context.typeTypeOrVoid());
 
@@ -105,33 +121,25 @@ namespace DoshikLangCompiler.Compilation.Visitors
             if (_compilationUnit.Events.ContainsKey(eventDeclaration.Name))
                 _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
 
-            eventDeclaration.Parameters = (List<MethodDeclarationParameter>)Visit(context.formalParameters());
-
-            var firstDuplicatedParameterName = eventDeclaration.Parameters
-                .GroupBy(x => x.Name)
-                .Where(x => x.Count() > 1)
-                .Select(x => x.Key)
-                .FirstOrDefault();
-
-            if (firstDuplicatedParameterName != null)
-                _compilationContext.ThrowCompilationError($"event parameter { firstDuplicatedParameterName } is defined more than once");
+            eventDeclaration.Parameters.Parameters.AddRange((List<MethodDeclarationParameter>)Visit(context.formalParameters()));
 
             if (!eventDeclaration.IsCustom)
             {
                 // Если ивент не кастомный, проверяем что параметры соответствуют указанным в external api
 
                 var declarationParamsAreOk =
-                    externalApiEvent.InParameters.Count == eventDeclaration.Parameters.Count
-                    && !eventDeclaration.Parameters.Any(x => x.IsOutput); //< don't support out params for built-in events yet
+                    externalApiEvent.InParameters.Count == eventDeclaration.Parameters.Parameters.Count
+                    && !eventDeclaration.Parameters.Parameters.Any(x => x.IsOutput); //< don't support out params for built-in events yet
 
                 if (declarationParamsAreOk)
                 {
                     for (int paramIdx = 0; paramIdx < externalApiEvent.InParameters.Count; paramIdx++)
                     {
                         var externalApiParam = externalApiEvent.InParameters[paramIdx];
-                        var declarationParam = eventDeclaration.Parameters[paramIdx];
+                        var declarationParam = eventDeclaration.Parameters.Parameters[paramIdx];
 
-                        if (declarationParam.Name != externalApiParam.Name || declarationParam.Type != externalApiParam.Type.ExternalName)
+                        // Проверяем только типы, название параметров может отличаться от заданного в api
+                        if (declarationParam.Variable.Type != externalApiParam.Type.ExternalName)
                         {
                             declarationParamsAreOk = false;
                             break;
@@ -172,16 +180,33 @@ namespace DoshikLangCompiler.Compilation.Visitors
         // возвращает MethodDeclarationParameter
         public override object VisitFormalParameter([NotNull] DoshikParser.FormalParameterContext context)
         {
-            var parameter = new MethodDeclarationParameter();
+            var parameter = new MethodDeclarationParameter()
+            {
+                Parent = _currentMethodDeclaration.Parameters
+            };
+
+            var scope = parameter.Parent.Scope;
 
             parameter.IsOutput = context.OUT() != null;
 
-            parameter.Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            var variable = new Variable()
+            {
+                Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType()),
+                Name = context.parameterName.Text,
+                Declarator = parameter
+            };
 
-            parameter.Name = context.parameterName.Text;
+            if (scope.Variables.ContainsKey(variable.Name))
+                _compilationContext.ThrowCompilationError($"parameter { variable.Name } is already defined");
+
+            scope.Variables[variable.Name] = variable;
+
+            parameter.Variable = variable;
 
             return parameter;
         }
+
+        private MethodDeclaration _currentMethodDeclaration;
 
         private CompilationUnit _compilationUnit;
     }
