@@ -12,13 +12,20 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
     // При этом не указывается конкретное место (типа конкретного statement-а), где была декларация.
     // считается что переменные все объявляются на уровне compilation unit-а и порядок их объявления не имеет значения
     // (в отличие от локальных переменных в теле методов)
-    public class CompilationUnit : IScopeOwner, IVariableDeclarator
+    public class CompilationUnit : ICodeHierarchyNode, IScopeOwner, IVariableDeclarator
     {
         // Variable type = CompilationUnitVariable
 
-        public Dictionary<string, MethodDeclaration> Events { get; } = new Dictionary<string, MethodDeclaration>();
+        public CompilationUnit()
+        {
+            // parent scope = null, так как это рут в иерархии scope-ов
+            Scope = new Scope(this, null);
+        }
 
-        public Scope Scope { get; } = new Scope();
+        ICodeHierarchyNode ICodeHierarchyNode.Parent => null;
+        public Scope Scope { get; private set; }
+
+        public Dictionary<string, MethodDeclaration> Events { get; } = new Dictionary<string, MethodDeclaration>();
     }
 
     public class CompilationUnitVariable : Variable

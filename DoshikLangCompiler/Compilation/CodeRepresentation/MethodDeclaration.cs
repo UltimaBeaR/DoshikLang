@@ -2,9 +2,15 @@
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation
 {
-    public class MethodDeclaration
+    public class MethodDeclaration : ICodeHierarchyNode
     {
-        public CompilationUnit Parent { get; set; }
+        public MethodDeclaration(CompilationUnit parent)
+        {
+            Parent = parent;
+        }
+
+        public CompilationUnit Parent { get; private set; }
+        ICodeHierarchyNode ICodeHierarchyNode.Parent => Parent;
 
         /// <summary>
         /// Имя типа возвращаемого значения из ивента. Если это null, значит указан void тип
@@ -16,23 +22,37 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         // Является ли событие кастомным или определенным пользователем
         public bool IsCustom { get; set; }
 
-        public MethodDeclarationParameters Parameters { get; } = new MethodDeclarationParameters();
+        public MethodDeclarationParameters Parameters { get; set; }
 
         public DoshikParser.BlockContext AntlrBody { get; set; }
+
+        public BlockOfStatements BodyBlock { get; set; }
     }
 
-    public class MethodDeclarationParameters : IScopeOwner
+    public class MethodDeclarationParameters : ICodeHierarchyNode, IScopeOwner
     {
-        public MethodDeclaration Parent { get; set; }
+        public MethodDeclarationParameters(MethodDeclaration parent, Scope parentScope)
+        {
+            Parent = parent;
+            Scope = new Scope(this, parentScope);
+        }
+
+        public MethodDeclaration Parent { get; private set; }
+        ICodeHierarchyNode ICodeHierarchyNode.Parent => Parent;
+        public Scope Scope { get; private set; }
 
         public List<MethodDeclarationParameter> Parameters { get; } = new List<MethodDeclarationParameter>();
-
-        public Scope Scope { get; } = new Scope();
     }
 
-    public class MethodDeclarationParameter : IVariableDeclarator
+    public class MethodDeclarationParameter : ICodeHierarchyNode, IVariableDeclarator
     {
-        public MethodDeclarationParameters Parent { get; set; }
+        public MethodDeclarationParameter(MethodDeclarationParameters parent)
+        {
+            Parent = parent;
+        }
+
+        public MethodDeclarationParameters Parent { get; private set; }
+        ICodeHierarchyNode ICodeHierarchyNode.Parent => Parent;
 
         public bool IsOutput { get; set; }
 

@@ -21,10 +21,6 @@ namespace DoshikLangCompiler.Compilation.Visitors
         public override object VisitCompilationUnit([NotNull] DoshikParser.CompilationUnitContext context)
         {
             _compilationUnit = new CompilationUnit();
-            _compilationUnit.Scope.Owner = _compilationUnit;
-
-            // null так как это самый топовый scope
-            _compilationUnit.Scope.ParentScope = null;
 
             var memberDeclarations = context.memberDeclaration();
 
@@ -90,16 +86,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // Если это event
 
-            var eventDeclaration = new MethodDeclaration()
-            {
-                Parent = _compilationUnit
-            };
-            eventDeclaration.Parameters.Parent = eventDeclaration;
+            var eventDeclaration = new MethodDeclaration(_compilationUnit);
+            eventDeclaration.Parameters = new MethodDeclarationParameters(eventDeclaration, _compilationUnit.Scope);
 
             _currentMethodDeclaration = eventDeclaration;
-
-            eventDeclaration.Parameters.Scope.Owner = eventDeclaration.Parameters;
-            eventDeclaration.Parameters.Scope.ParentScope = _compilationUnit.Scope;
 
             eventDeclaration.ReturnTypeOrVoid = GetTypeNameVisitor.Apply(_compilationContext, context.typeTypeOrVoid());
 
@@ -180,10 +170,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
         // возвращает MethodDeclarationParameter
         public override object VisitFormalParameter([NotNull] DoshikParser.FormalParameterContext context)
         {
-            var parameter = new MethodDeclarationParameter()
-            {
-                Parent = _currentMethodDeclaration.Parameters
-            };
+            var parameter = new MethodDeclarationParameter(_currentMethodDeclaration.Parameters);
 
             var scope = parameter.Parent.Scope;
 

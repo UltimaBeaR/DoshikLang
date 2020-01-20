@@ -20,7 +20,7 @@
     /// Также это может быть параметр в методе/событии, отдельный statement (если это локальная переменная в теле метода/события)
     /// а также часть синтаксической конструкции (инициализирующая часть в блоке for / foreach, там где можно объявлять переменные)
     /// </summary>
-    public interface IVariableDeclarator
+    public interface IVariableDeclarator : ICodeHierarchyNode
     {
     }
 }

@@ -77,7 +77,15 @@ namespace DoshikLangCompiler.Compilation
                     compilationContext.ThrowCompilationError($"Error in parser: { parserErrorListener.Errors.First() }");
                 }
 
+                // Высокоуровневая обработка - создается корневая струкура CompilationUnit и заполняются объявления (declarations) на уровне CompilationUnit - то есть
+                // переменные и ивенты. Непосредственно императивные куски кода (statements, expressions) еще не обрабатываются
                 var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, antlrCompilationUnit);
+
+                // Обходим все объявленные события и генерируем код для их implementation части (то есть обрабатываем statement-ы внутри тела обработчиков событий)
+                foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+                {
+                    MethodBlockCreationVisitor.Apply(compilationContext, eventHandler);
+                }
 
                 compilationErrors = null;
                 return compilationUnit;

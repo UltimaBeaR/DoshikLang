@@ -7,9 +7,15 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
     /// </summary>
     public class Scope
     {
-        public Scope ParentScope { get; set; }
+        public Scope(IScopeOwner owner, Scope parentScope)
+        {
+            Owner = owner;
+            ParentScope = parentScope;
+        }
 
-        public IScopeOwner Owner { get; set; }
+        public Scope ParentScope { get; private set; }
+
+        public IScopeOwner Owner { get; private set; }
 
         public Dictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
@@ -20,8 +26,12 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
     /// <summary>
     /// Место в иерархии, в котором создается новый scope
     /// </summary>
-    public interface IScopeOwner
+    public interface IScopeOwner : ICodeHierarchyNode
     {
+        /// <summary>
+        /// Scope, который создает этот элемент иерархии при входе в него (указатель текущего scope перемещается на него).
+        /// При выходе из этого элемента иерархии, scope перемещается на родительский. То есть Scope.ParentScope
+        /// </summary>
         Scope Scope { get; }
     }
 }

@@ -3,6 +3,7 @@ public int test = 5;
 private string _test2 = "sdfasdfasdfsdf";
 bool _noInitialization;
 
+/*
 event void _update()
 {
     // GetComponent<ComponentType> would be intrinsic global function returning hidden global immutable cached variable with initial value of "this" and type "ComponentType"
@@ -17,12 +18,13 @@ event void _update()
         _angle
     );
 }
+*/
 
 event void _onRenderImage(UnityEngineRenderTexture src, UnityEngineRenderTexture dest)
 {
     int c = 3;
 
-    if (true)
+    if (c + _angle + test == 0)
         UnityEngineDebug.Log("tessst");
 
     int d;
