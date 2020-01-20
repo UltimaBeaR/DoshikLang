@@ -17,7 +17,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
     }
 
     // ToDo: abstract?
-    public class Statement : ICodeHierarchyNode
+    public abstract class Statement : ICodeHierarchyNode
     {
         public Statement(ICodeHierarchyNode parent)
         {
@@ -25,5 +25,16 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         }
 
         public ICodeHierarchyNode Parent { get; private set; }
+    }
+
+    // Объявление локальной переменной. Может встречаться внутри блока либо for init части
+    public class LocalVariableDeclarationStatement : Statement, IVariableDeclarator
+    {
+        public LocalVariableDeclarationStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+
+        public Variable Variable { get; set; }
     }
 }

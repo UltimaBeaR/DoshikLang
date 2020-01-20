@@ -21,6 +21,17 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
         // ToDo: тут (или где-то отдельно) можно определить методы для поиска переменной по имени в текущем scope-е
         // - сначала искать среди своих Variables, затем подниматься на уровень выше и делать такой же поиск там
+
+        public Variable FindVariableByName(string variableName)
+        {
+            if (Variables.TryGetValue(variableName, out var foundVariable))
+                return foundVariable;
+
+            if (ParentScope == null)
+                return null;
+
+            return ParentScope.FindVariableByName(variableName);
+        }
     }
 
     /// <summary>

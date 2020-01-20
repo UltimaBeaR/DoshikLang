@@ -30,6 +30,11 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
     public class CompilationUnitVariable : Variable
     {
+        public CompilationUnitVariable(IVariableDeclarator declarator)
+            : base(declarator)
+        {
+        }
+
         public bool IsPublic { get; set; }
     }
 }

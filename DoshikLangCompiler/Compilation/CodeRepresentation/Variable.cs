@@ -2,6 +2,11 @@
 {
     public class Variable
     {
+        public Variable(IVariableDeclarator declarator)
+        {
+            Declarator = declarator;
+        }
+
         public string Type { get; set; }
 
         public string Name { get; set; }
@@ -11,7 +16,7 @@
         /// <summary>
         /// Ссылка на место, где переменная была объявлена
         /// </summary>
-        public IVariableDeclarator Declarator { get; set; }
+        public IVariableDeclarator Declarator { get; private set; }
     }
 
     /// <summary>

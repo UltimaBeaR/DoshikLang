@@ -26,6 +26,8 @@ namespace DoshikLangCompiler.Compilation
 
             var compilationUnit = BuildCodeRepresentation(out var compilationErrors);
 
+            // ToDo: надо бы сделать какой то опциональный вывод лога со всеми данными из compilationUnit в этом месте
+
             if (compilationUnit != null)
             {
                 var code = GenerateCode(compilationUnit);

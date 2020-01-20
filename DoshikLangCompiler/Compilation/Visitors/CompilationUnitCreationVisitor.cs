@@ -47,7 +47,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
             var scope = _compilationUnit.Scope;
 
-            var variable = new CompilationUnitVariable();
+            var variable = new CompilationUnitVariable(_compilationUnit);
 
             variable.IsPublic = context.PUBLIC() != null;
 
@@ -60,7 +60,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             variable.AntlrInitializer = variableInitializer;
 
             if (scope.Variables.ContainsKey(variable.Name))
-                _compilationContext.ThrowCompilationError($"variable {variable.Name} is already defined");
+                _compilationContext.ThrowCompilationError($"variable { variable.Name } is already defined");
 
             scope.Variables[variable.Name] = variable;
 
@@ -176,11 +176,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             parameter.IsOutput = context.OUT() != null;
 
-            var variable = new Variable()
+            var variable = new Variable(parameter)
             {
                 Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType()),
-                Name = context.parameterName.Text,
-                Declarator = parameter
+                Name = context.parameterName.Text
             };
 
             if (scope.Variables.ContainsKey(variable.Name))
