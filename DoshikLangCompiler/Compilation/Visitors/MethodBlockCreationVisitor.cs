@@ -1,6 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
 using DoshikLangCompiler.Compilation.CodeRepresentation;
-using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.Visitors
 {
@@ -65,6 +64,8 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             _declaringVariable = statement.Variable;
 
+            _currentExpressionParent = statement;
+
             // Он инициализирует _declaringVariable
             Visit(context.variableDeclarator());
 
@@ -102,12 +103,17 @@ namespace DoshikLangCompiler.Compilation.Visitors
             {
                 // ToDo: Сделать отдельный класс визитора для создания Expression-ов
                 // поидее в этом месте я должен его вызвать и он должен заполнить мне готовый expression, попутно проверяя что юзаются правильные переменные и т.д
+
+                var expression = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, expressionCtx);
             }
             else
                 _compilationContext.ThrowCompilationError("variables can only be initialized using expressions (no special initializer support yet)");
 
             return null;
         }
+
+        // Сюда устанавливается (заранее) родитель для возможного expression-а который встретится в самом стейтменте или его части (например for init часть цикла)
+        private ICodeHierarchyNode _currentExpressionParent;
 
         private Variable _declaringVariable;
 

@@ -194,36 +194,6 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitNewCall([NotNull] DoshikParser.NewCallContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNewConstCall([NotNull] DoshikParser.NewConstCallContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.newConstCallParams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNewConstCallParams([NotNull] DoshikParser.NewConstCallParamsContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.newConstCallParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNewConstCallParam([NotNull] DoshikParser.NewConstCallParamContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.constExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstExpression([NotNull] DoshikParser.ConstExpressionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.constArrayInitializer"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitConstArrayInitializer([NotNull] DoshikParser.ConstArrayInitializerContext context);
-	/// <summary>
 	/// Visit a parse tree produced by the <c>primaryExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// </summary>
@@ -258,13 +228,6 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by the <c>newConstCallExpression</c>
-	/// labeled alternative in <see cref="DoshikParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitNewConstCallExpression([NotNull] DoshikParser.NewConstCallExpressionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

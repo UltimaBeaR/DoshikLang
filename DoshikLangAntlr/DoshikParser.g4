@@ -108,6 +108,7 @@ forInit
 
 // EXPRESSIONS
 
+// Используется только для выражения типа if ( expression )  Просто оператор приоритета скобками называется primary -> parenthesisExpression
 parExpression
     : '(' expression ')'
     ;
@@ -128,44 +129,24 @@ methodCallParam:
 
 newCall: NEW typeType '(' methodCallParams? ')';
 
-newConstCall: NEWCONST typeType '(' newConstCallParams? ')';
-
-newConstCallParams
-    : newConstCallParam (',' newConstCallParam)*
-    ;
-
-newConstCallParam:
-    constExpression;
-
-constExpression:
-    literal
-    | newConstCall
-    | constArrayInitializer
-    ;
-
-constArrayInitializer
-    : '{' (constExpression (',' constExpression)* (',')? )? '}'
-    ;
-
 expression
-    : primary                                                                               # primaryExpression   
-    | expression bop='.' ( IDENTIFIER | methodCall)                                         # dotExpression
-    | expression '[' expression ']'                                                         # bracketsExpression
-    | methodCall                                                                            # methodCallExpression
-    | newConstCall                                                                          # newConstCallExpression
-    | newCall                                                                               # newCallExpression
-    | '(' typeType ')' expression                                                           # typecastExpression
-    | expression postfix=('++' | '--')                                                      # unaryPostfixExpression
-    | prefix=('+'|'-'|'++'|'--') expression                                                 # unaryPrefixExpression
-    | '!' expression                                                                        # notExpression
-    | expression bop=('*'|'/'|'%') expression                                               # multiplicationExpression
-    | expression bop=('+'|'-') expression                                                   # additionExpression
-    | expression bop=('<=' | '>=' | '>' | '<') expression                                   # relativeExpression
-    | expression bop=('==' | '!=') expression                                               # equalsExpression
-    | expression bop='&&' expression                                                        # andExpression
-    | expression bop='||' expression                                                        # orExpression
-    | <assoc=right> expression bop='?' expression ':' expression                            # ifElseExpression
-    | <assoc=right> expression bop=('=' | '+=' | '-=' | '*=' | '/=' | '%=') expression      # assignmentExpression
+    : primary                                                                                               # primaryExpression   
+    | left=expression '.' ( rightIdentifier=IDENTIFIER | rightMethodCall=methodCall)                        # dotExpression
+    | left=expression '[' right=expression ']'                                                              # bracketsExpression
+    | methodCall                                                                                            # methodCallExpression
+    | newCall                                                                                               # newCallExpression
+    | '(' left=typeType ')' right=expression                                                                # typecastExpression
+    | expression postfix=('++' | '--')                                                                      # unaryPostfixExpression
+    | prefix=('+'|'-'|'++'|'--') expression                                                                 # unaryPrefixExpression
+    | '!' expression                                                                                        # notExpression
+    | left=expression operator=('*'|'/'|'%') right=expression                                               # multiplicationExpression
+    | left=expression operator=('+'|'-') right=expression                                                   # additionExpression
+    | left=expression operator=('<=' | '>=' | '>' | '<') right=expression                                   # relativeExpression
+    | left=expression operator=('==' | '!=') right=expression                                               # equalsExpression
+    | left=expression '&&' right=expression                                                                 # andExpression
+    | left=expression '||' right=expression                                                                 # orExpression
+    | <assoc=right> condition=expression '?' trueExpressin=expression ':' elseExpression=expression         # ifElseExpression
+    | <assoc=right> left=expression operator=('=' | '+=' | '-=' | '*=' | '/=' | '%=') right=expression      # assignmentExpression
     ;
 
 primary

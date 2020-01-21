@@ -359,66 +359,6 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitNewCall([NotNull] DoshikParser.NewCallContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNewConstCall([NotNull] DoshikParser.NewConstCallContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNewConstCall([NotNull] DoshikParser.NewConstCallContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCallParams"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNewConstCallParams([NotNull] DoshikParser.NewConstCallParamsContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCallParams"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNewConstCallParams([NotNull] DoshikParser.NewConstCallParamsContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCallParam"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNewConstCallParam([NotNull] DoshikParser.NewConstCallParamContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCallParam"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNewConstCallParam([NotNull] DoshikParser.NewConstCallParamContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.constExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterConstExpression([NotNull] DoshikParser.ConstExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.constExpression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitConstExpression([NotNull] DoshikParser.ConstExpressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.constArrayInitializer"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterConstArrayInitializer([NotNull] DoshikParser.ConstArrayInitializerContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.constArrayInitializer"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitConstArrayInitializer([NotNull] DoshikParser.ConstArrayInitializerContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by the <c>primaryExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -488,20 +428,6 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by the <c>newConstCallExpression</c>
-	/// labeled alternative in <see cref="DoshikParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterNewConstCallExpression([NotNull] DoshikParser.NewConstCallExpressionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by the <c>newConstCallExpression</c>
-	/// labeled alternative in <see cref="DoshikParser.expression"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitNewConstCallExpression([NotNull] DoshikParser.NewConstCallExpressionContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

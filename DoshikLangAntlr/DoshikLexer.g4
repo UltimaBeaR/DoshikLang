@@ -2,7 +2,6 @@ lexer grammar DoshikLexer;
 
 // Keywords
 
-NEWCONST: 'new' Whitespace 'const';
 NEW: 'new';
 EVENT: 'event';
 PRIVATE: 'private';

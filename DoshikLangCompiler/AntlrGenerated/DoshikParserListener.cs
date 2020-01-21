@@ -301,56 +301,6 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitNewCall([NotNull] DoshikParser.NewCallContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterNewConstCall([NotNull] DoshikParser.NewConstCallContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCall"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitNewConstCall([NotNull] DoshikParser.NewConstCallContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCallParams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterNewConstCallParams([NotNull] DoshikParser.NewConstCallParamsContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCallParams"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitNewConstCallParams([NotNull] DoshikParser.NewConstCallParamsContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.newConstCallParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterNewConstCallParam([NotNull] DoshikParser.NewConstCallParamContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.newConstCallParam"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitNewConstCallParam([NotNull] DoshikParser.NewConstCallParamContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.constExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterConstExpression([NotNull] DoshikParser.ConstExpressionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.constExpression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitConstExpression([NotNull] DoshikParser.ConstExpressionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.constArrayInitializer"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterConstArrayInitializer([NotNull] DoshikParser.ConstArrayInitializerContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.constArrayInitializer"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitConstArrayInitializer([NotNull] DoshikParser.ConstArrayInitializerContext context);
-	/// <summary>
 	/// Enter a parse tree produced by the <c>primaryExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// </summary>
@@ -410,18 +360,6 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by the <c>newConstCallExpression</c>
-	/// labeled alternative in <see cref="DoshikParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterNewConstCallExpression([NotNull] DoshikParser.NewConstCallExpressionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by the <c>newConstCallExpression</c>
-	/// labeled alternative in <see cref="DoshikParser.expression"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitNewConstCallExpression([NotNull] DoshikParser.NewConstCallExpressionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

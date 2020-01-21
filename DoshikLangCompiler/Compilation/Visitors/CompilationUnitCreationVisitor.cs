@@ -12,9 +12,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
         }
 
-        public static CompilationUnit Apply(CompilationContext compilationContext, DoshikParser.CompilationUnitContext context)
+        public static CompilationUnit Apply(CompilationContext compilationContext, DoshikParser.CompilationUnitContext antlrContext)
         {
-            return (CompilationUnit)context.Accept(new CompilationUnitCreationVisitor(compilationContext));
+            return (CompilationUnit)antlrContext.Accept(new CompilationUnitCreationVisitor(compilationContext));
         }
 
         // возвращает CompilationUnit
