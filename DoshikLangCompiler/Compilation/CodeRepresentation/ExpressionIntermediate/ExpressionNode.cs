@@ -55,6 +55,13 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Left { get; set; }
+
+        // Right - либо идентификатор, либо вызов метода (одно из двух есть, другое null)
+
+        public string RightIdentifier { get; set; }
+        public MethodCallExpressionNodeData RightMethodCallData { get; set; }
     }
 
     public class BracketsExpressionNode : ExpressionNode<DoshikParser.BracketsExpressionContext>
@@ -63,6 +70,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
     }
 
     public class MethodCallExpressionNode : ExpressionNode<DoshikParser.MethodCallExpressionContext>
@@ -71,6 +81,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public MethodCallExpressionNodeData MethodCallData { get; } = new MethodCallExpressionNodeData();
     }
 
     public class NewCallExpressionNode : ExpressionNode<DoshikParser.NewCallExpressionContext>
@@ -79,6 +91,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public string Type { get; set; }
+
+        public List<MethodCallParameterExpressionNodeData> Parameters { get; } = new List<MethodCallParameterExpressionNodeData>();
     }
 
     public class TypecastExpressionNode : ExpressionNode<DoshikParser.TypecastExpressionContext>
@@ -87,6 +103,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public string Type { get; set; }
+
+        public IExpressionNode Expression { get; set; }
     }
 
     public class UnaryPostfixExpressionNode : ExpressionNode<DoshikParser.UnaryPostfixExpressionContext>
@@ -94,6 +114,23 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         public UnaryPostfixExpressionNode(DoshikParser.UnaryPostfixExpressionContext antlrContext)
             : base(antlrContext)
         {
+        }
+
+        public IExpressionNode Expression { get; set; }
+
+        public PostfixOption Postfix { get; set; }
+
+        public enum PostfixOption
+        {
+            /// <summary>
+            /// expression++
+            /// </summary>
+            Increment,
+
+            /// <summary>
+            /// expression--
+            /// </summary>
+            Decrement
         }
     }
 
@@ -103,6 +140,33 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Expression { get; set; }
+
+        public PrefixOption Prefix { get; set; }
+
+        public enum PrefixOption
+        {
+            /// <summary>
+            /// +expression
+            /// </summary>
+            Plus,
+
+            /// <summary>
+            /// -expression
+            /// </summary>
+            Minus,
+
+            /// <summary>
+            /// ++expression
+            /// </summary>
+            Increment,
+
+            /// <summary>
+            /// --expression
+            /// </summary>
+            Decrement
+        }
     }
 
     public class NotExpressionNode : ExpressionNode<DoshikParser.NotExpressionContext>
@@ -111,6 +175,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Expression { get; set; }
     }
 
     public class MultiplicationExpressionNode : ExpressionNode<DoshikParser.MultiplicationExpressionContext>
@@ -176,6 +242,34 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
+
+        public OperatorOption Operator { get; set; }
+
+        public enum OperatorOption
+        {
+            /// <summary>
+            /// left LesserOrEquals right
+            /// </summary>
+            LesserOrEquals,
+
+            /// <summary>
+            /// left GreaterOrEquals right
+            /// </summary>
+            GreaterOrEquals,
+
+            /// <summary>
+            /// left Lesser right
+            /// </summary>
+            Lesser,
+
+            /// <summary>
+            /// left Greater right
+            /// </summary>
+            Greater
+        }
     }
 
     public class EqualsExpressionNode : ExpressionNode<DoshikParser.EqualsExpressionContext>
@@ -183,6 +277,24 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         public EqualsExpressionNode(DoshikParser.EqualsExpressionContext antlrContext)
             : base(antlrContext)
         {
+        }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
+
+        public OperatorOption Operator { get; set; }
+
+        public enum OperatorOption
+        {
+            /// <summary>
+            /// left == right
+            /// </summary>
+            Equals,
+
+            /// <summary>
+            /// left != right
+            /// </summary>
+            NotEquals
         }
     }
 
@@ -192,6 +304,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
     }
 
     public class OrExpressionNode : ExpressionNode<DoshikParser.OrExpressionContext>
@@ -200,6 +315,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
     }
 
     public class IfElseExpressionNode : ExpressionNode<DoshikParser.IfElseExpressionContext>
@@ -208,6 +326,20 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        // ToDo: оно парсится как будто это вызов функции IfElse(condition, trueExpression, falseExpression)
+        // то есть сначала обрабатывает все 3 операнда а потом сам ifelse. По сути надо тут flow менять, то
+        // есть не порядок в выражении должен решать когда что выполнять а тут должен порядок определяться так же как в statement-е, то есть операции jump-а по условию
+        // condition-а. То есть единственное что должно тут обрабатыватья как expression - это condition и сама операция ifelse.
+        // экспрешены true / false должны быть вычеслены независимо (код для них должен быть сгенерирован независимо) внутри веток if/else (то есть секций разделенных джампами в коде).
+
+        public IExpressionNode Condition { get; set; }
+
+
+        // ToDo: видимо надо заменить эти вещи на Antlr context для под-деревьев выражений и их вычислять уже отдельно.
+
+        public IExpressionNode TrueExpression { get; set; }
+        public IExpressionNode ElseExpression { get; set; }
     }
 
     public class AssignmentExpressionNode : ExpressionNode<DoshikParser.AssignmentExpressionContext>
@@ -215,6 +347,44 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         public AssignmentExpressionNode(DoshikParser.AssignmentExpressionContext antlrContext)
             : base(antlrContext)
         {
+        }
+
+        public IExpressionNode Left { get; set; }
+        public IExpressionNode Right { get; set; }
+
+        public OperatorOption Operator { get; set; }
+
+        public enum OperatorOption
+        {
+            /// <summary>
+            /// left = right
+            /// </summary>
+            Assign,
+
+            /// <summary>
+            /// left += right
+            /// </summary>
+            PlusAssign,
+
+            /// <summary>
+            /// left -= right
+            /// </summary>
+            MinusAssign,
+
+            /// <summary>
+            /// left *= right
+            /// </summary>
+            MultiplyAssign,
+
+            /// <summary>
+            /// left /= right
+            /// </summary>
+            DivideAssign,
+
+            /// <summary>
+            /// left %= right
+            /// </summary>
+            ModAssign
         }
     }
 
@@ -224,6 +394,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
             : base(antlrContext)
         {
         }
+
+        public IExpressionNode Expression { get; set; }
     }
 
     public class LiteralExpressionNode : ExpressionNode<DoshikParser.LiteralExpressionContext>
@@ -231,6 +403,20 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         public LiteralExpressionNode(DoshikParser.LiteralExpressionContext antlrContext)
             : base(antlrContext)
         {
+        }
+
+        public string LiteralValue { get; set; }
+
+        public LiteralTypeOption LiteralType { get; set; }
+
+        public enum LiteralTypeOption
+        {
+            Int,
+            IntHex,
+            Float,
+            String,
+            Bool,
+            Null
         }
     }
 
@@ -241,6 +427,31 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         {
         }
 
+        /// <summary>
+        /// Может обозначать как имя переменной так и часть имени через точку (и возможно еще что-то)
+        /// </summary>
         public string Identifier { get; set; }
+    }
+
+    public class MethodCallExpressionNodeData
+    {
+        public string Name { get; set; }
+
+        /// <summary>
+        /// generic type arguments. Указываются названия типов
+        /// </summary>
+        public List<string> TypeArguments { get; } = new List<string>();
+
+        public List<MethodCallParameterExpressionNodeData> Parameters { get; } = new List<MethodCallParameterExpressionNodeData>();
+    }
+
+    public class MethodCallParameterExpressionNodeData
+    {
+        public bool IsOut { get; set; }
+
+        /// <summary>
+        /// Может содержать любое выражение, но если стоит IsOut, то нужно будет проверить что в этом случае Expression может быть только идентификатором с названием уже объявленной переменной
+        /// </summary>
+        public IExpressionNode Expression { get; set; }
     }
 }

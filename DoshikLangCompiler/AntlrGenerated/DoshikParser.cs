@@ -1753,9 +1753,10 @@ public partial class DoshikParser : Parser {
 	}
 
 	public partial class MethodCallContext : ParserRuleContext {
-		public ITerminalNode IDENTIFIER() { return GetToken(DoshikParser.IDENTIFIER, 0); }
+		public IToken methodName;
 		public ITerminalNode OPEN_PARENTHESIS() { return GetToken(DoshikParser.OPEN_PARENTHESIS, 0); }
 		public ITerminalNode CLOSE_PARENTHESIS() { return GetToken(DoshikParser.CLOSE_PARENTHESIS, 0); }
+		public ITerminalNode IDENTIFIER() { return GetToken(DoshikParser.IDENTIFIER, 0); }
 		public TypeArgumentsContext typeArguments() {
 			return GetRuleContext<TypeArgumentsContext>(0);
 		}
@@ -1790,7 +1791,7 @@ public partial class DoshikParser : Parser {
 		try {
 			EnterOuterAlt(_localctx, 1);
 			{
-			State = 249; Match(IDENTIFIER);
+			State = 249; _localctx.methodName = Match(IDENTIFIER);
 			State = 251;
 			ErrorHandler.Sync(this);
 			_la = TokenStream.LA(1);
@@ -1892,12 +1893,10 @@ public partial class DoshikParser : Parser {
 	}
 
 	public partial class MethodCallParamContext : ParserRuleContext {
-		public IToken outVariableName;
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
 		public ITerminalNode OUT() { return GetToken(DoshikParser.OUT, 0); }
-		public ITerminalNode IDENTIFIER() { return GetToken(DoshikParser.IDENTIFIER, 0); }
 		public MethodCallParamContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
@@ -1922,38 +1921,20 @@ public partial class DoshikParser : Parser {
 	public MethodCallParamContext methodCallParam() {
 		MethodCallParamContext _localctx = new MethodCallParamContext(Context, State);
 		EnterRule(_localctx, 50, RULE_methodCallParam);
+		int _la;
 		try {
-			State = 270;
+			EnterOuterAlt(_localctx, 1);
+			{
+			State = 268;
 			ErrorHandler.Sync(this);
-			switch (TokenStream.LA(1)) {
-			case NEW:
-			case INT_LITERAL:
-			case INT_HEX_LITERAL:
-			case FLOAT_LITERAL:
-			case BOOL_LITERAL:
-			case STRING_LITERAL:
-			case NULL_LITERAL:
-			case OPEN_PARENTHESIS:
-			case BANG:
-			case INC:
-			case DEC:
-			case ADD:
-			case SUB:
-			case IDENTIFIER:
-				EnterOuterAlt(_localctx, 1);
+			_la = TokenStream.LA(1);
+			if (_la==OUT) {
 				{
-				State = 267; expression(0);
+				State = 267; Match(OUT);
 				}
-				break;
-			case OUT:
-				EnterOuterAlt(_localctx, 2);
-				{
-				State = 268; Match(OUT);
-				State = 269; _localctx.outVariableName = Match(IDENTIFIER);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
+			}
+
+			State = 270; expression(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2336,7 +2317,7 @@ public partial class DoshikParser : Parser {
 	}
 	public partial class IfElseExpressionContext : ExpressionContext {
 		public ExpressionContext condition;
-		public ExpressionContext trueExpressin;
+		public ExpressionContext trueExpression;
 		public ExpressionContext elseExpression;
 		public ITerminalNode QUESTION() { return GetToken(DoshikParser.QUESTION, 0); }
 		public ITerminalNode COLON() { return GetToken(DoshikParser.COLON, 0); }
@@ -2439,13 +2420,11 @@ public partial class DoshikParser : Parser {
 		}
 	}
 	public partial class TypecastExpressionContext : ExpressionContext {
-		public TypeTypeContext left;
-		public ExpressionContext right;
 		public ITerminalNode OPEN_PARENTHESIS() { return GetToken(DoshikParser.OPEN_PARENTHESIS, 0); }
-		public ITerminalNode CLOSE_PARENTHESIS() { return GetToken(DoshikParser.CLOSE_PARENTHESIS, 0); }
 		public TypeTypeContext typeType() {
 			return GetRuleContext<TypeTypeContext>(0);
 		}
+		public ITerminalNode CLOSE_PARENTHESIS() { return GetToken(DoshikParser.CLOSE_PARENTHESIS, 0); }
 		public ExpressionContext expression() {
 			return GetRuleContext<ExpressionContext>(0);
 		}
@@ -2516,9 +2495,9 @@ public partial class DoshikParser : Parser {
 				Context = _localctx;
 				_prevctx = _localctx;
 				State = 284; Match(OPEN_PARENTHESIS);
-				State = 285; ((TypecastExpressionContext)_localctx).left = typeType();
+				State = 285; typeType();
 				State = 286; Match(CLOSE_PARENTHESIS);
-				State = 287; ((TypecastExpressionContext)_localctx).right = expression(12);
+				State = 287; expression(12);
 				}
 				break;
 			case 5:
@@ -2672,7 +2651,7 @@ public partial class DoshikParser : Parser {
 						State = 313;
 						if (!(Precpred(Context, 2))) throw new FailedPredicateException(this, "Precpred(Context, 2)");
 						State = 314; Match(QUESTION);
-						State = 315; ((IfElseExpressionContext)_localctx).trueExpressin = expression(0);
+						State = 315; ((IfElseExpressionContext)_localctx).trueExpression = expression(0);
 						State = 316; Match(COLON);
 						State = 317; ((IfElseExpressionContext)_localctx).elseExpression = expression(2);
 						}
@@ -3187,7 +3166,7 @@ public partial class DoshikParser : Parser {
 		'\x19', '\x3', '\x19', '\x5', '\x19', '\x102', '\n', '\x19', '\x3', '\x19', 
 		'\x3', '\x19', '\x3', '\x1A', '\x3', '\x1A', '\x3', '\x1A', '\a', '\x1A', 
 		'\x109', '\n', '\x1A', '\f', '\x1A', '\xE', '\x1A', '\x10C', '\v', '\x1A', 
-		'\x3', '\x1B', '\x3', '\x1B', '\x3', '\x1B', '\x5', '\x1B', '\x111', '\n', 
+		'\x3', '\x1B', '\x5', '\x1B', '\x10F', '\n', '\x1B', '\x3', '\x1B', '\x3', 
 		'\x1B', '\x3', '\x1C', '\x3', '\x1C', '\x3', '\x1C', '\x3', '\x1C', '\x5', 
 		'\x1C', '\x117', '\n', '\x1C', '\x3', '\x1C', '\x3', '\x1C', '\x3', '\x1D', 
 		'\x3', '\x1D', '\x3', '\x1D', '\x3', '\x1D', '\x3', '\x1D', '\x3', '\x1D', 
@@ -3231,7 +3210,7 @@ public partial class DoshikParser : Parser {
 		'\x2', '\x2', '*', '\xED', '\x3', '\x2', '\x2', '\x2', ',', '\xEF', '\x3', 
 		'\x2', '\x2', '\x2', '.', '\xF3', '\x3', '\x2', '\x2', '\x2', '\x30', 
 		'\xFB', '\x3', '\x2', '\x2', '\x2', '\x32', '\x105', '\x3', '\x2', '\x2', 
-		'\x2', '\x34', '\x110', '\x3', '\x2', '\x2', '\x2', '\x36', '\x112', '\x3', 
+		'\x2', '\x34', '\x10E', '\x3', '\x2', '\x2', '\x2', '\x36', '\x112', '\x3', 
 		'\x2', '\x2', '\x2', '\x38', '\x127', '\x3', '\x2', '\x2', '\x2', ':', 
 		'\x15C', '\x3', '\x2', '\x2', '\x2', '<', '\x160', '\x3', '\x2', '\x2', 
 		'\x2', '>', '\x169', '\x3', '\x2', '\x2', '\x2', '@', '\x16B', '\x3', 
@@ -3376,10 +3355,10 @@ public partial class DoshikParser : Parser {
 		'\x106', '\x3', '\x2', '\x2', '\x2', '\x109', '\x10C', '\x3', '\x2', '\x2', 
 		'\x2', '\x10A', '\x108', '\x3', '\x2', '\x2', '\x2', '\x10A', '\x10B', 
 		'\x3', '\x2', '\x2', '\x2', '\x10B', '\x33', '\x3', '\x2', '\x2', '\x2', 
-		'\x10C', '\x10A', '\x3', '\x2', '\x2', '\x2', '\x10D', '\x111', '\x5', 
-		'\x38', '\x1D', '\x2', '\x10E', '\x10F', '\a', '\a', '\x2', '\x2', '\x10F', 
-		'\x111', '\a', '>', '\x2', '\x2', '\x110', '\x10D', '\x3', '\x2', '\x2', 
-		'\x2', '\x110', '\x10E', '\x3', '\x2', '\x2', '\x2', '\x111', '\x35', 
+		'\x10C', '\x10A', '\x3', '\x2', '\x2', '\x2', '\x10D', '\x10F', '\a', 
+		'\a', '\x2', '\x2', '\x10E', '\x10D', '\x3', '\x2', '\x2', '\x2', '\x10E', 
+		'\x10F', '\x3', '\x2', '\x2', '\x2', '\x10F', '\x110', '\x3', '\x2', '\x2', 
+		'\x2', '\x110', '\x111', '\x5', '\x38', '\x1D', '\x2', '\x111', '\x35', 
 		'\x3', '\x2', '\x2', '\x2', '\x112', '\x113', '\a', '\x3', '\x2', '\x2', 
 		'\x113', '\x114', '\x5', '<', '\x1F', '\x2', '\x114', '\x116', '\a', '\x1A', 
 		'\x2', '\x2', '\x115', '\x117', '\x5', '\x32', '\x1A', '\x2', '\x116', 
@@ -3460,7 +3439,7 @@ public partial class DoshikParser : Parser {
 		'L', 'O', 'X', '[', '\x64', 'h', 'p', 't', 'v', '|', '\x81', '\x85', '\x8C', 
 		'\x95', '\x99', '\xA3', '\xAB', '\xB4', '\xBF', '\xCD', '\xD2', '\xD7', 
 		'\xDE', '\xE1', '\xE5', '\xE9', '\xED', '\xF8', '\xFD', '\x101', '\x10A', 
-		'\x110', '\x116', '\x127', '\x148', '\x151', '\x153', '\x15C', '\x160', 
+		'\x10E', '\x116', '\x127', '\x148', '\x151', '\x153', '\x15C', '\x160', 
 		'\x166', '\x171',
 	};
 

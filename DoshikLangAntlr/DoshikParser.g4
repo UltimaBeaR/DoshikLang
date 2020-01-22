@@ -117,15 +117,15 @@ expressionList
     : expression (',' expression)*
     ;
 
-methodCall: IDENTIFIER typeArguments? '(' methodCallParams? ')';
+methodCall: methodName=IDENTIFIER typeArguments? '(' methodCallParams? ')';
 
 methodCallParams
     : methodCallParam (',' methodCallParam)*
     ;
 
+// В коде надо будет проверять что если стоит out, то expression может быть только референсом на переменную, а не любым выражением
 methodCallParam:
-    expression
-    | OUT outVariableName=IDENTIFIER;
+    OUT? expression;
 
 newCall: NEW typeType '(' methodCallParams? ')';
 
@@ -135,7 +135,7 @@ expression
     | left=expression '[' right=expression ']'                                                              # bracketsExpression
     | methodCall                                                                                            # methodCallExpression
     | newCall                                                                                               # newCallExpression
-    | '(' left=typeType ')' right=expression                                                                # typecastExpression
+    | '(' typeType ')' expression                                                                           # typecastExpression
     | expression postfix=('++' | '--')                                                                      # unaryPostfixExpression
     | prefix=('+'|'-'|'++'|'--') expression                                                                 # unaryPrefixExpression
     | '!' expression                                                                                        # notExpression
@@ -145,7 +145,7 @@ expression
     | left=expression operator=('==' | '!=') right=expression                                               # equalsExpression
     | left=expression '&&' right=expression                                                                 # andExpression
     | left=expression '||' right=expression                                                                 # orExpression
-    | <assoc=right> condition=expression '?' trueExpressin=expression ':' elseExpression=expression         # ifElseExpression
+    | <assoc=right> condition=expression '?' trueExpression=expression ':' elseExpression=expression        # ifElseExpression
     | <assoc=right> left=expression operator=('=' | '+=' | '-=' | '*=' | '/=' | '%=') right=expression      # assignmentExpression
     ;
 
