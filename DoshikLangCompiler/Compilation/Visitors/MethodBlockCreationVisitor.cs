@@ -60,7 +60,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
             var statement = new LocalVariableDeclarationStatement(_currentNode);
 
             statement.Variable = new Variable(statement);
-            statement.Variable.Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            statement.Variable.Type = foundType.DataType;
 
             _declaringVariable = statement.Variable;
 

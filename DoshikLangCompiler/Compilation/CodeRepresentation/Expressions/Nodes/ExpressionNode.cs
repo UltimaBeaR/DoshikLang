@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
 {
+    // Ноды это просто результат обработки expression-ов antlr парсером без особой обработки, но в более удобном для работы виде и представленный в виде последовательности операций для
+    // выполенения expression-а, а не в виде дерева
+
     public class ExpressionNodeSequence
     {
         // Выражения из данного дерева, но в виде линейного списка (там есть каждый из нодов), в том порядке, в котором они должны выполняться в итоге
@@ -56,7 +59,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         {
         }
 
-        public string LeftType { get; set; }
+        public DataType LeftType { get; set; }
 
         // Right - либо идентификатор, либо вызов метода (одно из двух есть, другое null)
 
@@ -71,6 +74,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         {
         }
 
+        // Несмотря на то что есть TypeDotExpressionNode, тут Left тоже может быть именем типа, в случае если это просто Identifier
+        // То есть сначала надо попробовать зарезолвить его по имени типа, а если такого типа не нашлось, то уже по имени переменной
         public IExpressionNode Left { get; set; }
 
         // Right - либо идентификатор, либо вызов метода (одно из двух есть, другое null)
@@ -107,7 +112,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         {
         }
 
-        public string Type { get; set; }
+        public DataType Type { get; set; }
 
         public List<MethodCallParameterExpressionNodeData> Parameters { get; } = new List<MethodCallParameterExpressionNodeData>();
     }
@@ -119,7 +124,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         {
         }
 
-        public string Type { get; set; }
+        public DataType Type { get; set; }
 
         public IExpressionNode Expression { get; set; }
     }
@@ -455,7 +460,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         /// <summary>
         /// generic type arguments. Указываются названия типов
         /// </summary>
-        public List<string> TypeArguments { get; } = new List<string>();
+        public List<DataType> TypeArguments { get; } = new List<DataType>();
 
         public List<MethodCallParameterExpressionNodeData> Parameters { get; } = new List<MethodCallParameterExpressionNodeData>();
     }

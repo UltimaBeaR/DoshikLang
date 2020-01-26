@@ -30,7 +30,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             var node = new TypeDotExpressionNode(context);
 
-            node.LeftType = GetTypeNameVisitor.Apply(_compilationContext, context.left);
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.left);
+            foundType.ThrowIfNotFound(_compilationContext);
+
+            node.LeftType = foundType.DataType;
 
             if (context.rightIdentifier != null)
             {
@@ -105,7 +108,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             var newCallCtx = context.newCall();
 
-            node.Type = GetTypeNameVisitor.Apply(_compilationContext, newCallCtx.typeType());
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, newCallCtx.typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            node.Type = foundType.DataType;
 
             node.Parameters.AddRange(GetMethodCallParameters(newCallCtx.methodCallParams()));
 
@@ -120,7 +125,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             var node = new TypecastExpressionNode(context);
 
-            node.Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            node.Type = foundType.DataType;
 
             node.Expression = Sequence.FindExpressionByAntlrContext(context.expression());
 
@@ -423,14 +430,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
             dataToPopulate.Parameters.AddRange(GetMethodCallParameters(methodCallCtx.methodCallParams()));
         }
 
-        private IEnumerable<string> GetTypeArguments(DoshikParser.TypeArgumentsContext typeArgumentsCtx)
+        private IEnumerable<DataType> GetTypeArguments(DoshikParser.TypeArgumentsContext typeArgumentsCtx)
         {
             if (typeArgumentsCtx == null)
                 yield break;
 
             foreach (var typeArgumentCtx in typeArgumentsCtx.typeArgument())
             {
-                yield return GetTypeNameVisitor.Apply(_compilationContext, typeArgumentCtx.typeType());
+                var foundType = GetTypeNameVisitor.Apply(_compilationContext, typeArgumentCtx.typeType());
+                foundType.ThrowIfNotFound(_compilationContext);
+                yield return foundType.DataType;
             }
         }
 

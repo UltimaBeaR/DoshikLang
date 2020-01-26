@@ -25,7 +25,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         ICodeHierarchyNode ICodeHierarchyNode.Parent => null;
         public Scope Scope { get; private set; }
 
-        public Dictionary<string, MethodDeclaration> Events { get; } = new Dictionary<string, MethodDeclaration>();
+        public Dictionary<string, EventDeclaration> Events { get; } = new Dictionary<string, EventDeclaration>();
     }
 
     public class CompilationUnitVariable : Variable

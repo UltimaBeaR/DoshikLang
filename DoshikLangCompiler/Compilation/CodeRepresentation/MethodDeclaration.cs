@@ -13,20 +13,36 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         ICodeHierarchyNode ICodeHierarchyNode.Parent => Parent;
 
         /// <summary>
-        /// Имя типа возвращаемого значения из ивента. Если это null, значит указан void тип
+        /// Имя типа возвращаемого значения из ивента. Может быть void
         /// </summary>
-        public string ReturnTypeOrVoid { get; set; }
+        public DataType ReturnTypeOrVoid { get; set; }
 
         public string Name { get; set; }
-
-        // Является ли событие кастомным или определенным пользователем
-        public bool IsCustom { get; set; }
 
         public MethodDeclarationParameters Parameters { get; set; }
 
         public DoshikParser.BlockContext AntlrBody { get; set; }
 
         public BlockOfStatements BodyBlock { get; set; }
+    }
+
+    public class EventDeclaration : MethodDeclaration
+    {
+        public EventDeclaration(CompilationUnit parent)
+            : base(parent)
+        {
+        }
+
+        public DoshikExternalApiEvent ExternalEvent { get; set; }
+
+        // Является ли событие кастомным или определенным пользователем
+        public bool IsCustom
+        {
+            get
+            {
+                return ExternalEvent == null;
+            }
+        }
     }
 
     public class MethodDeclarationParameters : ICodeHierarchyNode, IScopeOwner

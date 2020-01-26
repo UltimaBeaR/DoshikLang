@@ -24,19 +24,19 @@ namespace DoshikLangCompiler.Compilation
             throw new CompilationErrorException();
         }
 
-        public DoshikExternalApiType FindExternalApiType(string externalApiOrIntrinsicTypeName)
+        public DoshikExternalApiType FindExternalApiType(string[] codeNameOrIntrinsicTypeName)
         {
-            if (IntrinsicTypes.TryGetValue(externalApiOrIntrinsicTypeName, out var intrinsicType))
+            if (codeNameOrIntrinsicTypeName.Length == 1 && IntrinsicTypes.TryGetValue(codeNameOrIntrinsicTypeName[0], out var intrinsicType))
             {
                 return ExternalApi.Types.FirstOrDefault(x => x.DotnetType == intrinsicType);
             }
 
-            return ExternalApi.Types.FirstOrDefault(x => x.ExternalName == externalApiOrIntrinsicTypeName);
+            return ExternalApi.Types.FirstOrDefault(x => Enumerable.SequenceEqual(x.FullyQualifiedCodeName, codeNameOrIntrinsicTypeName));
         }
 
-        public DoshikExternalApiEvent FindExternalApiEvent(string externalApiEventName)
+        public DoshikExternalApiEvent FindExternalApiEvent(string eventCodeName)
         {
-            return ExternalApi.Events.FirstOrDefault(x => x.ExternalName == externalApiEventName);
+            return ExternalApi.Events.FirstOrDefault(x => x.CodeName == eventCodeName);
         }
 
         public List<string> CompilationErrors { get; } = new List<string>();

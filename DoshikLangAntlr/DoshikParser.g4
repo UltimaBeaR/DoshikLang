@@ -38,7 +38,7 @@ arrayInitializer
 
 // Для определения не примитивных типов переменных при их объявлении (на данный момент это будут типы, которые есть в апи удона)
 classOrInterfaceType
-    : IDENTIFIER typeArguments? ('.' IDENTIFIER typeArguments?)*
+    : IDENTIFIER typeArguments? ('::' IDENTIFIER typeArguments?)*
     ;
 
 typeArgument

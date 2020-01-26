@@ -111,19 +111,19 @@ namespace DoshikLangCompiler.Compilation
 
             foreach (var variable in compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().OrderBy(x => !x.IsPublic).ThenBy(x => x.Name))
             {
-                assemblyBuilder.AddVariable(variable.IsPublic, "global__" + variable.Name, variable.Type);
+                assemblyBuilder.AddVariable(variable.IsPublic, "global__" + variable.Name, variable.Type.ExternalType.ExternalName);
             }
 
             // Сначала просто добавляем все ивенты, чтобы было их определение
-            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.ExternalEvent.ExternalName))
             {
-                assemblyBuilder.AddOrGetEvent(eventHandler.Name);
+                assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
             }
 
             // Генерируем код внутри каждого из ивентов, попутно генерируя переменные
-            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.ExternalEvent.ExternalName))
             {
-                var eventBodyEmitter = assemblyBuilder.AddOrGetEvent(eventHandler.Name);
+                var eventBodyEmitter = assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
 
                 eventBodyEmitter.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
             }

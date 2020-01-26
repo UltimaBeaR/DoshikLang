@@ -58,7 +58,66 @@ namespace DoshikLangUnityEditor
             HandleMethodNodes(api, methodNodes);
             HandleEventNodes(api, eventNodes);
 
+            GenerateCodeNames(api);
+
             return api;
+        }
+
+        private void GenerateCodeNames(DoshikExternalApi api)
+        {
+            foreach (var apiEvent in api.Events)
+            {
+                var name = apiEvent.ExternalName;
+                // remove first "_"
+                name = name.Remove(0, 1);
+                name = FirstLetterToUpperCase(name);
+
+                apiEvent.CodeName = name;
+            }
+
+            foreach (var apiType in api.Types)
+            {
+                string firstNamespaceSegment = null;
+                string name = apiType.ExternalName;
+
+                var handled = TryHandleTypePrefix("System", "System", ref firstNamespaceSegment, ref name);
+                if (!handled)
+                    handled = TryHandleTypePrefix("UnityEngine", "UnityEngine", ref firstNamespaceSegment, ref name);
+                if (!handled)
+                    handled = TryHandleTypePrefix("VRCSDK3Components", "VRCSDK3Components", ref firstNamespaceSegment, ref name);
+                if (!handled)
+                    handled = TryHandleTypePrefix("VRCSDKBase", "VRCSDKBase", ref firstNamespaceSegment, ref name);
+                if (!handled)
+                    handled = TryHandleTypePrefix("VRCUdonCommonInterfaces", "VRCUdonCommonInterfaces", ref firstNamespaceSegment, ref name);
+
+                if (firstNamespaceSegment == null)
+                {
+                    apiType.FullyQualifiedCodeName = new string[] { name };
+                }
+                else
+                {
+                    apiType.FullyQualifiedCodeName = new string[] { firstNamespaceSegment, name };
+                }
+
+                foreach (var method in apiType.Methods)
+                {
+                    // Пока сохраняем оригинальные имена методов (потом возможно я переименую имена, связанные с операторами, чтобы из кода это выглядело как-то посимпатичнее)
+                    method.CodeName = method.ExternalName;
+                }
+            }
+        }
+
+        private bool TryHandleTypePrefix(string externalNamePrefix, string correspondingFirstNamespaceSegment, ref string firstNamespaceSegment, ref string name)
+        {
+            if (name.StartsWith(externalNamePrefix))
+            {
+                firstNamespaceSegment = correspondingFirstNamespaceSegment;
+                name = name.Remove(0, externalNamePrefix.Length);
+
+                return true;
+            }
+
+            return false;
         }
 
         private void HandleConstNodes(DoshikExternalApi api, List<DoshikNodeDefinition> nodes)
@@ -408,6 +467,16 @@ namespace DoshikLangUnityEditor
             }
 
             return apiEvent;
+        }
+
+        private static string FirstLetterToUpperCase(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
+            char[] chars = str.ToCharArray();
+            chars[0] = char.ToUpperInvariant(chars[0]);
+            return new string(chars);
         }
 
         private static string FirstLetterToLowerCase(string str)

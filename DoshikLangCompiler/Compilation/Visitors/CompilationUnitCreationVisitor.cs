@@ -51,7 +51,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             variable.IsPublic = context.PUBLIC() != null;
 
-            variable.Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            variable.Type = foundType.DataType;
 
             (var variableName, var variableInitializer) = ((string, DoshikParser.VariableInitializerContext))Visit(context.variableDeclarator());
 
@@ -86,24 +88,31 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // Если это event
 
-            var eventDeclaration = new MethodDeclaration(_compilationUnit);
+            var eventDeclaration = new EventDeclaration(_compilationUnit);
             eventDeclaration.Parameters = new MethodDeclarationParameters(eventDeclaration, _compilationUnit.Scope);
 
             _currentMethodDeclaration = eventDeclaration;
 
-            eventDeclaration.ReturnTypeOrVoid = GetTypeNameVisitor.Apply(_compilationContext, context.typeTypeOrVoid());
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeTypeOrVoid());
+            foundType.ThrowIfNotFound(_compilationContext);
+            eventDeclaration.ReturnTypeOrVoid = foundType.DataType;
 
             // Не знаю, бывают ли случаи когда событие может что-то возвращать.
             // Если увижу пример - сниму это ограничение (тогда в этом месте надо будет проверять что возвращаемый тип конкретного события является тем что описан в апи)
             // Вообще в апи там есть ивенты с output параметрами но похоже что это не возвращаемое значение, а out params
-            if (eventDeclaration.ReturnTypeOrVoid != null)
+            if (!eventDeclaration.ReturnTypeOrVoid.IsVoid)
                 _compilationContext.ThrowCompilationError($"event's return type must be void, but declared as { eventDeclaration.ReturnTypeOrVoid }");
 
             eventDeclaration.Name = context.methodName.Text;
 
-            var externalApiEvent = _compilationContext.FindExternalApiEvent(eventDeclaration.Name);
+            // сделал на всяких случай, чтобы не было неоднозначностей при генерировании итогового assembly, т.к. похоже что _ это зарезервировано для
+            // имен встроенных ивентов. Из кода дошика же я зарезервированные имена ивентов преобразовываю в те, которые начинаются НЕ с _
+            if (eventDeclaration.Name.StartsWith("_"))
+            {
+                _compilationContext.ThrowCompilationError($"event names cannot start from \"_\" symbol");
+            }
 
-            eventDeclaration.IsCustom = externalApiEvent == null;
+            eventDeclaration.ExternalEvent = _compilationContext.FindExternalApiEvent(eventDeclaration.Name);
 
             if (eventDeclaration.IsCustom)
                 _compilationContext.ThrowCompilationError($"custom events is not supported yet. event name must be one of predefined names");
@@ -118,18 +127,18 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 // Если ивент не кастомный, проверяем что параметры соответствуют указанным в external api
 
                 var declarationParamsAreOk =
-                    externalApiEvent.InParameters.Count == eventDeclaration.Parameters.Parameters.Count
+                    eventDeclaration.ExternalEvent.InParameters.Count == eventDeclaration.Parameters.Parameters.Count
                     && !eventDeclaration.Parameters.Parameters.Any(x => x.IsOutput); //< don't support out params for built-in events yet
 
                 if (declarationParamsAreOk)
                 {
-                    for (int paramIdx = 0; paramIdx < externalApiEvent.InParameters.Count; paramIdx++)
+                    for (int paramIdx = 0; paramIdx < eventDeclaration.ExternalEvent.InParameters.Count; paramIdx++)
                     {
-                        var externalApiParam = externalApiEvent.InParameters[paramIdx];
+                        var externalApiParam = eventDeclaration.ExternalEvent.InParameters[paramIdx];
                         var declarationParam = eventDeclaration.Parameters.Parameters[paramIdx];
 
                         // Проверяем только типы, название параметров может отличаться от заданного в api
-                        if (declarationParam.Variable.Type != externalApiParam.Type.ExternalName)
+                        if (declarationParam.Variable.Type.ExternalType.ExternalName != externalApiParam.Type.ExternalName)
                         {
                             declarationParamsAreOk = false;
                             break;
@@ -138,7 +147,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 }
 
                 if (!declarationParamsAreOk)
-                    _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event { externalApiEvent.ExternalName } signature");
+                    _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event signature");
             }
 
             eventDeclaration.AntlrBody = context.block();
@@ -176,9 +185,12 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             parameter.IsOutput = context.OUT() != null;
 
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+
             var variable = new Variable(parameter)
             {
-                Type = GetTypeNameVisitor.Apply(_compilationContext, context.typeType()),
+                Type = foundType.DataType,
                 Name = context.parameterName.Text
             };
 

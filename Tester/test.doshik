@@ -1,4 +1,6 @@
-float _angle = 10.5;
+float _angle1 = 10.5;
+System::Single _angle2 = 11.7;
+
 public int test = 5;
 private string _test2 = "sdfasdfasdfsdf";
 bool _noInitialization;
@@ -22,7 +24,25 @@ event void _update()
 }
 */
 
-event void _onRenderImage(UnityEngineRenderTexture src, UnityEngineRenderTexture dest)
+event void OnRenderImage(UnityEngine::RenderTexture src, UnityEngine::RenderTexture dest)
 {
     bool isCool = (a + 1).ToString("X")[0] == 5;
+    /*
+        var temp1 = a;                            // id -> reference "a" variable и вернуть значение этой переменной (т.к. переменная уже создана на этот момент)
+        var temp2 = 1;                            // literal - get or create variable for int literal = 1  и вернуть значение этой переменной литерала
+        var temp3 = temp1 + temp2;                // call static temp1Type.operator_+(temp1, temp2)   и вернуть значение, которое вернулось из метода (может быть void)
+        var temp4 = (temp3);                      // ничего не делать, возвратить значение переменной переданной в скобках.
+        var temp5 = "X";                          // литерал - аналогично
+        var temp6 = temp4.ToString(temp5);        // call instance temp4Type.ToString(temp4, temp5) - возвращаем результат
+        var temp7 = 0;                            // литерал - аналогично
+        var temp8 = temp6[temp7];                 // call static temp6Type.operator_[](temp6, temp7)  - возвращаем результат
+        var temp9 = 5;                            // литерал
+        var temp10 = temp8 == temp9;              // call static temp8Type.operator_==(temp8, temp9)  - возвращаем результат
+    */
+
+    int teeee = (VRCSDK3Components::VRCMirrorReflection)something;
+
+    int trololo = Something.ResolveLaterMethod(5, 6);
+    int sdfsdf = UnityEngine::Vector3.ExplicitStaticMethod(5, 6);
+    int ololo = teee.test.InstanceMethod(5, 6);
 }

@@ -34,15 +34,17 @@ NULL_LITERAL: 'null';
 
 // Separators
 
+
+SCOPE_RESOLUTION: '::';
+DOT: '.';
+SEMICOLON: ';';
+COMMA: ',';
 OPEN_PARENTHESIS: '(';
 CLOSE_PARENTHESIS: ')';
 OPEN_BRACE: '{';
 CLOSE_BRACE: '}';
 OPEN_BRACKET: '[';
 CLOSE_BRACKET: ']';
-SEMICOLON: ';';
-COMMA: ',';
-DOT: '.';
 
 // Operators
 
