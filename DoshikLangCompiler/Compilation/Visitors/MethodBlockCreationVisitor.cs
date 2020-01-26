@@ -72,6 +72,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
             // Он инициализирует _declaringVariable
             Visit(context.variableDeclarator());
 
+            // Добавляем переменную ПОСЛЕ выполнения инициализации, таким образом при выполнении выражения инициализации эта переменная еще будет недоступна для референеса
+            // то есть нельзя будет сделать так int a = a + 1;
+            // этим отличается инициализация переменной от обычного присваивания, где референсить присваемую переменную можно
             _currentScope.Variables.Add(statement.Variable.Name, statement.Variable);
 
             return statement;

@@ -27,7 +27,7 @@ VOID: 'void';
 
 INT_LITERAL: Digits;
 INT_HEX_LITERAL: '0' [xX] HexDigits;
-FLOAT_LITERAL: Digits '.' Digits;
+FLOAT_LITERAL: Digits '.' Digits FloatLiteralPostfix?;
 BOOL_LITERAL: 'true' | 'false';
 STRING_LITERAL: '"' (~["\r\n])* '"';
 NULL_LITERAL: 'null';
@@ -97,6 +97,8 @@ IDENTIFIER: IdentifierLetter (IdentifierLetter | Digit)*;
 fragment Whitespace: [ \t\r\n\u000C]+;
 
 fragment IdentifierLetter: [a-zA-Z_];
+
+fragment FloatLiteralPostfix: [fd];
 
 fragment Digits: Digit+;
 fragment HexDigits: HexDigit+;

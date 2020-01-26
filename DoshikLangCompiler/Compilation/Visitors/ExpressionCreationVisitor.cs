@@ -21,7 +21,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             var visitor = new ExpressionCreationVisitor(compilationContext);
             visitor.Visit(antlrContext);
 
-            return new ExpressionBuilder().Build(expressionParent, visitor.Sequence);
+            return new ExpressionBuilder().Build(compilationContext, expressionParent, visitor.Sequence);
         }
 
         public override object VisitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context)

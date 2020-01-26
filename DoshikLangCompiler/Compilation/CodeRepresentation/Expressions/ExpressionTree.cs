@@ -32,20 +32,27 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
     /// </summary>
     public class ExpressionSlot
     {
+        public ExpressionSlot(DataType type, IExpression outputSideExpression)
+        {
+            Type = type;
+            OutputSideExpression = outputSideExpression;
+        }
+
         /// <summary>
         /// Тип данных (из udon api)
         /// </summary>
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Выражение, к которому этот слот направлен на входное значение (то есть выражение справа от слота)
-        /// </summary>
-        public IExpression InputSideExpression { get; set; }
+        public DataType Type { get; private set; }
 
         /// <summary>
         /// Выражение, к которому этот слот направлен на выходное значение (то есть выражение слева от слота)
         /// </summary>
-        public IExpression OutputSideExpression { get; set; }
+        public IExpression OutputSideExpression { get; private set; }
+
+        /// <summary>
+        /// Выражение, к которому этот слот направлен на входное значение (то есть выражение справа от слота)
+        /// Таких выражений может быть несколько
+        /// </summary>
+        public List<IExpression> InputSideExpressions { get; } = new List<IExpression>();
     }
 
     /// <summary>
@@ -63,6 +70,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
     /// </summary>
     public class VariableReferenceExpression : ExpressionBase
     {
+        /// <summary>
+        /// Переменная. Ассоциирована с выходным слотом
+        /// </summary>
         public Variable Variable { get; set; }
     }
 
@@ -75,7 +85,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         /// <summary>
         /// Тип из udon api
         /// </summary>
-        public string ValueType { get; set; }
+        public DataType ValueType { get; set; }
 
         /// <summary>
         /// Значение в виде dotnet типа (скорее всего тут будут только примитивные типы, например int, string, float, int64 и тд)
@@ -100,7 +110,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         /// <summary>
         /// Тип (из udon api), к которому применяется вызов метода
         /// </summary>
-        public string Type { get; set; }
+        public DataType Type { get; set; }
     }
 
     public class IfElseExpression : ExpressionBase
