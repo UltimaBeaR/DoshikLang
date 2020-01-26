@@ -1,7 +1,7 @@
 ﻿using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 
-namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermediate
+namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
 {
     public class ExpressionNodeSequence
     {
@@ -47,6 +47,21 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.ExpressionIntermedia
         IParseTree IExpressionNode.AntlrContext => AntlrContext;
 
         public IExpressionNode Parent { get; set; }
+    }
+
+    public class TypeDotExpressionNode : ExpressionNode<DoshikParser.TypeDotExpressionContext>
+    {
+        public TypeDotExpressionNode(DoshikParser.TypeDotExpressionContext antlrContext)
+            : base(antlrContext)
+        {
+        }
+
+        public string LeftType { get; set; }
+
+        // Right - либо идентификатор, либо вызов метода (одно из двух есть, другое null)
+
+        public string RightIdentifier { get; set; }
+        public MethodCallExpressionNodeData RightMethodCallData { get; set; }
     }
 
     public class DotExpressionNode : ExpressionNode<DoshikParser.DotExpressionContext>

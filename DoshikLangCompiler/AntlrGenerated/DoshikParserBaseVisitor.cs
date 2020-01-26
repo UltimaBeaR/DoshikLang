@@ -425,6 +425,17 @@ public partial class DoshikParserBaseVisitor<Result> : AbstractParseTreeVisitor<
 	/// <return>The visitor result.</return>
 	public virtual Result VisitUnaryPostfixExpression([NotNull] DoshikParser.UnaryPostfixExpressionContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by the <c>relativeExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// <para>

@@ -3,6 +3,8 @@ public int test = 5;
 private string _test2 = "sdfasdfasdfsdf";
 bool _noInitialization;
 
+int a = 30;
+
 /*
 event void _update()
 {
@@ -22,7 +24,5 @@ event void _update()
 
 event void _onRenderImage(UnityEngineRenderTexture src, UnityEngineRenderTexture dest)
 {
-
-    int result = (new UnityEngineTransform(a, a + b * c + 3 + c)).DoStuff(5, 6) + test.namespace.thing.CallMethod<int, UnityEngineVector3>() < 3 ? 80 : ((int)!false)++;
-
+    bool isCool = (a + 1).ToString("X")[0] == 5;
 }

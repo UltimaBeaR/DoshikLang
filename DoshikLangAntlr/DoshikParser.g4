@@ -131,8 +131,12 @@ newCall: NEW typeType '(' methodCallParams? ')';
 
 expression
     : primary                                                                                               # primaryExpression   
+    | left=typeType '.' ( rightIdentifier=IDENTIFIER | rightMethodCall=methodCall)                          # typeDotExpression
     | left=expression '.' ( rightIdentifier=IDENTIFIER | rightMethodCall=methodCall)                        # dotExpression
+
+    // если будут типы, поддерживающие синтаксис a[one, two, ...] то можно будет в right сделать expressionList
     | left=expression '[' right=expression ']'                                                              # bracketsExpression
+
     | methodCall                                                                                            # methodCallExpression
     | newCall                                                                                               # newCallExpression
     | '(' typeType ')' expression                                                                           # typecastExpression

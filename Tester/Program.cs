@@ -2,6 +2,7 @@
 using DoshikLangUnityEditor;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Tester
 {
@@ -53,11 +54,6 @@ namespace Tester
 
             Console.ReadLine();
 
-
-
-
-
-
             //NodesLogger.LogRegistries();
 
 
@@ -71,7 +67,7 @@ namespace Tester
             // всегда само как то даункастится в этот тип? тогда возможно и во входных параметрах в heap будет определен IEnumerableT. Вобщем надо поисследовать
 
 
-            
+
 
             //var allTypes = api.Types
             //    .OrderBy(x => x.ExternalName)

@@ -513,6 +513,20 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitUnaryPostfixExpression([NotNull] DoshikParser.UnaryPostfixExpressionContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by the <c>relativeExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// <para>The default implementation does nothing.</para>

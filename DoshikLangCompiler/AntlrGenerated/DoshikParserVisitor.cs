@@ -271,6 +271,13 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitUnaryPostfixExpression([NotNull] DoshikParser.UnaryPostfixExpressionContext context);
 	/// <summary>
+	/// Visit a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context);
+	/// <summary>
 	/// Visit a parse tree produced by the <c>relativeExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// </summary>

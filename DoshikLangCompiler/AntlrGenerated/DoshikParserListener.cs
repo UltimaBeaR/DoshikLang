@@ -433,6 +433,18 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitUnaryPostfixExpression([NotNull] DoshikParser.UnaryPostfixExpressionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>typeDotExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context);
+	/// <summary>
 	/// Enter a parse tree produced by the <c>relativeExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.
 	/// </summary>
