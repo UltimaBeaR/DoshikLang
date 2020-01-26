@@ -102,7 +102,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             {
                 if (DataType == null)
                 {
-                    _compilationContext.ThrowCompilationError("type " + SourceText + " is undefined");
+                    throw _compilationContext.ThrowCompilationError("type " + SourceText + " is undefined");
                 }
             }
         }

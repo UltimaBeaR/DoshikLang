@@ -62,7 +62,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             variable.AntlrInitializer = variableInitializer;
 
             if (scope.Variables.ContainsKey(variable.Name))
-                _compilationContext.ThrowCompilationError($"variable { variable.Name } is already defined");
+                throw _compilationContext.ThrowCompilationError($"variable { variable.Name } is already defined");
 
             scope.Variables[variable.Name] = variable;
 
@@ -84,7 +84,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // Пока не поддерживаю кастомные функции (не ивенты)
             if (!isEvent)
-                _compilationContext.ThrowCompilationError($"custom functions is not supported yet");
+                throw _compilationContext.ThrowCompilationError($"custom functions is not supported yet");
 
             // Если это event
 
@@ -101,7 +101,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             // Если увижу пример - сниму это ограничение (тогда в этом месте надо будет проверять что возвращаемый тип конкретного события является тем что описан в апи)
             // Вообще в апи там есть ивенты с output параметрами но похоже что это не возвращаемое значение, а out params
             if (!eventDeclaration.ReturnTypeOrVoid.IsVoid)
-                _compilationContext.ThrowCompilationError($"event's return type must be void, but declared as { eventDeclaration.ReturnTypeOrVoid }");
+                throw _compilationContext.ThrowCompilationError($"event's return type must be void, but declared as { eventDeclaration.ReturnTypeOrVoid }");
 
             eventDeclaration.Name = context.methodName.Text;
 
@@ -109,16 +109,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
             // имен встроенных ивентов. Из кода дошика же я зарезервированные имена ивентов преобразовываю в те, которые начинаются НЕ с _
             if (eventDeclaration.Name.StartsWith("_"))
             {
-                _compilationContext.ThrowCompilationError($"event names cannot start from \"_\" symbol");
+                throw _compilationContext.ThrowCompilationError($"event names cannot start from \"_\" symbol");
             }
 
             eventDeclaration.ExternalEvent = _compilationContext.FindExternalApiEvent(eventDeclaration.Name);
 
             if (eventDeclaration.IsCustom)
-                _compilationContext.ThrowCompilationError($"custom events is not supported yet. event name must be one of predefined names");
+                throw _compilationContext.ThrowCompilationError($"custom events is not supported yet. event name must be one of predefined names");
 
             if (_compilationUnit.Events.ContainsKey(eventDeclaration.Name))
-                _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
+                throw _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
 
             eventDeclaration.Parameters.Parameters.AddRange((List<MethodDeclarationParameter>)Visit(context.formalParameters()));
 
@@ -147,7 +147,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 }
 
                 if (!declarationParamsAreOk)
-                    _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event signature");
+                    throw _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event signature");
             }
 
             eventDeclaration.AntlrBody = context.block();
@@ -195,7 +195,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             };
 
             if (scope.Variables.ContainsKey(variable.Name))
-                _compilationContext.ThrowCompilationError($"parameter { variable.Name } is already defined");
+                throw _compilationContext.ThrowCompilationError($"parameter { variable.Name } is already defined");
 
             scope.Variables[variable.Name] = variable;
 

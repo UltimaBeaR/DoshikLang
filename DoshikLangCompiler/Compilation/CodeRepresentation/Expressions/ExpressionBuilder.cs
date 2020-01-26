@@ -136,12 +136,12 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             var variable = scope.FindVariableByName(node.Identifier);
 
             if (variable == null)
-                _compilationContext.ThrowCompilationError($"variable { node.Identifier } is not defined");
+                throw _compilationContext.ThrowCompilationError($"variable { node.Identifier } is not defined");
 
             result.Variable = variable;
 
-            // Добавляем выходной слот
-            result.OutputSlots.Add(new ExpressionSlot(result.Variable.Type, result));
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.Variable.Type, result);
 
             return result;
         }
@@ -149,7 +149,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         private IExpression HandleLiteralExpressionNode(LiteralExpressionNode node)
         {
             var result = new ConstantValueExpression();
-            Type dotnetType = null;
+            Type dotnetType;
 
             switch (node.LiteralType)
             {
@@ -168,7 +168,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                             result.DotnetValue = longResult;
                         }
                         else
-                            _compilationContext.ThrowCompilationError("integer constant is too large");
+                            throw _compilationContext.ThrowCompilationError("integer constant is too large");
                     }
                     break;
                 case LiteralExpressionNode.LiteralTypeOption.IntHex:
@@ -187,7 +187,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                             result.DotnetValue = longResult;
                         }
                         else
-                            _compilationContext.ThrowCompilationError("integer constant is too large");
+                            throw _compilationContext.ThrowCompilationError("integer constant is too large");
                     }
                     break;
                 case LiteralExpressionNode.LiteralTypeOption.Float:
@@ -219,7 +219,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
                             }
                             else
-                                _compilationContext.ThrowCompilationError("cannot parse float literal");
+                                throw _compilationContext.ThrowCompilationError("cannot parse float literal");
                         }
                         else
                         {
@@ -230,7 +230,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
                             }
                             else
-                                _compilationContext.ThrowCompilationError("cannot parse double literal");
+                                throw _compilationContext.ThrowCompilationError("cannot parse double literal");
                         }
                     }
                     break;
@@ -271,8 +271,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
             result.ValueType = new DataType { ExternalType = _compilationContext.FindExternalApiType(dotnetType) };
 
-            // Добавляем выходной слот
-            result.OutputSlots.Add(new ExpressionSlot(result.ValueType, result));
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
 
             return result;
         }
@@ -286,6 +286,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
             var result = new StaticMethodCallExpression();
 
+            if (node.RightIdentifier != null)
+                throw _compilationContext.ThrowCompilationError("properties are not supported yet");
+
             return result;
         }
 
@@ -297,6 +300,61 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
             var result = new StaticMethodCallExpression();
 
+            if (node.RightIdentifier != null)
+                throw _compilationContext.ThrowCompilationError("static properties are not supported yet");
+
+            if (node.RightMethodCallData.TypeArguments.Count > 0)
+                throw _compilationContext.ThrowCompilationError("method type arguments are not supported");
+
+            var overloadInPararmeters = new List<DoshikExternalApiType>();
+            var overloadOutParameters = new List<DoshikExternalApiType>();
+
+            // Проходим по всем параметрам у вызова метода
+            foreach (var methodCallParameter in node.RightMethodCallData.Parameters)
+            {
+                // Добавляем input слот к текущему выражению (он уже существует как output у выражения, соответствующего этому параметру)
+
+                var slot = FindExpressionByExpressionNode(methodCallParameter.Expression).ReturnOutputSlot;
+
+                if (slot.Type.IsVoid)
+                    throw _compilationContext.ThrowCompilationError("cannot pass void as method call parameter");
+
+                slot.InputSideExpressions.Add(result);
+                result.InputSlots.Add(slot);
+
+                // Распределяем параметр в один из списков - входной или выходной - для определения перегрузки метода
+
+                if (methodCallParameter.IsOut)
+                    overloadOutParameters.Add(slot.Type.ExternalType);
+                else
+                    overloadInPararmeters.Add(slot.Type.ExternalType);
+            }
+
+            var foundOverload = _compilationContext.FindBestMethodOverload(true, node.LeftType.ExternalType, node.RightMethodCallData.Name, overloadInPararmeters, overloadOutParameters);
+
+            if (foundOverload.OverloadCount == 0)
+                throw _compilationContext.ThrowCompilationError($"static method { node.RightMethodCallData.Name } not found in { _compilationContext.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type");
+
+            if (foundOverload.BestOverload == null)
+                throw _compilationContext.ThrowCompilationError($"overload for static method { node.RightMethodCallData.Name } not found in { _compilationContext.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type, but found { foundOverload.OverloadCount } methods with this name");
+
+            result.MethodOverload = foundOverload.BestOverload;
+
+            // Определяем выходное значение
+
+            var returnValueType = new DataType() { IsVoid = result.MethodOverload.OutParameterType == null };
+            if (!returnValueType.IsVoid)
+            {
+                returnValueType.ExternalType = result.MethodOverload.OutParameterType;
+            }
+            
+            result.ReturnOutputSlot = new ExpressionSlot(returnValueType, result);
+
+            foreach (var outParameter in result.MethodOverload.ExtraOutParameters)
+            {
+                result.AdditionalOutputSlots.Add(new ExpressionSlot(new DataType() { ExternalType = outParameter.Type }, result));
+            }
+
             return result;
         }
 
@@ -306,9 +364,28 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             // тут надо найти определенный статический метод op_Addition у типа, который определен в выходной ноде левого параметра
             // и возвратить его вызов
 
+            // ToDo: при формировании external api нужно бы разобрать методы по группам: Простой метод, конструктор, перегрузка оператора (+, - и тд)
+            // тогда можно было бы тут искать не по имени метода а по группе и среди них уже искать перегрузки по типам параметров (причем тут бы тогда то статический метод или нет определялось бы
+            // в зависимости от флага того метод статический или нет)
+            // этот код можно тоже сделать универсальным на многие операторы
+
             var result = new StaticMethodCallExpression();
 
+            var leftExpression = FindExpressionByExpressionNode(node.Left);
+            var rightExpression = FindExpressionByExpressionNode(node.Right);
+
             return result;
+        }
+
+        // Находит ранее определенный IExpression в _sequence по соответствующему ему ноду из _nodeSequence
+        private IExpression FindExpressionByExpressionNode(IExpressionNode node)
+        {
+            var foundIndex = _nodeSequence.Sequence.FindIndex(x => x == node);
+
+            if (foundIndex >= 0)
+                return _sequence[foundIndex];
+
+            return null;
         }
 
         private CompilationContext _compilationContext;

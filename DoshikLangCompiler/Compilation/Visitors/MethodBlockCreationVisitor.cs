@@ -86,7 +86,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             _declaringVariable.Name = context.variableName.Text;
 
             if (_currentScope.FindVariableByName(_declaringVariable.Name) != null)
-                _compilationContext.ThrowCompilationError($"variable { _declaringVariable.Name } is already defined");
+                throw _compilationContext.ThrowCompilationError($"variable { _declaringVariable.Name } is already defined");
 
             var variableInitializerCtx = context.variableInitializer();
 
@@ -115,7 +115,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 var expression = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, expressionCtx);
             }
             else
-                _compilationContext.ThrowCompilationError("variables can only be initialized using expressions (no special initializer support yet)");
+                throw _compilationContext.ThrowCompilationError("variables can only be initialized using expressions (no special initializer support yet)");
 
             return null;
         }

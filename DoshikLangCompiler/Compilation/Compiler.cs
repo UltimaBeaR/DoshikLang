@@ -71,12 +71,12 @@ namespace DoshikLangCompiler.Compilation
 
                 if (lexerErrorListener.Errors.Count > 0)
                 {
-                    compilationContext.ThrowCompilationError($"Error in lexer: { lexerErrorListener.Errors.First() }");
+                    throw compilationContext.ThrowCompilationError($"Error in lexer: { lexerErrorListener.Errors.First() }");
                 }
 
                 if (parserErrorListener.Errors.Count > 0)
                 {
-                    compilationContext.ThrowCompilationError($"Error in parser: { parserErrorListener.Errors.First() }");
+                    throw compilationContext.ThrowCompilationError($"Error in parser: { parserErrorListener.Errors.First() }");
                 }
 
                 // Высокоуровневая обработка - создается корневая струкура CompilationUnit и заполняются объявления (declarations) на уровне CompilationUnit - то есть

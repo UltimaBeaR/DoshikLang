@@ -17,13 +17,26 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
     public interface IExpression
     {
         List<ExpressionSlot> InputSlots { get; }
-        List<ExpressionSlot> OutputSlots { get; }
+        ExpressionSlot ReturnOutputSlot { get; set; }
+        List<ExpressionSlot> AdditionalOutputSlots { get; }
     }
 
     public abstract class ExpressionBase : IExpression
     {
+        /// <summary>
+        /// Входные слоты - соответствуют входным параметрам метода либо операндам оператора.
+        /// </summary>
         public List<ExpressionSlot> InputSlots { get; } = new List<ExpressionSlot>();
-        public List<ExpressionSlot> OutputSlots { get; } = new List<ExpressionSlot>();
+
+        /// <summary>
+        /// Единственный required слот с возвращаемым значением. Может иметь тип void (в этом случае в нем гарантированно не будет input-ов)
+        /// </summary>
+        public ExpressionSlot ReturnOutputSlot { get; set; }
+
+        /// <summary>
+        /// Слоты, которые могут понадобится если у вызова метода, соответствующего этому expression-у будут out параметры
+        /// </summary>
+        public List<ExpressionSlot> AdditionalOutputSlots { get; } = new List<ExpressionSlot>();
     }
 
     /// <summary>
@@ -111,6 +124,11 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         /// Тип (из udon api), к которому применяется вызов метода
         /// </summary>
         public DataType Type { get; set; }
+
+        /// <summary>
+        /// Найденная перегрузка метода в АПИ (если потом появятся кастомные методы, то тут должно быть что-то НЕ ТОЛЬКО из апи (нужно будет завернуть в какую-нибудь абстракцию)
+        /// </summary>
+        public DoshikExternalApiTypeMethodOverload MethodOverload { get; set; }
     }
 
     public class IfElseExpression : ExpressionBase
