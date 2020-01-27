@@ -251,17 +251,131 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitLocalVariableDeclaration([NotNull] DoshikParser.LocalVariableDeclarationContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.statement"/>.
+	/// Enter a parse tree produced by the <c>subBlockStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterStatement([NotNull] DoshikParser.StatementContext context) { }
+	public virtual void EnterSubBlockStatement([NotNull] DoshikParser.SubBlockStatementContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.statement"/>.
+	/// Exit a parse tree produced by the <c>subBlockStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitStatement([NotNull] DoshikParser.StatementContext context) { }
+	public virtual void ExitSubBlockStatement([NotNull] DoshikParser.SubBlockStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>ifStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterIfStatement([NotNull] DoshikParser.IfStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>ifStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitIfStatement([NotNull] DoshikParser.IfStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>forLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterForLoopStatement([NotNull] DoshikParser.ForLoopStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>forLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitForLoopStatement([NotNull] DoshikParser.ForLoopStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>whileLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>whileLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>returnStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterReturnStatement([NotNull] DoshikParser.ReturnStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>returnStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitReturnStatement([NotNull] DoshikParser.ReturnStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>breakStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterBreakStatement([NotNull] DoshikParser.BreakStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>breakStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitBreakStatement([NotNull] DoshikParser.BreakStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>continueStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterContinueStatement([NotNull] DoshikParser.ContinueStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>continueStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitContinueStatement([NotNull] DoshikParser.ContinueStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>nopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterNopStatement([NotNull] DoshikParser.NopStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>nopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitNopStatement([NotNull] DoshikParser.NopStatementContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>expressionStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterExpressionStatement([NotNull] DoshikParser.ExpressionStatementContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>expressionStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitExpressionStatement([NotNull] DoshikParser.ExpressionStatementContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.forControl"/>.
 	/// <para>The default implementation does nothing.</para>

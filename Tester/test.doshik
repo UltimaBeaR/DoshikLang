@@ -1,8 +1,8 @@
-int a = 30;
+float a;
 
 event void Update()
 {
-    int res1 = System::Int32.op_Addition(a, 1);
-    int res2 = int.op_Addition(a, 1);
-    int res3 = a + 1;
+    float res1 = System::Single.op_Addition(a, 1.0f);
+    float res2 = System::Single.op_Addition(a, 100.0f);
+    float res3 = System::Single.op_Addition(a, 1.0000f);
 }

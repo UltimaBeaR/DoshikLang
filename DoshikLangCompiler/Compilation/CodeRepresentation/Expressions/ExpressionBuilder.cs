@@ -3,7 +3,6 @@ using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 {
@@ -269,7 +268,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                     throw new NotImplementedException();
             }
 
-            result.ValueType = new DataType { ExternalType = _compilationContext.FindExternalApiType(dotnetType) };
+            result.ValueType = _compilationContext.TypeLibrary.FindTypeByDotnetType(dotnetType);
+
+            _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue);
 
             // Определяем выходное значение
             result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
@@ -306,8 +307,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             if (node.RightMethodCallData.TypeArguments.Count > 0)
                 throw _compilationContext.ThrowCompilationError("method type arguments are not supported");
 
-            var overloadInPararmeters = new List<DoshikExternalApiType>();
-            var overloadOutParameters = new List<DoshikExternalApiType>();
+            var findOverloadPararmeters = new List<TypeLibrary.FindOverloadParameter>(node.RightMethodCallData.Parameters.Count);
 
             // Проходим по всем параметрам у вызова метода
             foreach (var methodCallParameter in node.RightMethodCallData.Parameters)
@@ -322,37 +322,32 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                 slot.InputSideExpressions.Add(result);
                 result.InputSlots.Add(slot);
 
-                // Распределяем параметр в один из списков - входной или выходной - для определения перегрузки метода
-
-                if (methodCallParameter.IsOut)
-                    overloadOutParameters.Add(slot.Type.ExternalType);
-                else
-                    overloadInPararmeters.Add(slot.Type.ExternalType);
+                findOverloadPararmeters.Add(new TypeLibrary.FindOverloadParameter { IsOut = methodCallParameter.IsOut, Type = slot.Type.ExternalType });
             }
 
-            var foundOverload = _compilationContext.FindBestMethodOverload(true, node.LeftType.ExternalType, node.RightMethodCallData.Name, overloadInPararmeters, overloadOutParameters);
+            var foundOverload = _compilationContext.TypeLibrary.FindBestMethodOverload(true, node.LeftType.ExternalType, node.RightMethodCallData.Name, findOverloadPararmeters);
 
             if (foundOverload.OverloadCount == 0)
-                throw _compilationContext.ThrowCompilationError($"static method { node.RightMethodCallData.Name } not found in { _compilationContext.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type");
+                throw _compilationContext.ThrowCompilationError($"static method { node.RightMethodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type");
 
             if (foundOverload.BestOverload == null)
-                throw _compilationContext.ThrowCompilationError($"overload for static method { node.RightMethodCallData.Name } not found in { _compilationContext.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type, but found { foundOverload.OverloadCount } methods with this name");
+                throw _compilationContext.ThrowCompilationError($"overload for static method { node.RightMethodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(node.LeftType.ExternalType) } type, but found { foundOverload.OverloadCount } methods with this name");
 
             result.MethodOverload = foundOverload.BestOverload;
 
             // Определяем выходное значение
 
-            var returnValueType = new DataType() { IsVoid = result.MethodOverload.OutParameterType == null };
-            if (!returnValueType.IsVoid)
-            {
-                returnValueType.ExternalType = result.MethodOverload.OutParameterType;
-            }
+            var returnValueIsVoid = result.MethodOverload.OutParameterType == null;
+
+            var returnValueType = returnValueIsVoid
+                ? _compilationContext.TypeLibrary.FindVoid()
+                : _compilationContext.TypeLibrary.FindByExternalType(result.MethodOverload.OutParameterType);
             
             result.ReturnOutputSlot = new ExpressionSlot(returnValueType, result);
 
             foreach (var outParameter in result.MethodOverload.ExtraOutParameters)
             {
-                result.AdditionalOutputSlots.Add(new ExpressionSlot(new DataType() { ExternalType = outParameter.Type }, result));
+                result.AdditionalOutputSlots.Add(new ExpressionSlot(_compilationContext.TypeLibrary.FindByExternalType(outParameter.Type), result));
             }
 
             return result;

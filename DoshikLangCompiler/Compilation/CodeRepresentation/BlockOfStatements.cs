@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions;
+using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation
 {
@@ -36,5 +37,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         }
 
         public Variable Variable { get; set; }
+
+        /// <summary>
+        /// Инициализирующее выражение. Может быть null, если оно не задано
+        /// </summary>
+        public ExpressionTree Initializer { get; set; }
     }
 }

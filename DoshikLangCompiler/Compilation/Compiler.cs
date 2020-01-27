@@ -81,19 +81,20 @@ namespace DoshikLangCompiler.Compilation
 
                 // Высокоуровневая обработка - создается корневая струкура CompilationUnit и заполняются объявления (declarations) на уровне CompilationUnit - то есть
                 // переменные и ивенты. Непосредственно императивные куски кода (statements, expressions) еще не обрабатываются
-                var compilationUnit = CompilationUnitCreationVisitor.Apply(compilationContext, antlrCompilationUnit);
+                CompilationUnitCreationVisitor.Apply(compilationContext, antlrCompilationUnit);
 
                 // Обходим все объявленные события и генерируем код для их implementation части (то есть обрабатываем statement-ы внутри тела обработчиков событий)
-                foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.Name))
+                foreach (var eventHandler in compilationContext.CompilationUnit.Events.Values.OrderBy(x => x.Name))
                 {
                     MethodBlockCreationVisitor.Apply(compilationContext, eventHandler);
                 }
 
                 compilationErrors = null;
-                return compilationUnit;
+                return compilationContext.CompilationUnit;
             }
             catch (CompilationErrorException)
             {
+                compilationContext.CompilationUnit = null;
                 compilationErrors = compilationContext.CompilationErrors;
                 return null;
             }
@@ -108,6 +109,13 @@ namespace DoshikLangCompiler.Compilation
             // в vs code. Можно потом оформить библиотеку для создания CompilationUnit объекта отдельно и использовать ее тут же, просто послее нее будет вызываться эта генерация asm кода
 
             var assemblyBuilder = new UAssemblyBuilder();
+
+            for (int constantIdx = 0; constantIdx < compilationUnit.Constants.Count; constantIdx++)
+            {
+                var constant = compilationUnit.Constants[constantIdx];
+
+                assemblyBuilder.AddVariable(false, "constant__" + constantIdx.ToString(), constant.Type.ExternalType.ExternalName, constant.DotnetValue);
+            }
 
             foreach (var variable in compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().OrderBy(x => !x.IsPublic).ThenBy(x => x.Name))
             {

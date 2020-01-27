@@ -86,15 +86,15 @@ localVariableDeclaration
     ;
 
 statement
-    : blockLabel=block
-    | IF parExpression statement (ELSE statement)?
-    | FOR '(' forControl ')' statement
-    | WHILE parExpression statement
-    | RETURN expression? ';'
-    | BREAK IDENTIFIER? ';'
-    | CONTINUE IDENTIFIER? ';'
-    | ';'
-    | statementExpression=expression ';'
+    : block                                                                             # subBlockStatement
+    | IF condition=parExpression trueBody=statement (ELSE falseBody=statement)?         # ifStatement
+    | FOR '(' forControl ')' body=statement                                             # forLoopStatement
+    | WHILE condition=parExpression body=statement                                      # whileLoopStatement
+    | RETURN expression? ';'                                                            # returnStatement
+    | BREAK ';'                                                                         # breakStatement
+    | CONTINUE ';'                                                                      # continueStatement
+    | ';'                                                                               # nopStatement
+    | expression ';'                                                                    # expressionStatement
     ;
 
 forControl:
@@ -149,7 +149,7 @@ expression
     | left=expression operator=('==' | '!=') right=expression                                               # equalsExpression
     | left=expression '&&' right=expression                                                                 # andExpression
     | left=expression '||' right=expression                                                                 # orExpression
-    | <assoc=right> condition=expression '?' trueExpression=expression ':' elseExpression=expression        # ifElseExpression
+    | <assoc=right> condition=expression '?' trueExpression=expression ':' falseExpression=expression        # ifElseExpression
     | <assoc=right> left=expression operator=('=' | '+=' | '-=' | '*=' | '/=' | '%=') right=expression      # assignmentExpression
     ;
 

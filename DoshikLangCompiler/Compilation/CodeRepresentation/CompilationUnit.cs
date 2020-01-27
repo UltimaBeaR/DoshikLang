@@ -26,6 +26,25 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         public Scope Scope { get; private set; }
 
         public Dictionary<string, EventDeclaration> Events { get; } = new Dictionary<string, EventDeclaration>();
+
+        public List<Constant> Constants { get; } = new List<Constant>();
+
+        public void AddConstant(DataType type, object dotnetValue)
+        {
+            if (Constants.Find(x => x.Equals(type, dotnetValue)) == null)
+                Constants.Add(new Constant { Type = type, DotnetValue = dotnetValue });
+        }
+    }
+
+    public class Constant
+    {
+        public DataType Type { get; set; }
+        public object DotnetValue { get; set; }
+
+        public bool Equals(DataType type, object dotnetValue)
+        {
+            return Type == type && (DotnetValue == null && dotnetValue == null || (DotnetValue.Equals(dotnetValue)));
+        }
     }
 
     public class CompilationUnitVariable : Variable

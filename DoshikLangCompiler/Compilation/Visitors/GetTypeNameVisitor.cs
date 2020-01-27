@@ -34,7 +34,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 return new FoundType()
                 {
                     SourceText = context.GetText(),
-                    DataType = new DataType() { IsVoid = true }
+                    DataType = _compilationContext.TypeLibrary.FindVoid()
                 };
             }
 
@@ -63,9 +63,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // ToDo: если появятся using statements то тут надо будет учитывать также то что на уровне файла мог быть определен using какого-нибуль неймспейса
             // и тип тогда надо будет искать не только по type но type с учетом этого namespace
-            var externalApiType = _compilationContext.FindExternalApiType(codeName);
+            var dataType = _compilationContext.TypeLibrary.FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName(codeName);
 
-            if (externalApiType == null)
+            if (dataType == null)
             {
                 // Тип не найден
                 return new FoundType()
@@ -79,7 +79,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             return new FoundType()
             {
                 SourceText = sourceTypeText,
-                DataType = new DataType() { ExternalType = externalApiType }
+                DataType = dataType
             };
         }
 

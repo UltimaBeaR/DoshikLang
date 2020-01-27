@@ -12,15 +12,14 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
         }
 
-        public static CompilationUnit Apply(CompilationContext compilationContext, DoshikParser.CompilationUnitContext antlrContext)
+        public static void Apply(CompilationContext compilationContext, DoshikParser.CompilationUnitContext antlrContext)
         {
-            return (CompilationUnit)antlrContext.Accept(new CompilationUnitCreationVisitor(compilationContext));
+            antlrContext.Accept(new CompilationUnitCreationVisitor(compilationContext));
         }
 
-        // возвращает CompilationUnit
         public override object VisitCompilationUnit([NotNull] DoshikParser.CompilationUnitContext context)
         {
-            _compilationUnit = new CompilationUnit();
+            _compilationContext.CompilationUnit = new CompilationUnit();
 
             var memberDeclarations = context.memberDeclaration();
 
@@ -29,7 +28,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 Visit(memberDeclaration);
             }
 
-            return _compilationUnit;
+            return null;
         }
 
         public override object VisitMemberDeclaration([NotNull] DoshikParser.MemberDeclarationContext context)
@@ -45,9 +44,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
         public override object VisitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context)
         {
-            var scope = _compilationUnit.Scope;
+            var scope = _compilationContext.CompilationUnit.Scope;
 
-            var variable = new CompilationUnitVariable(_compilationUnit);
+            var variable = new CompilationUnitVariable(_compilationContext.CompilationUnit);
 
             variable.IsPublic = context.PUBLIC() != null;
 
@@ -59,7 +58,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             variable.Name = variableName;
 
-            variable.AntlrInitializer = variableInitializer;
+            if (variableInitializer != null)
+            {
+                // ToDo: потом можно сделать инициализаторы полей. Прикол тут в том что их нельзя инициализировать также
+                // как локальные переменные в statement-ах, потому что тут нет порядка выполнения операций, а значит
+                // в инициализирующем выражении первой переменной может быть зареференшена вторвая переменная а в инициализации второй переменной референс на первую
+                // таким образом будет circular reference. И такие вещи нужно определять, для этого нужно сортировать эти определения переменных и инициализировать их
+                // в порядке начиная от меньшего количества референсов на другие переменные в инициализаторе до больших + трекать как то circular референсы. 
+                // Из-за того что тут такой гимор, я решил пока не делать инициализаторы (инициализировать переменные все равно можно будет вручную на событии Start или как там его)
+                throw _compilationContext.ThrowCompilationError($"field initializer is not supported yet");
+            }
 
             if (scope.Variables.ContainsKey(variable.Name))
                 throw _compilationContext.ThrowCompilationError($"variable { variable.Name } is already defined");
@@ -88,8 +96,8 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             // Если это event
 
-            var eventDeclaration = new EventDeclaration(_compilationUnit);
-            eventDeclaration.Parameters = new MethodDeclarationParameters(eventDeclaration, _compilationUnit.Scope);
+            var eventDeclaration = new EventDeclaration(_compilationContext.CompilationUnit);
+            eventDeclaration.Parameters = new MethodDeclarationParameters(eventDeclaration, _compilationContext.CompilationUnit.Scope);
 
             _currentMethodDeclaration = eventDeclaration;
 
@@ -117,7 +125,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             if (eventDeclaration.IsCustom)
                 throw _compilationContext.ThrowCompilationError($"custom events is not supported yet. event name must be one of predefined names");
 
-            if (_compilationUnit.Events.ContainsKey(eventDeclaration.Name))
+            if (_compilationContext.CompilationUnit.Events.ContainsKey(eventDeclaration.Name))
                 throw _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
 
             eventDeclaration.Parameters.Parameters.AddRange((List<MethodDeclarationParameter>)Visit(context.formalParameters()));
@@ -152,7 +160,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             eventDeclaration.AntlrBody = context.block();
 
-            _compilationUnit.Events[eventDeclaration.Name] = eventDeclaration;
+            _compilationContext.CompilationUnit.Events[eventDeclaration.Name] = eventDeclaration;
 
             return null;
         }
@@ -205,7 +213,5 @@ namespace DoshikLangCompiler.Compilation.Visitors
         }
 
         private MethodDeclaration _currentMethodDeclaration;
-
-        private CompilationUnit _compilationUnit;
     }
 }

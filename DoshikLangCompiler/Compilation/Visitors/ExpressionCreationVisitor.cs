@@ -319,7 +319,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             node.Condition = Sequence.FindExpressionByAntlrContext(context.condition);
             node.TrueExpression = Sequence.FindExpressionByAntlrContext(context.trueExpression);
-            node.ElseExpression = Sequence.FindExpressionByAntlrContext(context.elseExpression);
+            node.ElseExpression = Sequence.FindExpressionByAntlrContext(context.falseExpression);
 
             Sequence.Sequence.Add(node);
 

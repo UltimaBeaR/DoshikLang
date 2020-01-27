@@ -38,9 +38,21 @@ namespace Tester
 
             if (output.CompilationErrors == null)
             {
-                Console.WriteLine("compiled. code:");
+                Console.WriteLine("compiled.");
+
+                Console.WriteLine("code:");
                 Console.WriteLine();
+                Console.WriteLine("###############################################################");
                 Console.WriteLine(output.UdonAssemblyCode);
+                Console.WriteLine("###############################################################");
+
+                Console.WriteLine();
+                Console.WriteLine("variable default values:");
+                Console.WriteLine();
+                foreach (var variable in output.DefaultHeapValues)
+                {
+                    Console.WriteLine(variable.Key + " = " + variable.Value.value.ToString());
+                }
             }
             else
             {

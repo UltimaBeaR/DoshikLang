@@ -140,11 +140,68 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitLocalVariableDeclaration([NotNull] DoshikParser.LocalVariableDeclarationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.statement"/>.
+	/// Visit a parse tree produced by the <c>subBlockStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitStatement([NotNull] DoshikParser.StatementContext context);
+	Result VisitSubBlockStatement([NotNull] DoshikParser.SubBlockStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>ifStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitIfStatement([NotNull] DoshikParser.IfStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>forLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitForLoopStatement([NotNull] DoshikParser.ForLoopStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>whileLoopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>returnStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitReturnStatement([NotNull] DoshikParser.ReturnStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>breakStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitBreakStatement([NotNull] DoshikParser.BreakStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>continueStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitContinueStatement([NotNull] DoshikParser.ContinueStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>nopStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitNopStatement([NotNull] DoshikParser.NopStatementContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>expressionStatement</c>
+	/// labeled alternative in <see cref="DoshikParser.statement"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitExpressionStatement([NotNull] DoshikParser.ExpressionStatementContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.forControl"/>.
 	/// </summary>

@@ -1,5 +1,7 @@
 ﻿using Antlr4.Runtime.Misc;
 using DoshikLangCompiler.Compilation.CodeRepresentation;
+using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions;
+using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.Visitors
 {
@@ -77,10 +79,12 @@ namespace DoshikLangCompiler.Compilation.Visitors
             // этим отличается инициализация переменной от обычного присваивания, где референсить присваемую переменную можно
             _currentScope.Variables.Add(statement.Variable.Name, statement.Variable);
 
+            statement.Initializer = _declaringVariableInitializerExpression;
+
             return statement;
         }
 
-        // Ничего не возвращает, просто инициализирует _declaringVariable
+        // Ничего не возвращает, просто инициализирует _declaringVariable и _declaringVariableInitializerExpression
         public override object VisitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context)
         {
             _declaringVariable.Name = context.variableName.Text;
@@ -90,40 +94,45 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             var variableInitializerCtx = context.variableInitializer();
 
-            // если != null значит инициализтор задан - иначе это просто объявление переменной без инициализации
+            // если != null значит инициализтор задан
             if (variableInitializerCtx != null)
             {
                 // продолжаем изменять _declaringVariable
-                Visit(variableInitializerCtx);
+                _declaringVariableInitializerExpression = (ExpressionTree)Visit(variableInitializerCtx);
+            }
+            else
+            {
+                // иначе это просто объявление переменной без инициализации
+
+                _declaringVariableInitializerExpression = null;
             }
 
             return null;
         }
 
-        // Ничего не возвращает, просто инициализирует _declaringVariable (часть справа от присваивания)
+        // Возвращает ExpressionTree
         public override object VisitVariableInitializer([NotNull] DoshikParser.VariableInitializerContext context)
         {
             var expressionCtx = context.expression();
 
             if (expressionCtx != null)
             {
-                // ToDo: тут я поидее должнен выполнить expression, проверить что он возвращает такой же тип как и объявленный в переменной и после этого
-                // надо добавить дополнительный стейтмент в список стейтментов у которого будет внутри expression с присвоением переменной
-                // то есть создать новый expression и в левую часть ему референс на объявляемую переменную а в правую - полученное только что выражение инициализации переменной.
-                // а при визите обычного expression statement я буду такой же стейтмент делать полностью из кода
+                var expressionTree = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, expressionCtx);
 
-                var expression = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, expressionCtx);
+                if (_declaringVariable.Type != expressionTree.RootExpression.ReturnOutputSlot.Type)
+                    throw _compilationContext.ThrowCompilationError("declaring variable type differs from initialization expression return type");
+
+                return expressionTree;
             }
             else
                 throw _compilationContext.ThrowCompilationError("variables can only be initialized using expressions (no special initializer support yet)");
-
-            return null;
         }
 
         // Сюда устанавливается (заранее) родитель для возможного expression-а который встретится в самом стейтменте или его части (например for init часть цикла)
         private ICodeHierarchyNode _currentExpressionParent;
 
         private Variable _declaringVariable;
+        private ExpressionTree _declaringVariableInitializerExpression;
 
         private ICodeHierarchyNode _currentNode;
         private Scope _currentScope;

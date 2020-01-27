@@ -11,8 +11,6 @@
 
         public string Name { get; set; }
 
-        public DoshikParser.VariableInitializerContext AntlrInitializer { get; set; }
-
         /// <summary>
         /// Ссылка на место, где переменная была объявлена
         /// </summary>
