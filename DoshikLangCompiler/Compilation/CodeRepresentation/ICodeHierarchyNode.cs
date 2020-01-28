@@ -17,5 +17,17 @@
 
             return node.Parent.FindNearestScopeOwner();
         }
+
+        public static TParent FindNearestParentOfType<TParent>(this ICodeHierarchyNode node)
+            where TParent : ICodeHierarchyNode
+        {
+            if (node.Parent == null)
+                return default;
+
+            if (node.Parent is TParent result)
+                return result;
+
+            return node.Parent.FindNearestParentOfType<TParent>();
+        }
     }
 }

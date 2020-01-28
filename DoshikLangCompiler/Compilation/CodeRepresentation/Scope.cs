@@ -19,18 +19,22 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
         public Dictionary<string, Variable> Variables { get; } = new Dictionary<string, Variable>();
 
-        // ToDo: тут (или где-то отдельно) можно определить методы для поиска переменной по имени в текущем scope-е
-        // - сначала искать среди своих Variables, затем подниматься на уровень выше и делать такой же поиск там
-
-        public Variable FindVariableByName(string variableName)
+        /// <summary>
+        /// thisScopeOnly - значит искать только в текущем scope, без учета родительских scope
+        /// </summary>
+        /// <returns></returns>
+        public Variable FindVariableByName(string variableName, bool thisScopeOnly = false)
         {
             if (Variables.TryGetValue(variableName, out var foundVariable))
                 return foundVariable;
 
+            if (thisScopeOnly)
+                return null;
+
             if (ParentScope == null)
                 return null;
 
-            return ParentScope.FindVariableByName(variableName);
+            return ParentScope.FindVariableByName(variableName, false);
         }
     }
 

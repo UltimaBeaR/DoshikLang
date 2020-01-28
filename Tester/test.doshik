@@ -1,8 +1,11 @@
 float a;
 
+event void Start()
+{
+    int result = 5;
+}
+
 event void Update()
 {
-    float res1 = System::Single.op_Addition(a, 1.0f);
-    float res2 = System::Single.op_Addition(a, 100.0f);
-    float res3 = System::Single.op_Addition(a, 1.0000f);
+    float result = System::Single.op_Addition(System::Single.op_Multiplication(a, 1.0f), 5.0f);
 }

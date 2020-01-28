@@ -150,13 +150,14 @@ namespace DoshikLangCompiler.Compilation
         /// <summary>
         /// Полная сигнатура перегрузки метода (используется для вызова метода в assembly)
         /// </summary>
-        public string GetFulExternalName()
+        public string GetFullExternalName()
         {
             var sb = new StringBuilder();
 
             sb.Append(Method.Type.ExternalName);
             sb.Append(".__");
             sb.Append(Method.ExternalName);
+            sb.Append("__");
 
             sb.Append(ExternalName);
 

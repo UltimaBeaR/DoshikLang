@@ -51,7 +51,7 @@ namespace Tester
                 Console.WriteLine();
                 foreach (var variable in output.DefaultHeapValues)
                 {
-                    Console.WriteLine(variable.Key + " = " + variable.Value.value.ToString());
+                    Console.WriteLine(variable.Key + " = " + variable.Value.value.ToString() + " (" + variable.Value.type.FullName + ")");
                 }
             }
             else

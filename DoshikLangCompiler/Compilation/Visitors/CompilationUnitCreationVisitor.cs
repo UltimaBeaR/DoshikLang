@@ -69,7 +69,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 throw _compilationContext.ThrowCompilationError($"field initializer is not supported yet");
             }
 
-            if (scope.Variables.ContainsKey(variable.Name))
+            if (scope.FindVariableByName(variable.Name, true) != null)
                 throw _compilationContext.ThrowCompilationError($"variable { variable.Name } is already defined");
 
             scope.Variables[variable.Name] = variable;
@@ -202,7 +202,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 Name = context.parameterName.Text
             };
 
-            if (scope.Variables.ContainsKey(variable.Name))
+            if (scope.FindVariableByName(variable.Name, true) != null)
                 throw _compilationContext.ThrowCompilationError($"parameter { variable.Name } is already defined");
 
             scope.Variables[variable.Name] = variable;

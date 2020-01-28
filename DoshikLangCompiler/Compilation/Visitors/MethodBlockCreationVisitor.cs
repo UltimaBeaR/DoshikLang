@@ -89,6 +89,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
             _declaringVariable.Name = context.variableName.Text;
 
+            // ToDo: Тут надо искать переменную не везде а только в текущем scope плюс в родительях, исключая все что выше определения метода.
+            // то есть переменную заданную в параметрах переопределить нельзя, НО должно быть возможно переопределить переменную, заданную в "текущем классе"(то есть глобальную). Ее потом надо сделать чтобы
+            // можно было вызывать по this.variable
             if (_currentScope.FindVariableByName(_declaringVariable.Name) != null)
                 throw _compilationContext.ThrowCompilationError($"variable { _declaringVariable.Name } is already defined");
 

@@ -417,7 +417,7 @@ namespace DoshikLangUnityEditor
 
             if (apiMethod == null)
             {
-                apiMethod = new DoshikExternalApiTypeMethod { ExternalName = externalName, Overloads = new List<DoshikExternalApiTypeMethodOverload>() };
+                apiMethod = new DoshikExternalApiTypeMethod { Type = apiType, ExternalName = externalName, Overloads = new List<DoshikExternalApiTypeMethodOverload>() };
                 apiType.Methods.Add(apiMethod);
             }
 
@@ -434,6 +434,7 @@ namespace DoshikLangUnityEditor
             {
                 apiMethodOverload = new DoshikExternalApiTypeMethodOverload
                 {
+                    Method = apiMethod,
                     ExternalName = externalName,
                     InParameters = new List<DoshikExternalApiMethodParameter>(),
                     ExtraOutParameters = new List<DoshikExternalApiMethodParameter>()

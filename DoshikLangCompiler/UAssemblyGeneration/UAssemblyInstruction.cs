@@ -8,7 +8,7 @@ namespace DoshikLangCompiler.UAssemblyGeneration
         {
             Name = name;
             ByteCount = byteCount;
-            Parameters = parameters;
+            Parameters = parameters ?? new List<IUAssemblyInstructionParameter>();
         }
 
         public string Name { get; private set; }

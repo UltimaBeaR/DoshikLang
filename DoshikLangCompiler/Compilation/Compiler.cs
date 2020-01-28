@@ -30,7 +30,12 @@ namespace DoshikLangCompiler.Compilation
 
             if (compilationUnit != null)
             {
-                var code = GenerateCode(compilationUnit);
+                // Процесс генерации кода уже не должен валидировать исходный код (описываемый в структуре CompilationUnit)
+                // Процесс генерации кода просто генерирует assembly код под target платформу (в данном случае это всегда udon assembly)
+                // Все compile-time ошибки, которые могли быть должны быть обработаны ДО входа в этот метод.
+                // В этом случае весь код, кроме вызова этого метода можно будет переиспользовать для анализаторов языка. Например сделать language server для подсветки кода
+                // в vs code. Можно потом оформить библиотеку для создания CompilationUnit объекта отдельно и использовать ее тут же, просто послее нее будет вызываться эта генерация asm кода
+                var code = (new CodeGenerator(compilationUnit, true)).GenerateCode();
 
                 output.UdonAssemblyCode = code.UdonAssemblyCode;
                 output.DefaultHeapValues = code.DefaultHeapValues;
@@ -98,45 +103,6 @@ namespace DoshikLangCompiler.Compilation
                 compilationErrors = compilationContext.CompilationErrors;
                 return null;
             }
-        }
-
-        private UAssemblyBuilderCode GenerateCode(CompilationUnit compilationUnit)
-        {
-            // Процесс генерации кода уже не должен валидировать исходный код (описываемый в структуре CompilationUnit)
-            // Процесс генерации кода просто генерирует assembly код под target платформу (в данном случае это всегда udon assembly)
-            // Все compile-time ошибки, которые могли быть должны быть обработаны ДО входа в этот метод.
-            // В этом случае весь код, кроме вызова этого метода можно будет переиспользовать для анализаторов языка. Например сделать language server для подсветки кода
-            // в vs code. Можно потом оформить библиотеку для создания CompilationUnit объекта отдельно и использовать ее тут же, просто послее нее будет вызываться эта генерация asm кода
-
-            var assemblyBuilder = new UAssemblyBuilder();
-
-            for (int constantIdx = 0; constantIdx < compilationUnit.Constants.Count; constantIdx++)
-            {
-                var constant = compilationUnit.Constants[constantIdx];
-
-                assemblyBuilder.AddVariable(false, "constant__" + constantIdx.ToString(), constant.Type.ExternalType.ExternalName, constant.DotnetValue);
-            }
-
-            foreach (var variable in compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().OrderBy(x => !x.IsPublic).ThenBy(x => x.Name))
-            {
-                assemblyBuilder.AddVariable(variable.IsPublic, "global__" + variable.Name, variable.Type.ExternalType.ExternalName);
-            }
-
-            // Сначала просто добавляем все ивенты, чтобы было их определение
-            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.ExternalEvent.ExternalName))
-            {
-                assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
-            }
-
-            // Генерируем код внутри каждого из ивентов, попутно генерируя переменные
-            foreach (var eventHandler in compilationUnit.Events.Values.OrderBy(x => x.ExternalEvent.ExternalName))
-            {
-                var eventBodyEmitter = assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
-
-                eventBodyEmitter.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
-            }
-
-            return assemblyBuilder.MakeCode(true);
         }
     }
 
