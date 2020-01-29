@@ -19,7 +19,8 @@ namespace DoshikLangCompiler.Compilation
             { "int", typeof(int) },
             { "float", typeof(float) },
             { "bool", typeof(bool) },
-            { "string", typeof(string) }
+            { "string", typeof(string) },
+            { "object", typeof(object) }
         };
 
         public List<DataType> AllTypes { get; } = new List<DataType>();

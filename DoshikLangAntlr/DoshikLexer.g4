@@ -21,6 +21,7 @@ INT: 'int';
 FLOAT: 'float';
 BOOL: 'bool';
 STRING: 'string';
+OBJECT: 'object';
 VOID: 'void';
 
 // Literals

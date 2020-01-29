@@ -1,7 +1,6 @@
 ﻿using Antlr4.Runtime;
 using DoshikLangCompiler.Compilation.CodeRepresentation;
 using DoshikLangCompiler.Compilation.Visitors;
-using DoshikLangCompiler.UAssemblyGeneration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +26,8 @@ namespace DoshikLangCompiler.Compilation
             var compilationUnit = BuildCodeRepresentation(out var compilationErrors);
 
             // ToDo: надо бы сделать какой то опциональный вывод лога со всеми данными из compilationUnit в этом месте
+            // а еще лучше сделать какой-то визуализатор конечных нодов (особенно expression-ов), т.к. там дальше пойдет куча трасформаций и оптимизаций и без видения
+            // графа очень сложно понять что происходит
 
             if (compilationUnit != null)
             {

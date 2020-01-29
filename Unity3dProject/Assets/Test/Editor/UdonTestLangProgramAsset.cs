@@ -13,39 +13,70 @@ public class UdonTestLangProgramAsset : UdonAssemblyProgramAsset
         var values = new Dictionary<string, (object value, Type type)>()
         {
             {
-                "axis_0",
-                ( value: new Vector3(0, 0, 1), type: typeof(Vector3) )
+                "constant_0",
+                ( value: (System.Single)18.5, type: typeof(System.Single) )
             },
 
             {
-                "angle_0",
-                ( value: (Single)1, type: typeof(Single) )
+                "constant_1",
+                ( value: (System.Single)5, type: typeof(System.Single) )
+            },
+
+                        {
+                "constant_2",
+                ( value: (System.Single)2, type: typeof(System.Single) )
             },
         };
 
         udonAssembly = @"
+# compiled with UAssemblyBuilder
+
 .data_start
 
-    
-    instance_0: %UnityEngineTransform, this
-    axis_0: %UnityEngineVector3, null
-    angle_0: %SystemSingle, null
+
+    constant_0: %SystemSingle, null
+    constant_1: %SystemSingle, null
+    constant_2: %SystemSingle, null
+    global_private_a_0: %SystemSingle, null
+    local_event_Update_result_0: %SystemSingle, null
+    temp_0: %SystemSingle, null
+    temp_1: %SystemSingle, null
+    temp_2: %SystemObject, null
 
 .data_end
 
 .code_start
 
+    .export _start
     .export _update
-    
+
+    _start:
+        PUSH, constant_0  # 0x000000
+        PUSH, global_private_a_0  # 0x000005
+        COPY  # 0x00000A
+        JUMP, 0xFFFFFF  # 0x00000B
+
     _update:
-    
-        PUSH, instance_0
-        PUSH, axis_0
-        PUSH, angle_0
-        EXTERN, ""UnityEngineTransform.__Rotate__UnityEngineVector3_SystemSingle__SystemVoid""
-        JUMP, 0xFFFFFF
+        PUSH, global_private_a_0  # 0x000010
+        PUSH, constant_1  # 0x000015
+        PUSH, temp_0  # 0x00001A
+        EXTERN, ""SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle""  # 0x00001F
+        PUSH, temp_0  # 0x000024
+        PUSH, constant_2  # 0x000029
+        PUSH, temp_1  # 0x00002E
+        EXTERN, ""SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle""  # 0x000033
+        PUSH, temp_1  # 0x000038
+        PUSH, local_event_Update_result_0  # 0x00003D
+        COPY  # 0x000042
+        PUSH, local_event_Update_result_0  # 0x000043
+        PUSH, temp_2  # 0x000048
+        COPY  # 0x00004D
+        PUSH, temp_2  # 0x00004E
+        EXTERN, ""UnityEngineDebug.__Log__SystemObject__SystemVoid""  # 0x000053
+        JUMP, 0xFFFFFF  # 0x000058
 
 .code_end
+
         ";
 
         base.DoRefreshProgramActions();

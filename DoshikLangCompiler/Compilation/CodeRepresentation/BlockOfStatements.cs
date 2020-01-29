@@ -17,7 +17,6 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         public List<Statement> Statements { get; } = new List<Statement>();
     }
 
-    // ToDo: abstract?
     public abstract class Statement : ICodeHierarchyNode
     {
         public Statement(ICodeHierarchyNode parent)
@@ -42,5 +41,15 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         /// Инициализирующее выражение. Может быть null, если оно не задано
         /// </summary>
         public ExpressionTree Initializer { get; set; }
+    }
+
+    public class ExpressionStatement : Statement
+    {
+        public ExpressionStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+
+        public ExpressionTree Expression { get; set; }
     }
 }

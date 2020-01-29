@@ -168,6 +168,7 @@ primitiveType
     | FLOAT
     | BOOL
     | STRING
+    | OBJECT
     ;
 
 typeArguments

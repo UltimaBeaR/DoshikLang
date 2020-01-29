@@ -75,6 +75,8 @@ namespace DoshikLangCompiler.Compilation
         {
             if (statement is LocalVariableDeclarationStatement localVariableDeclarationStatement)
                 GenerateCodeForLocalVariableDeclarationStatement(localVariableDeclarationStatement);
+            else if (statement is ExpressionStatement expressionStatement)
+                GenerateCodeForExpressionStatement(expressionStatement);
             else
                 throw new NotImplementedException();
         }
@@ -102,30 +104,58 @@ namespace DoshikLangCompiler.Compilation
             }
         }
 
-        private void GenerateCodeForExpression(IExpression expression)
+        private void GenerateCodeForExpressionStatement(ExpressionStatement statement)
         {
-            // ToDo: в случае когда эта штука будет использоваться из мест где результат expression-а не используется нужно будет ПОСЛЕ вызова этого метода
-            // Удалить последнюю инструкцию из _currentEventBodyEmitter (это будет инструкция PUSH результата). Но делать это надо только в случае если это НЕ expression возвращающий void
-            // проверить это можно по типу возвращаемого expression результата = expression.ReturnOutputSlot.Type.IsVoid
-            // (этот случай например в стейтменте, который состоит только из одного выражения и все, например вызов метода без присвоения результата чему-то)
+            GenerateCodeForExpression(statement.Expression.RootExpression, true);
+        }
 
-            // ToDo: вместо VariableReferenceExpression тут должны быть GetVariable / SetVariable expression-ы
-
-            if (expression is VariableReferenceExpression variableReferenceExpression)
-                GenerateCodeForVariableReferenceExpression(variableReferenceExpression);
+        private void GenerateCodeForExpression(IExpression expression, bool removeExpressionResult = false)
+        {
+            if (expression is GetVariableExpression getVariableExpression)
+                GenerateCodeForGetVariableExpression(getVariableExpression);
+            else if (expression is SetVariableExpression setVariableExpression)
+                GenerateCodeForSetVariableExpression(setVariableExpression);
             else if (expression is ConstantValueExpression constantValueExpression)
                 GenerateCodeForConstantValueExpression(constantValueExpression);
             else if (expression is StaticMethodCallExpression staticMethodCallExpression)
                 GenerateCodeForStaticMethodCallExpression(staticMethodCallExpression);
+            else if (expression is TypecastExpression typecastExpression)
+                GenerateCodeForTypecastExpression(typecastExpression);
             else
                 throw new NotImplementedException();
+
+            if (removeExpressionResult)
+            {
+                // Если removeExpressionResult значит нужно удалить результат последнего выполненного выражения в expression tree (последний push)
+                // так как его никто не будет использовать, а стек должен сводиться к 0лю (итоговое кол-во push-ей должно быть покрыто таким же количеством pop-ов, явных или неявных)
+
+                if (!expression.ReturnOutputSlot.Type.IsVoid)
+                {
+                    // Удаляем последнюю push инструкцию (она должна быть, если возвращаемый результат из выражения это не void)
+                    _currentEventBodyEmitter.Instructions.RemoveAt(_currentEventBodyEmitter.Instructions.Count - 1);
+                }
+            }
         }
 
-        private void GenerateCodeForVariableReferenceExpression(VariableReferenceExpression expression)
+        private void GenerateCodeForGetVariableExpression(GetVariableExpression expression)
         {
             var name = _variableNames[expression.Variable];
 
             _currentEventBodyEmitter.PUSH_varableName(name);
+        }
+
+        private void GenerateCodeForSetVariableExpression(SetVariableExpression expression)
+        {
+            // Генерируем код выражения, которое будет присваиваться
+            GenerateCodeForExpression(expression.Expression.OutputSideExpression);
+
+            // пушим переменную, в которую будет присвоение
+
+            var name = _variableNames[expression.Variable];
+            _currentEventBodyEmitter.PUSH_varableName(name);
+
+            // Копируем (то есть присваиваем)
+            _currentEventBodyEmitter.COPY();
         }
 
         private void GenerateCodeForConstantValueExpression(ConstantValueExpression expression)
@@ -165,6 +195,23 @@ namespace DoshikLangCompiler.Compilation
                 // Пушим еще раз, т.к. extern сделал pop (чтобы в результате вызова этого expression-а остался запушенный результат на стеке)
                 _currentEventBodyEmitter.PUSH_varableName(returnVariableName);
             }
+        }
+
+        private void GenerateCodeForTypecastExpression(TypecastExpression expression)
+        {
+            // Генерируем код выражения, которые кастится к заданному типу (в результате будет push переменной)
+            GenerateCodeForExpression(expression.Expression.OutputSideExpression);
+
+            // Добавляем и пушим временную переменную c типом, в который нужно затайпкастить
+
+            var outputVariableName = AddTemporaryVariable(expression.Type.ExternalType);
+            _currentEventBodyEmitter.PUSH_varableName(outputVariableName);
+
+            // Копируем во временную переменную (при этом автоматически производится тайпкаст к типу переменной, в которую идет копирование)
+            _currentEventBodyEmitter.COPY();
+
+            // Пушим еще раз временную переменную, как результат всей операции, т.к. copy сделала pop своих аргументов
+            _currentEventBodyEmitter.PUSH_varableName(outputVariableName);
         }
 
         // создает временную переменную для вычислений.

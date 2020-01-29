@@ -46,14 +46,13 @@ namespace DoshikLangCompiler.Compilation.Visitors
         public override object VisitBlockStatement([NotNull] DoshikParser.BlockStatementContext context)
         {
             var localVariableDeclarationCtx = context.localVariableDeclaration();
+            var statementCtx = context.statement();
             if (localVariableDeclarationCtx != null)
-            {
                 return (LocalVariableDeclarationStatement)Visit(localVariableDeclarationCtx);
-            }
-
-            // ToDo: сделать остальные виды statement блоков (но сначала видимо надо сделать expression в части инициализации локальной переменной)
-
-            return null;
+            else if (statementCtx != null)
+                return (Statement)Visit(statementCtx);
+            else
+                throw new System.NotImplementedException();
         }
 
         // возвращает LocalVariableDeclarationStatement
@@ -80,6 +79,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
             _currentScope.Variables.Add(statement.Variable.Name, statement.Variable);
 
             statement.Initializer = _declaringVariableInitializerExpression;
+
+            return statement;
+        }
+
+        // возвращает ExpressionStatement
+        public override object VisitExpressionStatement([NotNull] DoshikParser.ExpressionStatementContext context)
+        {
+            var statement = new ExpressionStatement(_currentNode);
+
+            statement.Expression = ExpressionCreationVisitor.Apply(_compilationContext, statement, context.expression());
 
             return statement;
         }

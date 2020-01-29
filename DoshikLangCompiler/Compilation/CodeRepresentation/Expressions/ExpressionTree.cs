@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes;
+using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 {
@@ -45,6 +46,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
     /// </summary>
     public class ExpressionSlot
     {
+        // ToDo: сделать метод SetInput / SetOutput, которые будут прописывать в слот заданный expression плюс у expression-а прописывать себя как слот и удалять старое соединение из expression-а
+
         public ExpressionSlot(DataType type, IExpression outputSideExpression)
         {
             Type = type;
@@ -57,15 +60,14 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         public DataType Type { get; private set; }
 
         /// <summary>
-        /// Выражение, к которому этот слот направлен на выходное значение (то есть выражение слева от слота)
+        /// Выражение, к которому этот слот направлен на входное значение (то есть выражение справа от слота)
         /// </summary>
-        public IExpression OutputSideExpression { get; private set; }
+        public IExpression InputSideExpression { get; set; }
 
         /// <summary>
-        /// Выражение, к которому этот слот направлен на входное значение (то есть выражение справа от слота)
-        /// Таких выражений может быть несколько
+        /// Выражение, к которому этот слот направлен на выходное значение (то есть выражение слева от слота)
         /// </summary>
-        public List<IExpression> InputSideExpressions { get; } = new List<IExpression>();
+        public IExpression OutputSideExpression { get; set; }
     }
 
     /// <summary>
@@ -76,6 +78,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
     {
         public ExpressionSlot Left { get; set; }
         public ExpressionSlot Right { get; set; }
+
+        public AssignmentExpressionNode.OperatorOption Operator { get; set; }
     }
 
     // ToDo: это выражение должно быть временным (смотреть Note на почте) - оно находится в expression tree только до тех пор пока не произойдет дополнительная обработка
@@ -92,6 +96,27 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         /// Переменная. Ассоциирована с выходным слотом
         /// </summary>
         public Variable Variable { get; set; }
+    }
+
+    public class GetVariableExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Переменная. Ассоциирована с выходным слотом
+        /// </summary>
+        public Variable Variable { get; set; }
+    }
+
+    public class SetVariableExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Переменная. Ассоциирована с выходным слотом
+        /// </summary>
+        public Variable Variable { get; set; }
+
+        /// <summary>
+        /// Выражение, результат которого присваивается в значение переменной
+        /// </summary>
+        public ExpressionSlot Expression { get; set; }
     }
 
     /// <summary>
@@ -141,5 +166,18 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         public ExpressionSlot Condition { get; set; }
         public ExpressionSlot IfBody { get; set; }
         public ExpressionSlot ElseBody { get; set; }
+    }
+
+    public class TypecastExpression : ExpressionBase
+    {
+        /// <summary>
+        /// Тип, в который осуществляется преобразование
+        /// </summary>
+        public DataType Type { get; set; }
+
+        /// <summary>
+        /// Выражение, которое преобразуется в заданный тип
+        /// </summary>
+        public ExpressionSlot Expression { get; set; }
     }
 }

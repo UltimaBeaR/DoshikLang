@@ -2,10 +2,11 @@ float a;
 
 event void Start()
 {
-    int result = 5;
+    a = 18.5f;
 }
 
 event void Update()
 {
-    float result = System::Single.op_Addition(System::Single.op_Multiplication(a, 1.0f), 5.0f);
+    float result = System::Single.op_Multiplication(System::Single.op_Addition(a, 5.0f), 2.0f);
+    UnityEngine::Debug.Log((object)result);
 }

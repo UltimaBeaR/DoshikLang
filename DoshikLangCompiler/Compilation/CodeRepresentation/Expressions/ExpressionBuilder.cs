@@ -97,13 +97,14 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             {
                 var expressionNode = _nodeSequence.Sequence[sequenceIndex];
 
-                // Может вернуться null, если это оператор со скобками, в итоговой последовательности будет тоже null вместо expression
                 var expression = HandleNode(expressionNode);
 
                 _sequence.Add(expression);
             }
 
-            _tree.RootExpression = _sequence.Where(x => x != null).LastOrDefault();
+            _tree.RootExpression = _sequence.LastOrDefault();
+
+            (new ExpressionTransformer()).Transform(_compilationContext, _tree);
 
             return _tree;
         }
@@ -122,6 +123,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                 return HandleTypeDotExpressionNode(typeDotExpressionNode);
             else if (node is AdditionExpressionNode additionExpressionNode)
                 return HandleAdditionExpressionNode(additionExpressionNode);
+            else if (node is TypecastExpressionNode typecastExpressionNode)
+                return HandleTypecastExpressionNode(typecastExpressionNode);
+            else if (node is AssignmentExpressionNode assignmentExpressionNode)
+                return HandleAssignmentExpressionNode(assignmentExpressionNode);
 
             throw new NotImplementedException();
         }
@@ -314,12 +319,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             {
                 // Добавляем input слот к текущему выражению (он уже существует как output у выражения, соответствующего этому параметру)
 
-                var slot = FindExpressionByExpressionNode(methodCallParameter.Expression).ReturnOutputSlot;
+                var slot = FindExpressionByExpressionNode(methodCallParameter.Expression, false).ReturnOutputSlot;
 
-                if (slot.Type.IsVoid)
-                    throw _compilationContext.ThrowCompilationError("cannot pass void as method call parameter");
-
-                slot.InputSideExpressions.Add(result);
+                slot.InputSideExpression = result;
                 result.InputSlots.Add(slot);
 
                 findOverloadPararmeters.Add(new TypeLibrary.FindOverloadParameter { IsOut = methodCallParameter.IsOut, Type = slot.Type.ExternalType });
@@ -366,19 +368,61 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
 
             var result = new StaticMethodCallExpression();
 
-            var leftExpression = FindExpressionByExpressionNode(node.Left);
-            var rightExpression = FindExpressionByExpressionNode(node.Right);
+            var leftExpression = FindExpressionByExpressionNode(node.Left, false);
+            var rightExpression = FindExpressionByExpressionNode(node.Right, false);
+
+            return result;
+        }
+
+        private IExpression HandleTypecastExpressionNode(TypecastExpressionNode node)
+        {
+            var result = new TypecastExpression();
+
+            result.Type = node.Type;
+
+            result.Expression = FindExpressionByExpressionNode(node.Expression, false).ReturnOutputSlot;
+            result.Expression.InputSideExpression = result;
+            result.InputSlots.Add(result.Expression);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.Type, result);
+
+            return result;
+        }
+
+        private IExpression HandleAssignmentExpressionNode(AssignmentExpressionNode node)
+        {
+            var result = new AssignmentExpression();
+            result.Operator = node.Operator;
+
+            result.Left = FindExpressionByExpressionNode(node.Left, true).ReturnOutputSlot;
+            result.Left.InputSideExpression = result;
+            result.InputSlots.Add(result.Left);
+
+            result.Right = FindExpressionByExpressionNode(node.Right, false).ReturnOutputSlot;
+            result.Right.InputSideExpression = result;
+            result.InputSlots.Add(result.Right);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(_compilationContext.TypeLibrary.FindVoid(), result);
 
             return result;
         }
 
         // Находит ранее определенный IExpression в _sequence по соответствующему ему ноду из _nodeSequence
-        private IExpression FindExpressionByExpressionNode(IExpressionNode node)
+        private IExpression FindExpressionByExpressionNode(IExpressionNode node, bool canReturnVoid = true)
         {
             var foundIndex = _nodeSequence.Sequence.FindIndex(x => x == node);
 
             if (foundIndex >= 0)
-                return _sequence[foundIndex];
+            {
+                var expression = _sequence[foundIndex];
+
+                if (!canReturnVoid && expression.ReturnOutputSlot.Type.IsVoid)
+                    throw _compilationContext.ThrowCompilationError("expression cannot return void");
+
+                return expression;
+            }
 
             return null;
         }
