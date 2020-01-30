@@ -4,58 +4,90 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Assets\DoshikSDK\Editor\ExternalDlls\**" />
+    <EmbeddedResource Remove="Assets\DoshikSDK\Editor\ExternalDlls\**" />
+    <None Remove="Assets\DoshikSDK\Editor\ExternalDlls\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Assets\DoshikSDK\Editor\DoshikProgramAsset.cs" />
+    <Compile Remove="Assets\DoshikSDK\Editor\ScriptImporter\CreateNewDoshikProgramFileEndNameEditAction.cs" />
+    <Compile Remove="Assets\DoshikSDK\Editor\ScriptImporter\DoshikScriptImporter.cs" />
+    <Compile Remove="Assets\DoshikSDK\Editor\ScriptImporter\DoshikScriptImporterEditor.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\DoshikLangCompiler\DoshikLangCompiler.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Assets\DoshikSDK\Editor\DoshikProgramAsset.cs" />
+    <None Include="Assets\DoshikSDK\Editor\ScriptImporter\CreateNewDoshikProgramFileEndNameEditAction.cs" />
+    <None Include="Assets\DoshikSDK\Editor\ScriptImporter\DoshikScriptImporter.cs" />
+    <None Include="Assets\DoshikSDK\Editor\ScriptImporter\DoshikScriptImporterEditor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>..\ExternalDlls\UnityEngine.dll</HintPath>
+      <HintPath>..\ExternalDlls\Unity3D\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\ExternalDlls\UnityEngine.UI.dll</HintPath>
+      <HintPath>..\ExternalDlls\Unity3D\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.ClientBindings">
-      <HintPath>..\ExternalDlls\VRC.Udon.ClientBindings.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\External\VRC.Udon.ClientBindings.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Common">
-      <HintPath>..\ExternalDlls\VRC.Udon.Common.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\External\VRC.Udon.Common.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Compiler">
-      <HintPath>..\ExternalDlls\VRC.Udon.Compiler.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\Editor\External\VRC.Udon.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.EditorBindings">
-      <HintPath>..\ExternalDlls\VRC.Udon.EditorBindings.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\Editor\External\VRC.Udon.EditorBindings.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Graph">
-      <HintPath>..\ExternalDlls\VRC.Udon.Graph.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\Editor\External\VRC.Udon.Graph.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Security">
-      <HintPath>..\ExternalDlls\VRC.Udon.Security.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\External\VRC.Udon.Security.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.UAssembly">
-      <HintPath>..\ExternalDlls\VRC.Udon.UAssembly.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\Editor\External\VRC.Udon.UAssembly.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.VM">
-      <HintPath>..\ExternalDlls\VRC.Udon.VM.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\External\VRC.Udon.VM.dll</HintPath>
     </Reference>
     <Reference Include="VRC.Udon.Wrapper">
-      <HintPath>..\ExternalDlls\VRC.Udon.Wrapper.dll</HintPath>
+      <HintPath>..\ExternalDlls\Udon\External\VRC.Udon.Wrapper.dll</HintPath>
     </Reference>
     <Reference Include="VRCCore-Editor">
-      <HintPath>..\ExternalDlls\VRCCore-Editor.dll</HintPath>
+      <HintPath>..\ExternalDlls\VRCSDK\Plugins\VRCCore-Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRCCore-Standalone">
-      <HintPath>..\ExternalDlls\VRCCore-Standalone.dll</HintPath>
+      <HintPath>..\ExternalDlls\VRCSDK\Plugins\VRCCore-Standalone.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDK3">
-      <HintPath>..\ExternalDlls\VRCSDK3.dll</HintPath>
+      <HintPath>..\ExternalDlls\VRCSDK\Plugins\VRCSDK3.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDK3-Editor">
-      <HintPath>..\ExternalDlls\VRCSDK3-Editor.dll</HintPath>
+      <HintPath>..\ExternalDlls\VRCSDK\Plugins\VRCSDK3-Editor.dll</HintPath>
     </Reference>
     <Reference Include="VRCSDKBase">
-      <HintPath>..\ExternalDlls\VRCSDKBase.dll</HintPath>
+      <HintPath>..\ExternalDlls\VRCSDK\Plugins\VRCSDKBase.dll</HintPath>
     </Reference>
   </ItemGroup>
 

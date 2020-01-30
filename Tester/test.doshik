@@ -1,12 +1,15 @@
-float a;
+int counter;
 
+// Start is called before the first frame update
 event void Start()
 {
-    a = 18.5f;
+    counter = 1000;
 }
 
+// Update is called once per frame
 event void Update()
 {
-    float result = System::Single.op_Multiplication(System::Single.op_Addition(a, 5.0f), 2.0f);
-    UnityEngine::Debug.Log((object)result);
+    counter = System::Int32.op_Addition(counter, 1);
+
+    UnityEngine::Debug.Log((object)counter);
 }

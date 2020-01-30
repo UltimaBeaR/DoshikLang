@@ -1,4 +1,4 @@
-﻿using DoshikLangUnityEditor;
+﻿using DoshikSDK.ExternalApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;

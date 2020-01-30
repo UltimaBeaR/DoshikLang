@@ -58,7 +58,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                 setVariableExpression.Variable = variableReferenceExpression.Variable;
 
                 setVariableExpression.Expression = rightSideExpression.ReturnOutputSlot;
-
+                setVariableExpression.InputSlots.Add(setVariableExpression.Expression);
                 rightSideExpression.ReturnOutputSlot.InputSideExpression = setVariableExpression;
 
                 setVariableExpression.ReturnOutputSlot = assignmentExpression.ReturnOutputSlot;
