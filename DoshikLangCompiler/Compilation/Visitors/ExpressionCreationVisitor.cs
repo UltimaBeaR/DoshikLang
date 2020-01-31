@@ -1,7 +1,7 @@
 ﻿using Antlr4.Runtime.Misc;
 using DoshikLangCompiler.Compilation.CodeRepresentation;
-using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions;
 using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes;
+using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree;
 using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.Visitors
@@ -90,6 +90,21 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             node.Left = Sequence.FindExpressionByAntlrContext(context.left);
             node.Right = Sequence.FindExpressionByAntlrContext(context.right);
+
+            Sequence.Sequence.Add(node);
+
+            return null;
+        }
+
+        public override object VisitDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context)
+        {
+            VisitChildren(context);
+
+            var node = new DefaultOfTypeExpressionNode(context);
+
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.defaultOfType().typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            node.Type = foundType.DataType;
 
             Sequence.Sequence.Add(node);
 

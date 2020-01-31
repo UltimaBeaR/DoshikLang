@@ -1,4 +1,4 @@
-﻿using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions;
+﻿using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree;
 using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation

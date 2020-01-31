@@ -2,6 +2,7 @@ lexer grammar DoshikLexer;
 
 // Keywords
 
+DEFAULT: 'default';
 NEW: 'new';
 EVENT: 'event';
 PRIVATE: 'private';

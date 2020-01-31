@@ -425,6 +425,18 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitExpressionList([NotNull] DoshikParser.ExpressionListContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="DoshikParser.defaultOfType"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDefaultOfType([NotNull] DoshikParser.DefaultOfTypeContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DoshikParser.defaultOfType"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDefaultOfType([NotNull] DoshikParser.DefaultOfTypeContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.methodCall"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -542,6 +554,20 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by the <c>defaultOfTypeExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by the <c>defaultOfTypeExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

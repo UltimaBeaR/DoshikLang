@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
+namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 {
     /// <summary>
     /// Трансформирует ноды в ExpressionTree, упрощая их. Некоторые типы нод убираются совсем и заменяются на другие типы нод

@@ -3,9 +3,8 @@ using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes;
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
-using DoshikLangCompiler.Compilation.Visitors;
 
-namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
+namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 {
     public class ExpressionBuilder
     {
@@ -128,6 +127,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                 return HandleTypecastExpressionNode(typecastExpressionNode);
             else if (node is AssignmentExpressionNode assignmentExpressionNode)
                 return HandleAssignmentExpressionNode(assignmentExpressionNode);
+            else if (node is DefaultOfTypeExpressionNode defaultOfTypeExpressionNode)
+                return HandleDefaultOfTypeExpressionNode(defaultOfTypeExpressionNode);
 
             throw new NotImplementedException();
         }
@@ -387,6 +388,25 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
             return result;
         }
 
+        private IExpression HandleDefaultOfTypeExpressionNode(DefaultOfTypeExpressionNode node)
+        {
+            var result = new ConstantValueExpression();
+
+            result.ValueType = node.Type;
+
+            // Добавляем константу (если еще нет), означающую дефолтное значение этого типа. null - значит что возьмется значение null из кода (не реальное значение dotnet объекта),
+            // а это значит что будет просто дефолтное значение этого типа
+            // ToDo: надо удостовериться что все дефолтные значения безопасны для копирования.
+            // То есть проверить что не будет такого что дефолтное значение это какая нибудь ссылка с готовым объектом
+            // (тогда можно будет изменить его через вызов метода и это сломает константу для всех мест где ее используют)
+            _compilationContext.CompilationUnit.AddConstant(result.ValueType, null);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
+
+            return result;
+        }
+
         private IExpression CreateStaticMethodCallExpression(DataType type, MethodCallExpressionNodeData methodCallData)
         {
             var result = new StaticMethodCallExpression();
@@ -415,7 +435,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
                 throw _compilationContext.ThrowCompilationError($"static method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type");
 
             if (foundOverload.BestOverload == null)
-                throw _compilationContext.ThrowCompilationError($"overload for static method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type, but found { foundOverload.OverloadCount } methods with this name");
+            {
+                // ToDo: в сообщении указывать сигнатуру перегрузки которая искалась и все сигнатуры которые есть
+                throw _compilationContext.ThrowCompilationError($"overload for static method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type, but found { foundOverload.OverloadCount } other overloads for this method");
+            }
 
             result.MethodOverload = foundOverload.BestOverload;
 

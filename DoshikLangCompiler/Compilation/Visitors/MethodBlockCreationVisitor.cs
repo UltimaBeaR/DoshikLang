@@ -1,7 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using DoshikLangCompiler.Compilation.CodeRepresentation;
-using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions;
-using System.Collections.Generic;
+using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree;
 
 namespace DoshikLangCompiler.Compilation.Visitors
 {

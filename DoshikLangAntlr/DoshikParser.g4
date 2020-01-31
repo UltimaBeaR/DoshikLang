@@ -117,6 +117,8 @@ expressionList
     : expression (',' expression)*
     ;
 
+defaultOfType: DEFAULT '(' typeType ')';
+
 methodCall: methodName=IDENTIFIER typeArguments? '(' methodCallParams? ')';
 
 methodCallParams
@@ -137,6 +139,7 @@ expression
     // если будут типы, поддерживающие синтаксис a[one, two, ...] то можно будет в right сделать expressionList
     | left=expression '[' right=expression ']'                                                              # bracketsExpression
 
+    | defaultOfType                                                                                         # defaultOfTypeExpression
     | methodCall                                                                                            # methodCallExpression
     | newCall                                                                                               # newCallExpression
     | '(' typeType ')' expression                                                                           # typecastExpression

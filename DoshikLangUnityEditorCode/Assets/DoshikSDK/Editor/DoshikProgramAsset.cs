@@ -9,6 +9,8 @@ namespace DoshikSDK
 {
     public class DoshikProgramAsset : UdonProgramAsset
     {
+        public string CompilationError { get; private set; }
+
         public void SetSourceCode(string sourceCode)
         {
             _sourceCode = sourceCode;
@@ -22,8 +24,8 @@ namespace DoshikSDK
                 {
                     LogWarning = (text) =>
                     {
-                    // Warning при генерировании api
-                }
+                        UnityEngine.Debug.LogWarning("Doshik: Generate Udon API: " + text);
+                    }
                 };
 
                 _externalApi = generator.Generate();
@@ -41,11 +43,12 @@ namespace DoshikSDK
 
                 if (output.CompilationErrors == null)
                 {
-                    AssembleProgram(output.UdonAssemblyCode);
+                    var assemblyError = AssembleProgram(output.UdonAssemblyCode);
 
-                    if (_assemblyError != null)
+                    if (assemblyError != null)
                     {
-                        // Ошибка в assembly
+                        CompilationError = "Assembly: " + assemblyError;
+                        UnityEngine.Debug.LogError("Doshik: " + CompilationError);
 
                         program = null;
                     }
@@ -60,7 +63,8 @@ namespace DoshikSDK
                 {
                     foreach (var error in output.CompilationErrors)
                     {
-                        // Ошибка компиляции
+                        CompilationError = "Compilation: " + error;
+                        UnityEngine.Debug.LogError("Doshik: " + CompilationError);
 
                         program = null;
                     }
@@ -68,7 +72,8 @@ namespace DoshikSDK
             }
             catch (Exception ex)
             {
-                // Неожиданное исключение при компиляции
+                CompilationError = "Unexpected exception while compiling: " + ex.ToString();
+                UnityEngine.Debug.LogError("Doshik: " + CompilationError);
 
                 program = null;
             }
@@ -119,22 +124,21 @@ namespace DoshikSDK
         }
 
 
-        private void AssembleProgram(string udonAssembly)
+        private string AssembleProgram(string udonAssembly)
         {
             try
             {
                 program = UdonEditorManager.Instance.Assemble(udonAssembly);
-                _assemblyError = null;
+                return null;
             }
             catch (Exception e)
             {
                 program = null;
-                _assemblyError = e.Message;
+                return e.Message;
             }
         }
 
         private string _sourceCode;
-        private string _assemblyError;
 
         // ToDo: сделать кэширование этого всего через сериализацию (возможно не тут, а где-то отдельно)
         private static DoshikExternalApi _externalApi;

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
+namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 {
     public static class ExpressionExtensions
     {

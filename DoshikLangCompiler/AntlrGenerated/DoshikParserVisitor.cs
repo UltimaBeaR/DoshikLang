@@ -227,6 +227,12 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitExpressionList([NotNull] DoshikParser.ExpressionListContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="DoshikParser.defaultOfType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDefaultOfType([NotNull] DoshikParser.DefaultOfTypeContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -285,6 +291,13 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context);
+	/// <summary>
+	/// Visit a parse tree produced by the <c>defaultOfTypeExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context);
 	/// <summary>
 	/// Visit a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

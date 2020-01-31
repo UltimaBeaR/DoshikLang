@@ -359,6 +359,16 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitExpressionList([NotNull] DoshikParser.ExpressionListContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="DoshikParser.defaultOfType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDefaultOfType([NotNull] DoshikParser.DefaultOfTypeContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="DoshikParser.defaultOfType"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDefaultOfType([NotNull] DoshikParser.DefaultOfTypeContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.methodCall"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -458,6 +468,18 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context);
+	/// <summary>
+	/// Enter a parse tree produced by the <c>defaultOfTypeExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by the <c>defaultOfTypeExpression</c>
+	/// labeled alternative in <see cref="DoshikParser.expression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context);
 	/// <summary>
 	/// Enter a parse tree produced by the <c>methodCallExpression</c>
 	/// labeled alternative in <see cref="DoshikParser.expression"/>.

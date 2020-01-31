@@ -1,7 +1,7 @@
-int counter;
-
 // Start is called before the first frame update
 event void Start()
 {
-    counter = int.op_Addition(counter, 1);
+    int a = default(int);
+
+    UnityEngine::Debug.Log((object)a);
 }
