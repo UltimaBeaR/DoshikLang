@@ -2,7 +2,7 @@
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
 {
-    public class TypeDotExpressionNode : ExpressionNodes<DoshikParser.TypeDotExpressionContext>
+    public class TypeDotExpressionNode : ExpressionNode<DoshikParser.TypeDotExpressionContext>
     {
         public TypeDotExpressionNode(DoshikParser.TypeDotExpressionContext antlrContext)
             : base(antlrContext)
@@ -17,7 +17,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public MethodCallExpressionNodeData RightMethodCallData { get; set; }
     }
 
-    public class DotExpressionNode : ExpressionNodes<DoshikParser.DotExpressionContext>
+    public class DotExpressionNode : ExpressionNode<DoshikParser.DotExpressionContext>
     {
         public DotExpressionNode(DoshikParser.DotExpressionContext antlrContext)
             : base(antlrContext)
@@ -34,7 +34,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public MethodCallExpressionNodeData RightMethodCallData { get; set; }
     }
 
-    public class BracketsExpressionNode : ExpressionNodes<DoshikParser.BracketsExpressionContext>
+    public class BracketsExpressionNode : ExpressionNode<DoshikParser.BracketsExpressionContext>
     {
         public BracketsExpressionNode(DoshikParser.BracketsExpressionContext antlrContext)
             : base(antlrContext)
@@ -45,7 +45,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Right { get; set; }
     }
 
-    public class DefaultOfTypeExpressionNode : ExpressionNodes<DoshikParser.DefaultOfTypeExpressionContext>
+    public class DefaultOfTypeExpressionNode : ExpressionNode<DoshikParser.DefaultOfTypeExpressionContext>
     {
         public DefaultOfTypeExpressionNode(DoshikParser.DefaultOfTypeExpressionContext antlrContext)
             : base(antlrContext)
@@ -55,7 +55,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public DataType Type { get; set; }
     }
 
-    public class MethodCallExpressionNode : ExpressionNodes<DoshikParser.MethodCallExpressionContext>
+    public class MethodCallExpressionNode : ExpressionNode<DoshikParser.MethodCallExpressionContext>
     {
         public MethodCallExpressionNode(DoshikParser.MethodCallExpressionContext antlrContext)
             : base(antlrContext)
@@ -65,7 +65,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public MethodCallExpressionNodeData MethodCallData { get; } = new MethodCallExpressionNodeData();
     }
 
-    public class NewCallExpressionNode : ExpressionNodes<DoshikParser.NewCallExpressionContext>
+    public class NewCallExpressionNode : ExpressionNode<DoshikParser.NewCallExpressionContext>
     {
         public NewCallExpressionNode(DoshikParser.NewCallExpressionContext antlrContext)
             : base(antlrContext)
@@ -77,7 +77,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public List<MethodCallParameterExpressionNodeData> Parameters { get; } = new List<MethodCallParameterExpressionNodeData>();
     }
 
-    public class TypecastExpressionNode : ExpressionNodes<DoshikParser.TypecastExpressionContext>
+    public class TypecastExpressionNode : ExpressionNode<DoshikParser.TypecastExpressionContext>
     {
         public TypecastExpressionNode(DoshikParser.TypecastExpressionContext antlrContext)
             : base(antlrContext)
@@ -89,7 +89,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Expression { get; set; }
     }
 
-    public class UnaryPostfixExpressionNode : ExpressionNodes<DoshikParser.UnaryPostfixExpressionContext>
+    public class UnaryPostfixExpressionNode : ExpressionNode<DoshikParser.UnaryPostfixExpressionContext>
     {
         public UnaryPostfixExpressionNode(DoshikParser.UnaryPostfixExpressionContext antlrContext)
             : base(antlrContext)
@@ -114,7 +114,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class UnaryPrefixExpressionNode : ExpressionNodes<DoshikParser.UnaryPrefixExpressionContext>
+    public class UnaryPrefixExpressionNode : ExpressionNode<DoshikParser.UnaryPrefixExpressionContext>
     {
         public UnaryPrefixExpressionNode(DoshikParser.UnaryPrefixExpressionContext antlrContext)
             : base(antlrContext)
@@ -149,7 +149,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class NotExpressionNode : ExpressionNodes<DoshikParser.NotExpressionContext>
+    public class NotExpressionNode : ExpressionNode<DoshikParser.NotExpressionContext>
     {
         public NotExpressionNode(DoshikParser.NotExpressionContext antlrContext)
             : base(antlrContext)
@@ -159,7 +159,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Expression { get; set; }
     }
 
-    public class MultiplicationExpressionNode : ExpressionNodes<DoshikParser.MultiplicationExpressionContext>
+    public class MultiplicationExpressionNode : ExpressionNode<DoshikParser.MultiplicationExpressionContext>
     {
         public MultiplicationExpressionNode(DoshikParser.MultiplicationExpressionContext antlrContext)
             : base(antlrContext)
@@ -190,7 +190,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class AdditionExpressionNode : ExpressionNodes<DoshikParser.AdditionExpressionContext>
+    public class AdditionExpressionNode : ExpressionNode<DoshikParser.AdditionExpressionContext>
     {
         public AdditionExpressionNode(DoshikParser.AdditionExpressionContext antlrContext)
             : base(antlrContext)
@@ -216,7 +216,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class RelativeExpressionNode : ExpressionNodes<DoshikParser.RelativeExpressionContext>
+    public class RelativeExpressionNode : ExpressionNode<DoshikParser.RelativeExpressionContext>
     {
         public RelativeExpressionNode(DoshikParser.RelativeExpressionContext antlrContext)
             : base(antlrContext)
@@ -252,7 +252,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class EqualsExpressionNode : ExpressionNodes<DoshikParser.EqualsExpressionContext>
+    public class EqualsExpressionNode : ExpressionNode<DoshikParser.EqualsExpressionContext>
     {
         public EqualsExpressionNode(DoshikParser.EqualsExpressionContext antlrContext)
             : base(antlrContext)
@@ -278,7 +278,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class AndExpressionNode : ExpressionNodes<DoshikParser.AndExpressionContext>
+    public class AndExpressionNode : ExpressionNode<DoshikParser.AndExpressionContext>
     {
         public AndExpressionNode(DoshikParser.AndExpressionContext antlrContext)
             : base(antlrContext)
@@ -289,7 +289,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Right { get; set; }
     }
 
-    public class OrExpressionNode : ExpressionNodes<DoshikParser.OrExpressionContext>
+    public class OrExpressionNode : ExpressionNode<DoshikParser.OrExpressionContext>
     {
         public OrExpressionNode(DoshikParser.OrExpressionContext antlrContext)
             : base(antlrContext)
@@ -300,7 +300,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Right { get; set; }
     }
 
-    public class IfElseExpressionNode : ExpressionNodes<DoshikParser.IfElseExpressionContext>
+    public class IfElseExpressionNode : ExpressionNode<DoshikParser.IfElseExpressionContext>
     {
         public IfElseExpressionNode(DoshikParser.IfElseExpressionContext antlrContext)
             : base(antlrContext)
@@ -322,7 +322,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode ElseExpression { get; set; }
     }
 
-    public class AssignmentExpressionNode : ExpressionNodes<DoshikParser.AssignmentExpressionContext>
+    public class AssignmentExpressionNode : ExpressionNode<DoshikParser.AssignmentExpressionContext>
     {
         public AssignmentExpressionNode(DoshikParser.AssignmentExpressionContext antlrContext)
             : base(antlrContext)
@@ -368,7 +368,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class ParenthesisExpressionNode : ExpressionNodes<DoshikParser.ParenthesisExpressionContext>
+    public class ParenthesisExpressionNode : ExpressionNode<DoshikParser.ParenthesisExpressionContext>
     {
         public ParenthesisExpressionNode(DoshikParser.ParenthesisExpressionContext antlrContext)
             : base(antlrContext)
@@ -378,7 +378,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         public IExpressionNode Expression { get; set; }
     }
 
-    public class LiteralExpressionNode : ExpressionNodes<DoshikParser.LiteralExpressionContext>
+    public class LiteralExpressionNode : ExpressionNode<DoshikParser.LiteralExpressionContext>
     {
         public LiteralExpressionNode(DoshikParser.LiteralExpressionContext antlrContext)
             : base(antlrContext)
@@ -400,7 +400,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         }
     }
 
-    public class IdentifierExpressionNode : ExpressionNodes<DoshikParser.IdentifierExpressionContext>
+    public class IdentifierExpressionNode : ExpressionNode<DoshikParser.IdentifierExpressionContext>
     {
         public IdentifierExpressionNode(DoshikParser.IdentifierExpressionContext antlrContext)
             : base(antlrContext)

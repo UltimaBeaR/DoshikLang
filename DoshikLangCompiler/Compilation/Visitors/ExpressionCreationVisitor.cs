@@ -274,7 +274,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 node.Operator = RelativeExpressionNode.OperatorOption.LesserOrEquals;
             else if (context.@operator.Type == DoshikParser.GE)
                 node.Operator = RelativeExpressionNode.OperatorOption.GreaterOrEquals;
-            if (context.@operator.Type == DoshikParser.LT)
+            else if (context.@operator.Type == DoshikParser.LT)
                 node.Operator = RelativeExpressionNode.OperatorOption.Lesser;
             else if (context.@operator.Type == DoshikParser.GT)
                 node.Operator = RelativeExpressionNode.OperatorOption.Greater;

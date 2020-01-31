@@ -37,10 +37,10 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         IParseTree AntlrContext { get; }
     }
 
-    public abstract class ExpressionNodes<TAntlrContext> : IExpressionNode
+    public abstract class ExpressionNode<TAntlrContext> : IExpressionNode
         where TAntlrContext : IParseTree
     {
-        public ExpressionNodes(TAntlrContext antlrContext)
+        public ExpressionNode(TAntlrContext antlrContext)
         {
             AntlrContext = antlrContext;
         }
