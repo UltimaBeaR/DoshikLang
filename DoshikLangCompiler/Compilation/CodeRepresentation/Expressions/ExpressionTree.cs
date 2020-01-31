@@ -82,11 +82,14 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions
         public AssignmentExpressionNode.OperatorOption Operator { get; set; }
     }
 
-    // ToDo: это выражение должно быть временным (смотреть Note на почте) - оно находится в expression tree только до тех пор пока не произойдет дополнительная обработка
-    // - после этого оно заменяется на getvariable expression (если это получение значения переменной) либо setvariable expression (если это присвоение нового значения переменной).
-    // эта замена может быть произведена только путем анализа готового expression tree - именно по этому нужны такие временные элементы
-    // один из кейсов - это getvariable в случае если оно находится в input для параметра вызова метода, но это setvariable если оно находится в
-    // input-е assignment expression-а как левый операнд (то, ВО ЧТО идет присвоение)
+    /// <summary>
+    /// Выражение, полученное из идентификатора, хранящее в себе тип данных. Не референсится в финальном expression tree
+    /// </summary>
+    public class TypeHolderDummyExpression : ExpressionBase
+    {
+        public DataType Type { get; set; }
+    }
+
     /// <summary>
     /// Получает уже объявленную переменную и возвращает ее значение в выходном слоте
     /// </summary>

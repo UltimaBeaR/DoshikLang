@@ -451,6 +451,12 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Nodes
         /// Может обозначать как имя переменной так и часть имени через точку (и возможно еще что-то)
         /// </summary>
         public string Identifier { get; set; }
+
+        /// <summary>
+        /// true, если этот идентификатор упоминается как левая часть выражения с точкой
+        /// (устанавливается при обработке выражения с точкой, то есть отложенно)
+        /// </summary>
+        public bool IsLeftOfDotExpression { get; set; }
     }
 
     public class MethodCallExpressionNodeData

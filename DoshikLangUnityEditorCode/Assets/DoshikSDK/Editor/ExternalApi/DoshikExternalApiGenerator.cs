@@ -80,7 +80,9 @@ namespace DoshikSDK.ExternalApi
                 string firstNamespaceSegment = null;
                 string name = apiType.ExternalName;
 
-                var handled = TryHandleTypePrefix("System", "System", ref firstNamespaceSegment, ref name);
+                bool handled;
+
+                handled = TryHandleTypePrefix("System", "System", ref firstNamespaceSegment, ref name);
                 if (!handled)
                     handled = TryHandleTypePrefix("UnityEngine", "UnityEngine", ref firstNamespaceSegment, ref name);
                 if (!handled)

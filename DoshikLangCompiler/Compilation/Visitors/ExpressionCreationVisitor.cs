@@ -58,6 +58,15 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
             node.Left = Sequence.FindExpressionByAntlrContext(context.left);
 
+            if (node.Left is IdentifierExpressionNode leftIdentifier)
+            {
+                // Устанавливаем флаг того, что этот идентификатор был упомянут как левая часть в dot expression
+                // это нужно, т.к. далее при преобразовании ноды в expression (expression tree domain) в случае если этот идентификатор
+                // является левой часть dot выражения, значит его стоит в первую очередь пытаться воспринять как тип а во вторую очередь как имя переменной
+                // во всех остальных же случаях это всегда должно быть имя переменной
+                leftIdentifier.IsLeftOfDotExpression = true;
+            }
+
             if (context.rightIdentifier != null)
             {
                 node.RightIdentifier = context.rightIdentifier.Text;

@@ -56,6 +56,46 @@ namespace DoshikLangCompiler.Compilation
             return AllTypes.FirstOrDefault(x => x.ExternalType != null && Enumerable.SequenceEqual(x.ExternalType.FullyQualifiedCodeName, fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName));
         }
 
+        public FoundType FindTypeByCodeNameString(string codeNameString)
+        {
+            if (codeNameString.Contains("[]"))
+            {
+                // Пока не поддерживаем [] в названии типа (вместо этого используем тип System::Int32Array и т.д. для этого)
+                return new FoundType()
+                {
+                    SourceText = codeNameString,
+                    DataType = null
+                };
+            }
+
+            // Получаем "::"
+            var scopeResolutionOperatorString = DoshikParser.DefaultVocabulary.GetLiteralName(DoshikParser.SCOPE_RESOLUTION).Trim('\'');
+
+            // Разделяем полное имя типа по "::"
+            var codeName = codeNameString.Split(new string[] { scopeResolutionOperatorString }, StringSplitOptions.None);
+
+            // ToDo: если появятся using statements то тут надо будет учитывать также то что на уровне файла мог быть определен using какого-нибуль неймспейса
+            // и тип тогда надо будет искать не только по type но type с учетом этого namespace
+            var dataType = FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName(codeName);
+
+            if (dataType == null)
+            {
+                // Тип не найден
+                return new FoundType()
+                {
+                    SourceText = codeNameString,
+                    DataType = null
+                };
+            }
+
+            // Тип найден
+            return new FoundType()
+            {
+                SourceText = codeNameString,
+                DataType = dataType
+            };
+        }
+
         /// <summary>
         /// Найти "лучшую перегрузку" метода
         /// </summary>
@@ -175,6 +215,30 @@ namespace DoshikLangCompiler.Compilation
 
             // Лучшая перегрузка метода (может быть 0, если она не найдена)
             public DoshikExternalApiTypeMethodOverload BestOverload { get; set; }
+        }
+
+        /// <summary>
+        /// Найденный тип + дополнительные данные о том где и как он был найден (может понадобится для правильного построения ошибок)
+        /// </summary>
+        public class FoundType
+        {
+            /// <summary>
+            /// Исходный код, по которому найден этот тип
+            /// </summary>
+            public string SourceText { get; set; }
+
+            /// <summary>
+            /// null, если тип не был найден
+            /// </summary>
+            public DataType DataType { get; set; }
+
+            public void ThrowIfNotFound(CompilationContext _compilationContext)
+            {
+                if (DataType == null)
+                {
+                    throw _compilationContext.ThrowCompilationError("type " + SourceText + " is undefined");
+                }
+            }
         }
 
         private CompilationContext _compilationContext;
