@@ -191,15 +191,15 @@ public interface IDoshikParserListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitBlock([NotNull] DoshikParser.BlockContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Enter a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterBlockStatement([NotNull] DoshikParser.BlockStatementContext context);
+	void EnterStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Exit a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitBlockStatement([NotNull] DoshikParser.BlockStatementContext context);
+	void ExitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.localVariableDeclaration"/>.
 	/// </summary>

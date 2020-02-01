@@ -1,8 +1,18 @@
 event void Start()
 {
-    int lol = 5 + 5;
+    int a = 5;
 
-    string test = 6.ToString() + " - six, " + lol.ToString() + " - ten";
+    {
+        int b = 6;
 
-    UnityEngine::Debug.Log((object)test);
+        UnityEngine::Debug.Log((object)b);
+        UnityEngine::Debug.Log((object)a);
+    }
+
+    {
+        int b = 7;
+
+        UnityEngine::Debug.Log((object)b);
+        UnityEngine::Debug.Log((object)a);
+    }
 }

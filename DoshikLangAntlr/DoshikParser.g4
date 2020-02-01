@@ -73,10 +73,10 @@ integerLiteral
 // STATEMENTS / BLOCKS
 
 block
-    : '{' blockStatement* '}'
+    : '{' statementInBlock* '}'
     ;
 
-blockStatement
+statementInBlock
     : localVariableDeclaration ';'
     | statement
     ;

@@ -30,7 +30,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             // Заходим в scope блока
             _currentScope = block.Scope;
 
-            foreach (var blockStatementCtx in context.blockStatement())
+            foreach (var blockStatementCtx in context.statementInBlock())
             {
                 var statement = (Statement)Visit(blockStatementCtx);
                 block.Statements.Add(statement);
@@ -42,7 +42,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
         }
 
         // возвращает Statement
-        public override object VisitBlockStatement([NotNull] DoshikParser.BlockStatementContext context)
+        public override object VisitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context)
         {
             var localVariableDeclarationCtx = context.localVariableDeclaration();
             var statementCtx = context.statement();

@@ -3,20 +3,6 @@ using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation.CodeRepresentation
 {
-    public class BlockOfStatements : ICodeHierarchyNode, IScopeOwner
-    {
-        public BlockOfStatements(ICodeHierarchyNode parent, Scope parentScope)
-        {
-            Parent = parent;
-            Scope = new Scope(this, parentScope);
-        }
-
-        public ICodeHierarchyNode Parent { get; private set; }
-        public Scope Scope { get; private set; }
-
-        public List<Statement> Statements { get; } = new List<Statement>();
-    }
-
     public abstract class Statement : ICodeHierarchyNode
     {
         public Statement(ICodeHierarchyNode parent)
@@ -25,6 +11,19 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         }
 
         public ICodeHierarchyNode Parent { get; private set; }
+    }
+
+    public class BlockOfStatements : Statement, IScopeOwner
+    {
+        public BlockOfStatements(ICodeHierarchyNode parent, Scope parentScope)
+            : base(parent)
+        {
+            Scope = new Scope(this, parentScope);
+        }
+
+        public Scope Scope { get; private set; }
+
+        public List<Statement> Statements { get; } = new List<Statement>();
     }
 
     // Объявление локальной переменной. Может встречаться внутри блока либо for init части

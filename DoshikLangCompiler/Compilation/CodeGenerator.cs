@@ -58,12 +58,7 @@ namespace DoshikLangCompiler.Compilation
 
                 // ToDo: как-то обработать параметры в методе. Вроде как под них есть захардкоженные названия переменных, которые нужно объявить?
 
-                var statements = eventHandler.BodyBlock.Statements;
-
-                foreach (var statement in statements)
-                {
-                    GenerateCodeForStatement(statement);
-                }
+                GenerateCodeForBlockOfStatements(eventHandler.BodyBlock);
 
                 _currentEventBodyEmitter.JUMP_absoluteAddress(UAssemblyBuilder.maxCodeAddress);
             }
@@ -75,6 +70,8 @@ namespace DoshikLangCompiler.Compilation
         {
             if (statement is LocalVariableDeclarationStatement localVariableDeclarationStatement)
                 GenerateCodeForLocalVariableDeclarationStatement(localVariableDeclarationStatement);
+            else if (statement is BlockOfStatements blockOfStatements)
+                GenerateCodeForBlockOfStatements(blockOfStatements);
             else if (statement is ExpressionStatement expressionStatement)
                 GenerateCodeForExpressionStatement(expressionStatement);
             else
@@ -102,6 +99,14 @@ namespace DoshikLangCompiler.Compilation
                 _currentEventBodyEmitter.PUSH_varableName(name);
                 _currentEventBodyEmitter.COPY();
             }
+        }
+
+        private void GenerateCodeForBlockOfStatements(BlockOfStatements statement)
+        {
+            var subStatements = statement.Statements;
+
+            foreach (var subStatement in subStatements)
+                GenerateCodeForStatement(subStatement);
         }
 
         private void GenerateCodeForExpressionStatement(ExpressionStatement statement)

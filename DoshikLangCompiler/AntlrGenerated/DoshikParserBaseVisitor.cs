@@ -194,7 +194,7 @@ public partial class DoshikParserBaseVisitor<Result> : AbstractParseTreeVisitor<
 	/// <return>The visitor result.</return>
 	public virtual Result VisitBlock([NotNull] DoshikParser.BlockContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Visit a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -202,7 +202,7 @@ public partial class DoshikParserBaseVisitor<Result> : AbstractParseTreeVisitor<
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitBlockStatement([NotNull] DoshikParser.BlockStatementContext context) { return VisitChildren(context); }
+	public virtual Result VisitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.localVariableDeclaration"/>.
 	/// <para>

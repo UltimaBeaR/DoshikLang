@@ -227,17 +227,17 @@ public partial class DoshikParserBaseListener : IDoshikParserListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitBlock([NotNull] DoshikParser.BlockContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Enter a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterBlockStatement([NotNull] DoshikParser.BlockStatementContext context) { }
+	public virtual void EnterStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Exit a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitBlockStatement([NotNull] DoshikParser.BlockStatementContext context) { }
+	public virtual void ExitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="DoshikParser.localVariableDeclaration"/>.
 	/// <para>The default implementation does nothing.</para>

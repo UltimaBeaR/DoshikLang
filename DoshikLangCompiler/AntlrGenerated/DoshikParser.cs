@@ -52,7 +52,7 @@ public partial class DoshikParser : Parser {
 		RULE_variableInitializer = 6, RULE_arrayInitializer = 7, RULE_classOrInterfaceType = 8, 
 		RULE_typeArgument = 9, RULE_formalParameters = 10, RULE_formalParameterList = 11, 
 		RULE_formalParameter = 12, RULE_literal = 13, RULE_integerLiteral = 14, 
-		RULE_block = 15, RULE_blockStatement = 16, RULE_localVariableDeclaration = 17, 
+		RULE_block = 15, RULE_statementInBlock = 16, RULE_localVariableDeclaration = 17, 
 		RULE_statement = 18, RULE_forControl = 19, RULE_forInit = 20, RULE_parExpression = 21, 
 		RULE_expressionList = 22, RULE_defaultOfType = 23, RULE_methodCall = 24, 
 		RULE_methodCallParams = 25, RULE_methodCallParam = 26, RULE_newCall = 27, 
@@ -62,7 +62,7 @@ public partial class DoshikParser : Parser {
 		"compilationUnit", "memberDeclaration", "methodDeclaration", "typeTypeOrVoid", 
 		"fieldDeclaration", "variableDeclarator", "variableInitializer", "arrayInitializer", 
 		"classOrInterfaceType", "typeArgument", "formalParameters", "formalParameterList", 
-		"formalParameter", "literal", "integerLiteral", "block", "blockStatement", 
+		"formalParameter", "literal", "integerLiteral", "block", "statementInBlock", 
 		"localVariableDeclaration", "statement", "forControl", "forInit", "parExpression", 
 		"expressionList", "defaultOfType", "methodCall", "methodCallParams", "methodCallParam", 
 		"newCall", "expression", "primary", "typeType", "primitiveType", "typeArguments"
@@ -1135,11 +1135,11 @@ public partial class DoshikParser : Parser {
 	public partial class BlockContext : ParserRuleContext {
 		public ITerminalNode OPEN_BRACE() { return GetToken(DoshikParser.OPEN_BRACE, 0); }
 		public ITerminalNode CLOSE_BRACE() { return GetToken(DoshikParser.CLOSE_BRACE, 0); }
-		public BlockStatementContext[] blockStatement() {
-			return GetRuleContexts<BlockStatementContext>();
+		public StatementInBlockContext[] statementInBlock() {
+			return GetRuleContexts<StatementInBlockContext>();
 		}
-		public BlockStatementContext blockStatement(int i) {
-			return GetRuleContext<BlockStatementContext>(i);
+		public StatementInBlockContext statementInBlock(int i) {
+			return GetRuleContext<StatementInBlockContext>(i);
 		}
 		public BlockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
@@ -1176,7 +1176,7 @@ public partial class DoshikParser : Parser {
 			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEFAULT) | (1L << NEW) | (1L << IF) | (1L << WHILE) | (1L << FOR) | (1L << BREAK) | (1L << CONTINUE) | (1L << RETURN) | (1L << INT) | (1L << FLOAT) | (1L << BOOL) | (1L << STRING) | (1L << OBJECT) | (1L << INT_LITERAL) | (1L << INT_HEX_LITERAL) | (1L << FLOAT_LITERAL) | (1L << BOOL_LITERAL) | (1L << STRING_LITERAL) | (1L << NULL_LITERAL) | (1L << SEMICOLON) | (1L << OPEN_PARENTHESIS) | (1L << OPEN_BRACE) | (1L << BANG) | (1L << INC) | (1L << DEC) | (1L << ADD) | (1L << SUB) | (1L << IDENTIFIER))) != 0)) {
 				{
 				{
-				State = 168; blockStatement();
+				State = 168; statementInBlock();
 				}
 				}
 				State = 173;
@@ -1197,7 +1197,7 @@ public partial class DoshikParser : Parser {
 		return _localctx;
 	}
 
-	public partial class BlockStatementContext : ParserRuleContext {
+	public partial class StatementInBlockContext : ParserRuleContext {
 		public LocalVariableDeclarationContext localVariableDeclaration() {
 			return GetRuleContext<LocalVariableDeclarationContext>(0);
 		}
@@ -1205,30 +1205,30 @@ public partial class DoshikParser : Parser {
 		public StatementContext statement() {
 			return GetRuleContext<StatementContext>(0);
 		}
-		public BlockStatementContext(ParserRuleContext parent, int invokingState)
+		public StatementInBlockContext(ParserRuleContext parent, int invokingState)
 			: base(parent, invokingState)
 		{
 		}
-		public override int RuleIndex { get { return RULE_blockStatement; } }
+		public override int RuleIndex { get { return RULE_statementInBlock; } }
 		public override void EnterRule(IParseTreeListener listener) {
 			IDoshikParserListener typedListener = listener as IDoshikParserListener;
-			if (typedListener != null) typedListener.EnterBlockStatement(this);
+			if (typedListener != null) typedListener.EnterStatementInBlock(this);
 		}
 		public override void ExitRule(IParseTreeListener listener) {
 			IDoshikParserListener typedListener = listener as IDoshikParserListener;
-			if (typedListener != null) typedListener.ExitBlockStatement(this);
+			if (typedListener != null) typedListener.ExitStatementInBlock(this);
 		}
 		public override TResult Accept<TResult>(IParseTreeVisitor<TResult> visitor) {
 			IDoshikParserVisitor<TResult> typedVisitor = visitor as IDoshikParserVisitor<TResult>;
-			if (typedVisitor != null) return typedVisitor.VisitBlockStatement(this);
+			if (typedVisitor != null) return typedVisitor.VisitStatementInBlock(this);
 			else return visitor.VisitChildren(this);
 		}
 	}
 
 	[RuleVersion(0)]
-	public BlockStatementContext blockStatement() {
-		BlockStatementContext _localctx = new BlockStatementContext(Context, State);
-		EnterRule(_localctx, 32, RULE_blockStatement);
+	public StatementInBlockContext statementInBlock() {
+		StatementInBlockContext _localctx = new StatementInBlockContext(Context, State);
+		EnterRule(_localctx, 32, RULE_statementInBlock);
 		try {
 			State = 180;
 			ErrorHandler.Sync(this);

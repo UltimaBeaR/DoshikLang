@@ -128,11 +128,11 @@ public interface IDoshikParserVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitBlock([NotNull] DoshikParser.BlockContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="DoshikParser.blockStatement"/>.
+	/// Visit a parse tree produced by <see cref="DoshikParser.statementInBlock"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitBlockStatement([NotNull] DoshikParser.BlockStatementContext context);
+	Result VisitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="DoshikParser.localVariableDeclaration"/>.
 	/// </summary>
