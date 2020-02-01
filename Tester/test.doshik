@@ -1,7 +1,19 @@
-// Start is called before the first frame update
+float a;
+
 event void Start()
 {
-    bool a = !true || !(5 >= 7) && false;
+    a = -5.0f;
+}
 
-    UnityEngine::Debug.Log((object)a);
+event void Update()
+{
+    float b = a + UnityEngine::Time.get_deltaTime() * 1000.0f;
+
+    UnityEngine::Debug.Log((object)(
+        new UnityEngine::Vector3(
+            a + 1.0f + 0.5f * 3.0f - 0.2f,
+            default(float),
+            b
+        )
+    ));
 }

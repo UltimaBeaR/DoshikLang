@@ -38,20 +38,20 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
         {
             if (node is ParenthesisExpressionNode parenthesisExpressionNode)
                 return HandleParenthesisExpressionNode(parenthesisExpressionNode);
-            else if (node is IdentifierExpressionNode identifierExpressionNode)
-                return HandleIdentifierExpressionNode(identifierExpressionNode);
             else if (node is LiteralExpressionNode literalExpressionNode)
                 return HandleLiteralExpressionNode(literalExpressionNode);
-            else if (node is DotExpressionNode dotExpressionNode)
-                return HandleDotExpressionNode(dotExpressionNode);
+            else if (node is IdentifierExpressionNode identifierExpressionNode)
+                return HandleIdentifierExpressionNode(identifierExpressionNode);
             else if (node is TypeDotExpressionNode typeDotExpressionNode)
                 return HandleTypeDotExpressionNode(typeDotExpressionNode);
-            else if (node is TypecastExpressionNode typecastExpressionNode)
-                return HandleTypecastExpressionNode(typecastExpressionNode);
-            else if (node is AssignmentExpressionNode assignmentExpressionNode)
-                return HandleAssignmentExpressionNode(assignmentExpressionNode);
+            else if (node is DotExpressionNode dotExpressionNode)
+                return HandleDotExpressionNode(dotExpressionNode);
             else if (node is DefaultOfTypeExpressionNode defaultOfTypeExpressionNode)
                 return HandleDefaultOfTypeExpressionNode(defaultOfTypeExpressionNode);
+            else if (node is NewCallExpressionNode newCallExpressionNode)
+                return HandleNewCallExpressionNode(newCallExpressionNode);
+            else if (node is TypecastExpressionNode typecastExpressionNode)
+                return HandleTypecastExpressionNode(typecastExpressionNode);
             else if (node is UnaryPrefixExpressionNode unaryPrefixExpressionNode)
                 return HandleUnaryPrefixExpressionNode(unaryPrefixExpressionNode);
             else if (node is NotExpressionNode notExpressionNode)
@@ -68,6 +68,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
                 return HandleAndExpressionNode(andExpressionNode);
             else if (node is OrExpressionNode orExpressionNode)
                 return HandleOrExpressionNode(orExpressionNode);
+            else if (node is AssignmentExpressionNode assignmentExpressionNode)
+                return HandleAssignmentExpressionNode(assignmentExpressionNode);
 
             throw new NotImplementedException();
         }
@@ -75,37 +77,6 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
         private IExpression HandleParenthesisExpressionNode(ParenthesisExpressionNode node)
         {
             return FindExpressionByExpressionNode(node.Expression, false);
-        }
-
-        private IExpression HandleIdentifierExpressionNode(IdentifierExpressionNode node)
-        {
-            if (node.IsLeftOfDotExpression)
-            {
-                // Если нода с идентификатором упоминалась как левая часть dot выражения, значит нужно в ПЕРВУЮ ОЧЕРЕДЬ проверить не является ли
-                // этот идентификатор названием типа
-
-                var foundType = _compilationContext.TypeLibrary.FindTypeByCodeNameString(node.Identifier);
-                if (foundType.DataType != null)
-                {
-                    return new TypeHolderDummyExpression() { Type = foundType.DataType };
-                }
-            }
-
-            var result = new VariableReferenceExpression();
-
-            var scope = _tree.FindNearestScopeOwner().Scope;
-
-            var variable = scope.FindVariableByName(node.Identifier);
-
-            if (variable == null)
-                throw _compilationContext.ThrowCompilationError($"variable { node.Identifier } is not defined");
-
-            result.Variable = variable;
-
-            // Определяем выходное значение
-            result.ReturnOutputSlot = new ExpressionSlot(result.Variable.Type, result);
-
-            return result;
         }
 
         private IExpression HandleLiteralExpressionNode(LiteralExpressionNode node)
@@ -119,7 +90,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
                     {
                         var literalValue = node.LiteralValue;
 
-                        if (int.TryParse(literalValue, NumberStyles.None, CultureInfo.InvariantCulture,  out int intResult))
+                        if (int.TryParse(literalValue, NumberStyles.None, CultureInfo.InvariantCulture, out int intResult))
                         {
                             dotnetType = typeof(int);
                             result.DotnetValue = intResult;
@@ -241,6 +212,45 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             return result;
         }
 
+        private IExpression HandleIdentifierExpressionNode(IdentifierExpressionNode node)
+        {
+            if (node.IsLeftOfDotExpression)
+            {
+                // Если нода с идентификатором упоминалась как левая часть dot выражения, значит нужно в ПЕРВУЮ ОЧЕРЕДЬ проверить не является ли
+                // этот идентификатор названием типа
+
+                var foundType = _compilationContext.TypeLibrary.FindTypeByCodeNameString(node.Identifier);
+                if (foundType.DataType != null)
+                {
+                    return new TypeHolderDummyExpression() { Type = foundType.DataType };
+                }
+            }
+
+            var result = new VariableReferenceExpression();
+
+            var scope = _tree.FindNearestScopeOwner().Scope;
+
+            var variable = scope.FindVariableByName(node.Identifier);
+
+            if (variable == null)
+                throw _compilationContext.ThrowCompilationError($"variable { node.Identifier } is not defined");
+
+            result.Variable = variable;
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.Variable.Type, result);
+
+            return result;
+        }
+
+        private IExpression HandleTypeDotExpressionNode(TypeDotExpressionNode node)
+        {
+            if (node.RightIdentifier != null)
+                throw _compilationContext.ThrowCompilationError("static properties are not supported yet");
+
+            return CreateStaticMethodCallExpression(node.LeftType, node.RightMethodCallData);
+        }
+
         private IExpression HandleDotExpressionNode(DotExpressionNode node)
         {
             if (node.RightIdentifier != null)
@@ -258,49 +268,6 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             }
         }
 
-        private IExpression HandleTypeDotExpressionNode(TypeDotExpressionNode node)
-        {
-            if (node.RightIdentifier != null)
-                throw _compilationContext.ThrowCompilationError("static properties are not supported yet");
-
-            return CreateStaticMethodCallExpression(node.LeftType, node.RightMethodCallData);
-        }
-
-        private IExpression HandleTypecastExpressionNode(TypecastExpressionNode node)
-        {
-            var result = new TypecastExpression();
-
-            result.Type = node.Type;
-
-            result.Expression = FindExpressionByExpressionNode(node.Expression, false).ReturnOutputSlot;
-            result.Expression.InputSideExpression = result;
-            result.InputSlots.Add(result.Expression);
-
-            // Определяем выходное значение
-            result.ReturnOutputSlot = new ExpressionSlot(result.Type, result);
-
-            return result;
-        }
-
-        private IExpression HandleAssignmentExpressionNode(AssignmentExpressionNode node)
-        {
-            var result = new AssignmentExpression();
-            result.Operator = node.Operator;
-
-            result.Left = FindExpressionByExpressionNode(node.Left, true).ReturnOutputSlot;
-            result.Left.InputSideExpression = result;
-            result.InputSlots.Add(result.Left);
-
-            result.Right = FindExpressionByExpressionNode(node.Right, false).ReturnOutputSlot;
-            result.Right.InputSideExpression = result;
-            result.InputSlots.Add(result.Right);
-
-            // Определяем выходное значение
-            result.ReturnOutputSlot = new ExpressionSlot(_compilationContext.TypeLibrary.FindVoid(), result);
-
-            return result;
-        }
-
         private IExpression HandleDefaultOfTypeExpressionNode(DefaultOfTypeExpressionNode node)
         {
             var result = new ConstantValueExpression();
@@ -316,6 +283,34 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 
             // Определяем выходное значение
             result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
+
+            return result;
+        }
+
+        private IExpression HandleNewCallExpressionNode(NewCallExpressionNode node)
+        {
+            var methodCallData = new MethodCallExpressionNodeData
+            {
+                Name = "ctor"
+            };
+
+            methodCallData.Parameters.AddRange(node.Parameters);
+
+            return CreateStaticMethodCallExpression(node.Type, methodCallData);
+        }
+
+        private IExpression HandleTypecastExpressionNode(TypecastExpressionNode node)
+        {
+            var result = new TypecastExpression();
+
+            result.Type = node.Type;
+
+            result.Expression = FindExpressionByExpressionNode(node.Expression, false).ReturnOutputSlot;
+            result.Expression.InputSideExpression = result;
+            result.InputSlots.Add(result.Expression);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.Type, result);
 
             return result;
         }
@@ -406,16 +401,55 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             }
         }
 
+        // ToDo: Про перегрузку операторов op_ConditionalAnd (&&) и op_ConditionalOr (||)
+        // Эти операторы перегружены только у bool. И зачем это сделано непонятно - это не обычный вызов функции. Эта булева
+        // логика должна выполняться непосредственно компилятором, а не внешним вызовом. Видимо это было сделано просто для удобства работы в графах.
+        // смысл в том что в случае выражения к примеру if (a != null && a.DoThings() == 5) внутри стоит оператор && - он должен сначала
+        // посчитать истинность левого операнда и ТОЛЬКО ЕСЛИ он истинен - оператор может выполнить правый операнд. А при обычном вызове
+        // метода сначала просчитываются все операнды (левый, правый) а потом только вызывается метод с этими операндами. Тут же действие должно
+        // быть между просчетом левого и правого операнда, то есть его нельзя посчитать внешним вызовом, это должен делать компилятор - посмотреть
+        // истинное ли выражение слева и сгенерировать по нему JUMP_IF_FALSE. То есть операнд справа НЕ ДОЛЖЕН ВЫПОЛНИТЬСЯ если операнд слева == false
+        // Аналогичная ситуация с оператором || - но там я уже не помню как логика идет.
+        // То есть надо вместо метода тут возвращать отдельный вид expression-а (можно сделать его общим для and/or)
+        //
+        // https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/expressions#user-defined-conditional-logical-operators
+        // x && y превращается в T.false(x) ? x : T.&(x, y)
+        // x || y превращается в T.true(x) ? x : T.|(x, y)
+        // можно попробовать возвращать в этих слуаях искусственно сгенерированый IfExpression
+        //
+        // Похожая ситуация идет при обработке оператора ifexpression - там тоже просчет операндов зависит от результата условия и там также идут JUMP_IF_FALSE
+
         private IExpression HandleAndExpressionNode(AndExpressionNode node)
         {
+            // ToDo: читать выше - тут не должно быть вызова метода
             return CreateStaticMethodCallExpressionForBinaryOperator("op_ConditionalAnd", node.Left, node.Right);
         }
 
         private IExpression HandleOrExpressionNode(OrExpressionNode node)
         {
+            // ToDo: читать выше - тут не должно быть вызова метода
             return CreateStaticMethodCallExpressionForBinaryOperator("op_ConditionalOr", node.Left, node.Right);
         }
-        
+
+        private IExpression HandleAssignmentExpressionNode(AssignmentExpressionNode node)
+        {
+            var result = new AssignmentExpression();
+            result.Operator = node.Operator;
+
+            result.Left = FindExpressionByExpressionNode(node.Left, true).ReturnOutputSlot;
+            result.Left.InputSideExpression = result;
+            result.InputSlots.Add(result.Left);
+
+            result.Right = FindExpressionByExpressionNode(node.Right, false).ReturnOutputSlot;
+            result.Right.InputSideExpression = result;
+            result.InputSlots.Add(result.Right);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(_compilationContext.TypeLibrary.FindVoid(), result);
+
+            return result;
+        }
+
         private IExpression CreateStaticMethodCallExpressionForUnaryOperator(string methodName, IExpressionNode operand)
         {
             var operandExpression = FindExpressionByExpressionNode(operand, false);
