@@ -259,13 +259,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             var left = FindExpressionByExpressionNode(node.Left, false);
 
             if (left is TypeHolderDummyExpression typeHolder)
-            {
                 return CreateStaticMethodCallExpression(typeHolder.Type, node.RightMethodCallData);
-            }
             else
-            {
-                throw _compilationContext.ThrowCompilationError("instance method calls are not supported yet");
-            }
+                return CreateInstanceMethodCallExpression(node.Left, node.RightMethodCallData);
         }
 
         private IExpression HandleDefaultOfTypeExpressionNode(DefaultOfTypeExpressionNode node)
@@ -479,18 +475,49 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             return CreateStaticMethodCallExpression(leftExpression.ReturnOutputSlot.Type, methodCallData);
         }
 
+        private IExpression CreateInstanceMethodCallExpression(IExpressionNode instanceExpressionNode, MethodCallExpressionNodeData methodCallData)
+        {
+            return CreateMethodCallExpression(null, instanceExpressionNode, methodCallData);
+        }
+
         private IExpression CreateStaticMethodCallExpression(DataType type, MethodCallExpressionNodeData methodCallData)
         {
-            var result = new StaticMethodCallExpression();
+            return CreateMethodCallExpression(type, null, methodCallData);
+        }
 
+        private IExpression CreateMethodCallExpression(DataType typeForStaticCall, IExpressionNode instanceForInstanceCall, MethodCallExpressionNodeData methodCallData)
+        {
             if (methodCallData.TypeArguments.Count > 0)
                 throw _compilationContext.ThrowCompilationError("method type arguments are not supported");
 
-            var findOverloadPararmeters = new List<TypeLibrary.FindOverloadParameter>(methodCallData.Parameters.Count);
+            var isStatic = instanceForInstanceCall == null;
+
+            IExpression instance = isStatic
+                ? null
+                : FindExpressionByExpressionNode(instanceForInstanceCall, false);
+
+            DataType type = isStatic
+                ? typeForStaticCall
+                : instance.ReturnOutputSlot.Type;
+
+            var result = isStatic
+                ? (IMethodCallExpression)new StaticMethodCallExpression()
+                : new InstanceMethodCallExpression();
+
+            var callParameters = new List<MethodCallParameterExpressionNodeData>(methodCallData.Parameters.Count + (isStatic ? 0 : 1));
+            
+            if (!isStatic)
+                callParameters.Add(new MethodCallParameterExpressionNodeData { Expression = instanceForInstanceCall });
+
+            callParameters.AddRange(methodCallData.Parameters);
+
+            var findOverloadPararmeters = new List<TypeLibrary.FindOverloadParameter>(callParameters.Count);
 
             // Проходим по всем параметрам у вызова метода
-            foreach (var methodCallParameter in methodCallData.Parameters)
+            for (int callParametersIndex = 0; callParametersIndex < callParameters.Count; callParametersIndex++)
             {
+                var methodCallParameter = callParameters[callParametersIndex];
+
                 // Добавляем input слот к текущему выражению (он уже существует как output у выражения, соответствующего этому параметру)
 
                 var slot = FindExpressionByExpressionNode(methodCallParameter.Expression, false).ReturnOutputSlot;
@@ -498,18 +525,23 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
                 slot.InputSideExpression = result;
                 result.InputSlots.Add(slot);
 
-                findOverloadPararmeters.Add(new TypeLibrary.FindOverloadParameter { IsOut = methodCallParameter.IsOut, Type = slot.Type.ExternalType });
+                var isInstanceParameter = !isStatic && callParametersIndex == 0;
+
+                if (!isInstanceParameter)
+                {
+                    findOverloadPararmeters.Add(new TypeLibrary.FindOverloadParameter { IsOut = methodCallParameter.IsOut, Type = slot.Type.ExternalType });
+                }
             }
 
-            var foundOverload = _compilationContext.TypeLibrary.FindBestMethodOverload(true, type.ExternalType, methodCallData.Name, findOverloadPararmeters);
+            var foundOverload = _compilationContext.TypeLibrary.FindBestMethodOverload(isStatic, type.ExternalType, methodCallData.Name, findOverloadPararmeters);
 
             if (foundOverload.OverloadCount == 0)
-                throw _compilationContext.ThrowCompilationError($"static method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type");
+                throw _compilationContext.ThrowCompilationError($"{ (isStatic ? "static" : "instance") } method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type");
 
             if (foundOverload.BestOverload == null)
             {
                 // ToDo: в сообщении указывать сигнатуру перегрузки которая искалась и все сигнатуры которые есть
-                throw _compilationContext.ThrowCompilationError($"overload for static method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type, but found { foundOverload.OverloadCount } other overloads for this method");
+                throw _compilationContext.ThrowCompilationError($"overload for { (isStatic ? "static" : "instance") } method { methodCallData.Name } not found in { _compilationContext.TypeLibrary.GetApiTypeFullCodeName(type.ExternalType) } type, but found { foundOverload.OverloadCount } other overloads for this method");
             }
 
             result.MethodOverload = foundOverload.BestOverload;

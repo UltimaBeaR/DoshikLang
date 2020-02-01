@@ -68,4 +68,9 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
         /// </summary>
         public IExpression OutputSideExpression { get; set; }
     }
+
+    public interface IMethodCallExpression : IExpression
+    {
+        DoshikExternalApiTypeMethodOverload MethodOverload { get; set; }
+    }
 }

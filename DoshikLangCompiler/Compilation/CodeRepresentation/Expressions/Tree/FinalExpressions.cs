@@ -41,16 +41,18 @@
     /// <summary>
     /// Вызов метода. 
     /// </summary>
-    public class MethodCallExpression : ExpressionBase
+    public class InstanceMethodCallExpression : ExpressionBase, IMethodCallExpression
     {
         /// <summary>
         /// Выражение, результат которого передается как входной слот "instance" (он же this)
         /// и в итоговом assembly коде будет передаваться как первый входной параметр для вызова метода.
         /// </summary>
         public ExpressionSlot Instance { get; set; }
+
+        public DoshikExternalApiTypeMethodOverload MethodOverload { get; set; }
     }
 
-    public class StaticMethodCallExpression : ExpressionBase
+    public class StaticMethodCallExpression : ExpressionBase, IMethodCallExpression
     {
         /// <summary>
         /// Тип (из udon api), к которому применяется вызов метода

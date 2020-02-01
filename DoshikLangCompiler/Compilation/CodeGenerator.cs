@@ -118,7 +118,9 @@ namespace DoshikLangCompiler.Compilation
             else if (expression is ConstantValueExpression constantValueExpression)
                 GenerateCodeForConstantValueExpression(constantValueExpression);
             else if (expression is StaticMethodCallExpression staticMethodCallExpression)
-                GenerateCodeForStaticMethodCallExpression(staticMethodCallExpression);
+                GenerateCodeForMethodCallExpression(staticMethodCallExpression);
+            else if (expression is InstanceMethodCallExpression instanceMethodCallExpression)
+                GenerateCodeForMethodCallExpression(instanceMethodCallExpression);
             else if (expression is TypecastExpression typecastExpression)
                 GenerateCodeForTypecastExpression(typecastExpression);
             else
@@ -165,7 +167,7 @@ namespace DoshikLangCompiler.Compilation
             _currentEventBodyEmitter.PUSH_varableName(name);
         }
 
-        private void GenerateCodeForStaticMethodCallExpression(StaticMethodCallExpression expression)
+        private void GenerateCodeForMethodCallExpression(IMethodCallExpression expression)
         {
             // Проходим по всем in параметрам (кроме out и return слотов) и (в порядке их следования!) выполняем генерацию кода для них
             foreach (var inputSlot in expression.InputSlots)

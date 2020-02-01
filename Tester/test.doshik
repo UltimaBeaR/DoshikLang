@@ -1,19 +1,8 @@
-float a;
-
 event void Start()
 {
-    a = -5.0f;
-}
+    int lol = 5 + 5;
 
-event void Update()
-{
-    float b = a + UnityEngine::Time.get_deltaTime() * 1000.0f;
+    string test = 6.ToString() + " - six, " + lol.ToString() + " - ten";
 
-    UnityEngine::Debug.Log((object)(
-        new UnityEngine::Vector3(
-            a + 1.0f + 0.5f * 3.0f - 0.2f,
-            default(float),
-            b
-        )
-    ));
+    UnityEngine::Debug.Log((object)test);
 }
