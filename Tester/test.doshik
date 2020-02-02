@@ -2,17 +2,12 @@ event void Start()
 {
     int a = 5;
 
+    if (true)
     {
-        int b = 6;
-
-        UnityEngine::Debug.Log((object)b);
-        UnityEngine::Debug.Log((object)a);
+        a = 8;
+        a = a * a;
     }
+    else
+        a = a - 1;
 
-    {
-        int b = 7;
-
-        UnityEngine::Debug.Log((object)b);
-        UnityEngine::Debug.Log((object)a);
-    }
 }

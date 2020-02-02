@@ -74,6 +74,8 @@ namespace DoshikLangCompiler.Compilation
                 GenerateCodeForBlockOfStatements(blockOfStatements);
             else if (statement is ExpressionStatement expressionStatement)
                 GenerateCodeForExpressionStatement(expressionStatement);
+            else if (statement is IfStatement ifStatement)
+                GenerateCodeForIfStatement(ifStatement);
             else
                 throw new NotImplementedException();
         }
@@ -112,6 +114,38 @@ namespace DoshikLangCompiler.Compilation
         private void GenerateCodeForExpressionStatement(ExpressionStatement statement)
         {
             GenerateCodeForExpression(statement.Expression.RootExpression, true);
+        }
+
+        private void GenerateCodeForIfStatement(IfStatement statement)
+        {
+            var labelIndex = _globalLabelUniqueCounter;
+            _globalLabelUniqueCounter++;
+
+            var labelAfterTrue = "after_true_" + labelIndex;
+            var labelAfterFalse = "after_false_" + labelIndex;
+
+
+            // Генерируем выражение условия. результатом будет значение в стеке типа bool, означающее, нужно ли выполнять true ветку (TrueStatement)
+            GenerateCodeForExpression(statement.Condition.RootExpression);
+
+            _currentEventBodyEmitter.JUMP_IF_FALSE_globalLabel(labelAfterTrue);
+
+            GenerateCodeForStatement(statement.TrueStatement);
+
+            if (statement.FalseStatement != null)
+                _currentEventBodyEmitter.JUMP_globalLabel(labelAfterFalse);
+
+            _currentEventBodyEmitter.NOP().GlobalLabel = labelAfterTrue;
+
+            if (statement.FalseStatement != null)
+            {
+                GenerateCodeForStatement(statement.FalseStatement);
+
+                _currentEventBodyEmitter.NOP().GlobalLabel = labelAfterFalse;
+            }
+
+            // ToDo: пока сделал косо криво через nop - по хорошему тут надо делать Jump на метку после последней инструкции в falsestatement, 
+            // но так как она еще не создана, то нельзя задать ей label (можно на уровне event body emitter сделать возможность задавать globalLabel + оффсет от него)
         }
 
         private void GenerateCodeForExpression(IExpression expression, bool removeExpressionResult = false)
@@ -310,6 +344,8 @@ namespace DoshikLangCompiler.Compilation
 
         // Временные переменные
         private List<string> _temporaryVariableNames = new List<string>();
+
+        private int _globalLabelUniqueCounter = 0;
 
         private UAssemblyEventBodyEmitter _currentEventBodyEmitter;
         private UAssemblyBuilder _assemblyBuilder;

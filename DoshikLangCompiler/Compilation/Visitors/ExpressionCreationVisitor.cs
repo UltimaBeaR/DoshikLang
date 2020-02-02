@@ -18,6 +18,16 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
         public static ExpressionTree Apply(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, DoshikParser.ExpressionContext antlrContext)
         {
+            return ApplyToParseTree(compilationContext, expressionParent, antlrContext);
+        }
+
+        public static ExpressionTree Apply(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, DoshikParser.ParExpressionContext antlrContext)
+        {
+            return ApplyToParseTree(compilationContext, expressionParent, antlrContext);
+        }
+
+        private static ExpressionTree ApplyToParseTree(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, Antlr4.Runtime.Tree.IParseTree antlrContext)
+        {
             var visitor = new ExpressionCreationVisitor(compilationContext);
             visitor.Visit(antlrContext);
 

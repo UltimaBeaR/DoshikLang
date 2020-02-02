@@ -51,4 +51,17 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
         public ExpressionTree Expression { get; set; }
     }
+
+    public class IfStatement : Statement
+    {
+        public IfStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+
+        public ExpressionTree Condition { get; set; }
+
+        public Statement TrueStatement { get; set; }
+        public Statement FalseStatement { get; set; }
+    }
 }

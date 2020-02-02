@@ -139,6 +139,31 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 throw _compilationContext.ThrowCompilationError("variables can only be initialized using expressions (no special initializer support yet)");
         }
 
+        // возвращает Statement (BlockOfStatements)
+        public override object VisitSubBlockStatement([NotNull] DoshikParser.SubBlockStatementContext context)
+        {
+            return Visit(context.block());
+        }
+
+        public override object VisitIfStatement([NotNull] DoshikParser.IfStatementContext context)
+        {
+            var statement = new IfStatement(_currentNode);
+
+            statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
+
+            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
+                throw _compilationContext.ThrowCompilationError("if condition must evaluate to bool value");
+
+            statement.TrueStatement = (Statement)Visit(context.trueBody);
+
+            if (context.falseBody != null)
+            {
+                statement.FalseStatement = (Statement)Visit(context.falseBody);
+            }
+
+            return statement;
+        }
+
         // Сюда устанавливается (заранее) родитель для возможного expression-а который встретится в самом стейтменте или его части (например for init часть цикла)
         private ICodeHierarchyNode _currentExpressionParent;
 
