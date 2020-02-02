@@ -64,4 +64,41 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
         public Statement TrueStatement { get; set; }
         public Statement FalseStatement { get; set; }
     }
+
+    public class WhileStatement : Statement
+    {
+        public WhileStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+
+        public ExpressionTree Condition { get; set; }
+
+        public Statement BodyStatement { get; set; }
+    }
+
+    public class BreakStatement : Statement
+    {
+        public BreakStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+    }
+
+    public class ContinueStatement : Statement
+    {
+        public ContinueStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+    }
+
+    // Пустой стейтмент (генерируется при просто точке с запятой)
+    public class EmptyStatement : Statement
+    {
+        public EmptyStatement(ICodeHierarchyNode parent)
+            : base(parent)
+        {
+        }
+    }
 }

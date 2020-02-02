@@ -25,9 +25,9 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
             var block = new BlockOfStatements(_currentNode, _currentScope);
 
-            _currentNode = block;
+            // Помечаем текущий блок и заходим в его scope
 
-            // Заходим в scope блока
+            _currentNode = block;
             _currentScope = block.Scope;
 
             foreach (var blockStatementCtx in context.statementInBlock())
@@ -36,8 +36,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
                 block.Statements.Add(statement);
             }
 
-            // Покидаем scope блока
+            // Возвращаем предыдущий блок и заходим в рдоительский scope
             _currentScope = _currentScope.ParentScope;
+            _currentNode = _currentNode.Parent;
+
             return block;
         }
 
@@ -78,6 +80,21 @@ namespace DoshikLangCompiler.Compilation.Visitors
             _currentScope.Variables.Add(statement.Variable.Name, statement.Variable);
 
             statement.Initializer = _declaringVariableInitializerExpression;
+
+            if (statement.Initializer == null && IsInsideOfLoop())
+            {
+                // Если инициализатор не задан (то есть переменная объявлена без инициализирующего выражения)
+                // и при этом мы находимся в теле цикла
+                // то создаем неявное инициализирующее выражение = default(T), где T = statement.Variable.Type
+                statement.Initializer = ExpressionBuilder.BuildDefaultOfType(_compilationContext, _currentExpressionParent, statement.Variable.Type);
+
+                // это нужно, чтобы при объявлении локальной переменной в теле цикла при любой итерации цикла она имела дефолтное значение, если
+                // ей не был указан инициализатор, иначе получится что ее значение будет переиспользоватья с предыдущей итерации
+
+                // впринципе можно в любом случае делать этот искусственный инициализатор (даже если не в цикле), но вроде как если переменная
+                // не находится в цикле то ее значение всегда будет дефолтным, если не было инициализатора
+                // возможно это изменится при реализации рекурсивных юзерских функций
+            }
 
             return statement;
         }
@@ -145,6 +162,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             return Visit(context.block());
         }
 
+        // возвращает Statement (IfStatement)
         public override object VisitIfStatement([NotNull] DoshikParser.IfStatementContext context)
         {
             var statement = new IfStatement(_currentNode);
@@ -152,7 +170,7 @@ namespace DoshikLangCompiler.Compilation.Visitors
             statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
 
             if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
-                throw _compilationContext.ThrowCompilationError("if condition must evaluate to bool value");
+                throw _compilationContext.ThrowCompilationError("condition must evaluate to bool value");
 
             statement.TrueStatement = (Statement)Visit(context.trueBody);
 
@@ -164,6 +182,50 @@ namespace DoshikLangCompiler.Compilation.Visitors
             return statement;
         }
 
+        public override object VisitWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context)
+        {
+            var statement = new WhileStatement(_currentNode);
+
+            statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
+
+            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
+                throw _compilationContext.ThrowCompilationError("condition must evaluate to bool value");
+
+            _isInLoopCounter++;
+
+            statement.BodyStatement = (Statement)Visit(context.body);
+
+            _isInLoopCounter--;
+
+            return statement;
+        }
+
+        public override object VisitBreakStatement([NotNull] DoshikParser.BreakStatementContext context)
+        {
+            if (!IsInsideOfLoop())
+                throw _compilationContext.ThrowCompilationError("break operator can be used only inside of loop body");
+
+            return new BreakStatement(_currentNode);
+        }
+
+        public override object VisitContinueStatement([NotNull] DoshikParser.ContinueStatementContext context)
+        {
+            if (!IsInsideOfLoop())
+                throw _compilationContext.ThrowCompilationError("continue operator can be used only inside of loop body");
+
+            return new ContinueStatement(_currentNode);
+        }
+
+        public override object VisitNopStatement([NotNull] DoshikParser.NopStatementContext context)
+        {
+            return new EmptyStatement(_currentNode);
+        }
+
+        private bool IsInsideOfLoop()
+        {
+            return _isInLoopCounter > 0;
+        }
+
         // Сюда устанавливается (заранее) родитель для возможного expression-а который встретится в самом стейтменте или его части (например for init часть цикла)
         private ICodeHierarchyNode _currentExpressionParent;
 
@@ -172,5 +234,10 @@ namespace DoshikLangCompiler.Compilation.Visitors
 
         private ICodeHierarchyNode _currentNode;
         private Scope _currentScope;
+
+        // инкрементируется каждый раз перед входом в тело цикла
+        // и декрементируется при выходе из тела цикла
+        // используется для проверки - находимся ли мы сейчас в цикле с учетом вложенностей. Если == 0, значит НЕ в цикле.
+        private int _isInLoopCounter = 0;
     }
 }

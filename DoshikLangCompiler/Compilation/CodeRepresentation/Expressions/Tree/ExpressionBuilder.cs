@@ -34,6 +34,16 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             return _tree;
         }
 
+        public static ExpressionTree BuildDefaultOfType(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, DataType type)
+        {
+            var tree = new ExpressionTree(expressionParent);
+            tree.RootExpression = CreateDefaultOfTypeExpression(compilationContext, type);
+
+            // Стадию трансформации пропускаем, т.к. тут заранее известно, что нечего трансформировать
+
+            return tree;
+        }
+
         private IExpression HandleNode(IExpressionNode node)
         {
             if (node is ParenthesisExpressionNode parenthesisExpressionNode)
@@ -266,21 +276,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 
         private IExpression HandleDefaultOfTypeExpressionNode(DefaultOfTypeExpressionNode node)
         {
-            var result = new ConstantValueExpression();
-
-            result.ValueType = node.Type;
-
-            // Добавляем константу (если еще нет), означающую дефолтное значение этого типа. null - значит что возьмется значение null из кода (не реальное значение dotnet объекта),
-            // а это значит что будет просто дефолтное значение этого типа
-            // ToDo: надо удостовериться что все дефолтные значения безопасны для копирования.
-            // То есть проверить что не будет такого что дефолтное значение это какая нибудь ссылка с готовым объектом
-            // (тогда можно будет изменить его через вызов метода и это сломает константу для всех мест где ее используют)
-            _compilationContext.CompilationUnit.AddConstant(result.ValueType, null);
-
-            // Определяем выходное значение
-            result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
-
-            return result;
+            return CreateDefaultOfTypeExpression(_compilationContext, node.Type);
         }
 
         private IExpression HandleNewCallExpressionNode(NewCallExpressionNode node)
@@ -442,6 +438,25 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 
             // Определяем выходное значение
             result.ReturnOutputSlot = new ExpressionSlot(_compilationContext.TypeLibrary.FindVoid(), result);
+
+            return result;
+        }
+
+        private static IExpression CreateDefaultOfTypeExpression(CompilationContext compilationContext, DataType type)
+        {
+            var result = new ConstantValueExpression();
+
+            result.ValueType = type;
+
+            // Добавляем константу (если еще нет), означающую дефолтное значение этого типа. null - значит что возьмется значение null из кода (не реальное значение dotnet объекта),
+            // а это значит что будет просто дефолтное значение этого типа
+            // ToDo: надо удостовериться что все дефолтные значения безопасны для копирования.
+            // То есть проверить что не будет такого что дефолтное значение это какая нибудь ссылка с готовым объектом
+            // (тогда можно будет изменить его через вызов метода и это сломает константу для всех мест где ее используют)
+            compilationContext.CompilationUnit.AddConstant(result.ValueType, null);
+
+            // Определяем выходное значение
+            result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
 
             return result;
         }

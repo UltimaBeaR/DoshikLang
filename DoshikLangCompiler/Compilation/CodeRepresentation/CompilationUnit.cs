@@ -43,7 +43,16 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
         public bool Equals(DataType type, object dotnetValue)
         {
-            return Type == type && (DotnetValue == null && dotnetValue == null || (DotnetValue.Equals(dotnetValue)));
+            if (Type != type)
+                return false;
+
+            if (DotnetValue == null && dotnetValue == null)
+                return true;
+
+            if (DotnetValue == null || dotnetValue == null)
+                return false;
+
+            return DotnetValue.Equals(dotnetValue);
         }
     }
 

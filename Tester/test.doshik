@@ -1,13 +1,9 @@
 event void Start()
 {
-    int a = 5;
-
-    if (true)
+    while (true)
     {
-        a = 8;
-        a = a * a;
-    }
-    else
-        a = a - 1;
+        int a;
 
+        a = a + 1;
+    }
 }

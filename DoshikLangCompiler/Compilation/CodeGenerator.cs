@@ -76,6 +76,14 @@ namespace DoshikLangCompiler.Compilation
                 GenerateCodeForExpressionStatement(expressionStatement);
             else if (statement is IfStatement ifStatement)
                 GenerateCodeForIfStatement(ifStatement);
+            else if (statement is WhileStatement whileStatement)
+                GenerateCodeForWhileStatement(whileStatement);
+            else if (statement is BreakStatement breakStatement)
+                GenerateCodeForBreakStatement(breakStatement);
+            else if (statement is ContinueStatement continueStatement)
+                GenerateCodeForContinueStatement(continueStatement);
+            else if (statement is EmptyStatement emptyStatement)
+                GenerateCodeForEmptyStatement(emptyStatement);
             else
                 throw new NotImplementedException();
         }
@@ -118,16 +126,16 @@ namespace DoshikLangCompiler.Compilation
 
         private void GenerateCodeForIfStatement(IfStatement statement)
         {
-            var labelIndex = _globalLabelUniqueCounter;
-            _globalLabelUniqueCounter++;
+            var labelIndex = GetUniqueGlobalLabelPostfix();
 
-            var labelAfterTrue = "after_true_" + labelIndex;
-            var labelAfterFalse = "after_false_" + labelIndex;
-
+            var labelAfterTrue = "after_true" + labelIndex;
+            var labelAfterFalse = "after_false" + labelIndex;
 
             // Генерируем выражение условия. результатом будет значение в стеке типа bool, означающее, нужно ли выполнять true ветку (TrueStatement)
             GenerateCodeForExpression(statement.Condition.RootExpression);
 
+            // В случае false в стеке (условие НЕ выполнено), прыгаем на метку с кодом после true блока (то есть это else ветка, либо за пределы условия, если else нет)
+            // Также убирается (pop) значение со стека
             _currentEventBodyEmitter.JUMP_IF_FALSE_globalLabel(labelAfterTrue);
 
             GenerateCodeForStatement(statement.TrueStatement);
@@ -146,6 +154,56 @@ namespace DoshikLangCompiler.Compilation
 
             // ToDo: пока сделал косо криво через nop - по хорошему тут надо делать Jump на метку после последней инструкции в falsestatement, 
             // но так как она еще не создана, то нельзя задать ей label (можно на уровне event body emitter сделать возможность задавать globalLabel + оффсет от него)
+            // можно также в NOP передавать какой-то флаг, что он может быть оптимизирован и в генерации итоговой сборки можно такие nop-ы удалять, но при этом 
+            // делать так что лейбел который был у этого Nop-а будет разрешаться на адрес следующей инструкции (учесть кейс что следующей инструкцией также может быть такой же Nop либо вообще отстутствие инструкции)
+            // (в этом случае нужно разрешать адрес до первой свободной инструкции либо ставить maxAddress)
+        }
+
+        private void GenerateCodeForWhileStatement(WhileStatement statement)
+        {
+            // Нужно завести стек в который перед входом в тело цикла ложить значения лейбелов labelBeforeCondition и labelAfterBody
+            // для того чтобы знать куда прыгать внутри тела цикла по break; и continue;
+            // а при выходе нужно удалять значение со стека
+
+            var labelIndex = GetUniqueGlobalLabelPostfix();
+
+            var labelBeforeCondition = "before_condition" + labelIndex;
+            var labelAfterBody = "after_body" + labelIndex;
+
+            _currentEventBodyEmitter.NOP().GlobalLabel = labelBeforeCondition;
+
+            // Генерируем выражение условия. результатом будет значение в стеке типа bool, означающее, нужно ли выполнять тело цикла (BodyStatement)
+            GenerateCodeForExpression(statement.Condition.RootExpression);
+
+            // В случае false в стеке (условие продолжения цикла НЕ выполнено), прыгаем на метку с кодом после тела цикла
+            // Также убирается (pop) значение со стека
+            _currentEventBodyEmitter.JUMP_IF_FALSE_globalLabel(labelAfterBody);
+
+            PushBreakContinueJumpLabel(labelAfterBody, labelBeforeCondition);
+
+            GenerateCodeForStatement(statement.BodyStatement);
+
+            PopBreakContinueJumpLabel();
+
+            // По завершении тела цикла прыгаем назад на условие (в итоге проверка условия выполнится опять)
+            _currentEventBodyEmitter.JUMP_globalLabel(labelBeforeCondition);
+
+            _currentEventBodyEmitter.NOP().GlobalLabel = labelAfterBody;
+        }
+
+        private void GenerateCodeForBreakStatement(BreakStatement statement)
+        {
+            _currentEventBodyEmitter.JUMP_globalLabel(GetBreakContinueJumpLabel().BreakLabel);
+        }
+
+        private void GenerateCodeForContinueStatement(ContinueStatement statement)
+        {
+            _currentEventBodyEmitter.JUMP_globalLabel(GetBreakContinueJumpLabel().ContinueLabel);
+        }
+
+        private void GenerateCodeForEmptyStatement(EmptyStatement statement)
+        {
+            // Ничего не делаем
         }
 
         private void GenerateCodeForExpression(IExpression expression, bool removeExpressionResult = false)
@@ -336,6 +394,29 @@ namespace DoshikLangCompiler.Compilation
             return "var_";
         }
 
+        private string GetUniqueGlobalLabelPostfix()
+        {
+            var result = "_" + _globalLabelUniqueCounter.ToString();
+            _globalLabelUniqueCounter++;
+
+            return result;
+        }
+
+        private void PushBreakContinueJumpLabel(string breakLabel, string continueLabel)
+        {
+            _breakContinueJumpLabels.Push(new BreakContinueJumpLabel { BreakLabel = breakLabel, ContinueLabel = continueLabel });
+        }
+
+        private void PopBreakContinueJumpLabel()
+        {
+            _breakContinueJumpLabels.Pop();
+        }
+
+        private BreakContinueJumpLabel GetBreakContinueJumpLabel()
+        {
+            return _breakContinueJumpLabels.Peek();
+        }
+
         // уникальные имена для констант. constant значения нельзя сравнивать по ссылке. Нужно вызывать Equals
         private List<(Constant constant, string name)> _constantNames = new List<(Constant constant, string name)>();
 
@@ -345,11 +426,21 @@ namespace DoshikLangCompiler.Compilation
         // Временные переменные
         private List<string> _temporaryVariableNames = new List<string>();
 
+        // Используется для генерации уникальных имен меток для JUMP-ов
         private int _globalLabelUniqueCounter = 0;
+
+        // Стек с глобальными метками для операторов break/continue, чтобы знать куда прыгать при генерации кода внутри цикла (с учетом вложенности циклов)
+        private Stack<BreakContinueJumpLabel> _breakContinueJumpLabels = new Stack<BreakContinueJumpLabel>();
 
         private UAssemblyEventBodyEmitter _currentEventBodyEmitter;
         private UAssemblyBuilder _assemblyBuilder;
         private CompilationUnit _compilationUnit;
         private bool _humanReadable;
+
+        private class BreakContinueJumpLabel
+        {
+            public string BreakLabel { get; set; }
+            public string ContinueLabel { get; set; }
+        }
     }
 }
