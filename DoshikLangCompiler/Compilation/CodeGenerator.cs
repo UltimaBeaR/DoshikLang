@@ -26,7 +26,7 @@ namespace DoshikLangCompiler.Compilation
                 var name = "constant_" + constantIdx.ToString();
 
                 _constantNames.Add((constant, name));
-                _assemblyBuilder.AddVariable(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue);
+                _assemblyBuilder.AddVariable(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue, constant.IsThis);
             }
 
             foreach (var variable in _compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().Where(x => x.IsPublic).OrderBy(x => x.Name))
@@ -259,7 +259,7 @@ namespace DoshikLangCompiler.Compilation
 
         private void GenerateCodeForConstantValueExpression(ConstantValueExpression expression)
         {
-            var name = _constantNames.First(x => x.constant.Equals(expression.ValueType, expression.DotnetValue)).name;
+            var name = _constantNames.First(x => x.constant.Equals(expression.ValueType, expression.DotnetValue, expression.IsThis)).name;
 
             _currentEventBodyEmitter.PUSH_varableName(name);
         }

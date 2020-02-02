@@ -29,10 +29,19 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
 
         public List<Constant> Constants { get; } = new List<Constant>();
 
-        public void AddConstant(DataType type, object dotnetValue)
+        public void AddConstant(DataType type, object dotnetValue, bool isThis = false)
         {
-            if (Constants.Find(x => x.Equals(type, dotnetValue)) == null)
-                Constants.Add(new Constant { Type = type, DotnetValue = dotnetValue });
+            if (Constants.Find(x => x.Equals(type, dotnetValue, isThis)) == null)
+            {
+                Constants.Add(
+                    new Constant
+                    {
+                        Type = type,
+                        DotnetValue = isThis ? null : dotnetValue,
+                        IsThis = isThis
+                    }
+                );
+            }
         }
     }
 
@@ -40,11 +49,15 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation
     {
         public DataType Type { get; set; }
         public object DotnetValue { get; set; }
+        public bool IsThis { get; set; }
 
-        public bool Equals(DataType type, object dotnetValue)
+        public bool Equals(DataType type, object dotnetValue, bool isThis)
         {
             if (Type != type)
                 return false;
+
+            if (IsThis && isThis)
+                return true;
 
             if (DotnetValue == null && dotnetValue == null)
                 return true;

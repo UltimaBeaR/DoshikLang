@@ -36,6 +36,11 @@
         /// Значение в виде dotnet типа (скорее всего тут будут только примитивные типы, например int, string, float, int64 и тд)
         /// </summary>
         public object DotnetValue { get; set; }
+
+        /// <summary>
+        /// Если true, значит DotnetValue игнорируется и вместо него используется значение "this"
+        /// </summary>
+        public bool IsThis { get; set; }
     }
 
     /// <summary>

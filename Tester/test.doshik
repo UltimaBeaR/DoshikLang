@@ -2,8 +2,6 @@ event void Start()
 {
     while (true)
     {
-        int a;
-
-        a = a + 1;
+        UnityEngine::GameObject go = GetThis<UnityEngine::GameObject>();
     }
 }

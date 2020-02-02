@@ -58,6 +58,8 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
                 return HandleDotExpressionNode(dotExpressionNode);
             else if (node is DefaultOfTypeExpressionNode defaultOfTypeExpressionNode)
                 return HandleDefaultOfTypeExpressionNode(defaultOfTypeExpressionNode);
+            else if (node is MethodCallExpressionNode methodCallExpressionNode)
+                return HandleMethodCallExpressionNode(methodCallExpressionNode);
             else if (node is NewCallExpressionNode newCallExpressionNode)
                 return HandleNewCallExpressionNode(newCallExpressionNode);
             else if (node is TypecastExpressionNode typecastExpressionNode)
@@ -277,6 +279,35 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
         private IExpression HandleDefaultOfTypeExpressionNode(DefaultOfTypeExpressionNode node)
         {
             return CreateDefaultOfTypeExpression(_compilationContext, node.Type);
+        }
+
+        private IExpression HandleMethodCallExpressionNode(MethodCallExpressionNode node)
+        {
+            // Встроенные функции:
+
+            if (node.MethodCallData.Name == "GetThis" && node.MethodCallData.TypeArguments.Count == 1 && node.MethodCallData.Parameters.Count == 0)
+            {
+                // Если это вызов GetThis<T>() - возвращаем константу this типа T
+
+                var result = new ConstantValueExpression();
+
+                result.DotnetValue = null;
+                result.IsThis = true;
+                result.ValueType = _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::GameObject").DataType;
+
+                _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue, true);
+
+                // Определяем выходное значение
+                result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
+
+                return result;
+            }
+
+            // Если не нашло во встроенных, ищем в определенных юзером
+            // (ToDo: когда я реализую юзерские функции, возможно надо будет сначала искать в них, а если
+            // не нашло то искать во встроенных)
+
+            throw _compilationContext.ThrowCompilationError("user defined method calls are not supported yet");
         }
 
         private IExpression HandleNewCallExpressionNode(NewCallExpressionNode node)
