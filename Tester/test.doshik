@@ -1,7 +1,46 @@
+public UnityEngine::Color colorA;
+public UnityEngine::Color colorB;
+
+private UnityEngine::Transform _transform;
+private UnityEngine::MeshRenderer _renderer;
+
+private UnityEngine::Vector3 _directionUp;
+
+private float _rotationRate;
+
+private float _lerpCoef;
+private bool _lerpCoefIsGrowing;
+
 event void Start()
 {
-    while (true)
-    {
-        UnityEngine::GameObject go = GetThis<UnityEngine::GameObject>();
-    }
+    _transform = GetThis<UnityEngine::Transform>();
+    _renderer = (UnityEngine::MeshRenderer)GetThis<UnityEngine::GameObject>().GetComponent("MeshRenderer");
+
+    _directionUp = new UnityEngine::Vector3(0.0f, 1.0f, 0.0f);
+
+    _lerpCoefIsGrowing = true;
+
+    _rotationRate = 50.0f;
+}
+
+event void Update()
+{
+    _renderer.get_material().set_color(
+        UnityEngine::Color.Lerp(colorA, colorB, _lerpCoef)
+    );
+
+    float deltaAngle = _rotationRate * UnityEngine::Time.get_deltaTime();
+
+    _transform.Rotate(_directionUp, deltaAngle);
+}
+
+event void FixedUpdate()
+{
+    if (_lerpCoefIsGrowing)
+        _lerpCoef = _lerpCoef + 0.01f;
+    else
+        _lerpCoef = _lerpCoef - 0.01f;
+
+    if ((_lerpCoefIsGrowing && _lerpCoef >= 1.0f) || (!_lerpCoefIsGrowing && _lerpCoef < 0.0f))
+        _lerpCoefIsGrowing = !_lerpCoefIsGrowing;
 }

@@ -167,6 +167,8 @@ namespace DoshikLangCompiler.Compilation.Visitors
         {
             var statement = new IfStatement(_currentNode);
 
+            _currentExpressionParent = statement;
+
             statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
 
             if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
@@ -185,6 +187,8 @@ namespace DoshikLangCompiler.Compilation.Visitors
         public override object VisitWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context)
         {
             var statement = new WhileStatement(_currentNode);
+
+            _currentExpressionParent = statement;
 
             statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
 
