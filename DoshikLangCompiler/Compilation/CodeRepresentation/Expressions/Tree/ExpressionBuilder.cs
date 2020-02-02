@@ -293,7 +293,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
 
                 result.DotnetValue = null;
                 result.IsThis = true;
-                result.ValueType = _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::GameObject").DataType;
+                result.ValueType = node.MethodCallData.TypeArguments[0];
 
                 _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue, true);
 
