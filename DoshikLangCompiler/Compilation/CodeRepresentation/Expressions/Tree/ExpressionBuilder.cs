@@ -289,11 +289,23 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
             {
                 // Если это вызов GetThis<T>() - возвращаем константу this типа T
 
+                var type = node.MethodCallData.TypeArguments[0];
+
+                // UdonBehaviour -> private bool ResolveUdonHeapReference(IUdonHeap heap, uint symbolAddress, UdonBaseHeapReference udonBaseHeapReference)
+                if (
+                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::GameObject").DataType &&
+                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Transform").DataType &&
+                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Object").DataType //< UdonBehaviour
+                )
+                {
+                    throw _compilationContext.ThrowCompilationError("Type argument for GetThis<T>() must be GameObject, Transform, or UdonBehaviour (VRCUdonCommonInterfaces::IUdonEventReceiver)");
+                }
+
                 var result = new ConstantValueExpression();
 
                 result.DotnetValue = null;
                 result.IsThis = true;
-                result.ValueType = node.MethodCallData.TypeArguments[0];
+                result.ValueType = type;
 
                 _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue, true);
 
