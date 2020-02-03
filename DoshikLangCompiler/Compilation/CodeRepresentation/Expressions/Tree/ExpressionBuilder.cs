@@ -298,7 +298,7 @@ namespace DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree
                     type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Object").DataType //< UdonBehaviour
                 )
                 {
-                    throw _compilationContext.ThrowCompilationError("Type argument for GetThis<T>() must be GameObject, Transform, or UdonBehaviour (VRCUdonCommonInterfaces::IUdonEventReceiver)");
+                    throw _compilationContext.ThrowCompilationError("Type argument for GetThis<T>() must be GameObject, Transform, or UdonBehaviour (UnityEngine::Object)");
                 }
 
                 var result = new ConstantValueExpression();
