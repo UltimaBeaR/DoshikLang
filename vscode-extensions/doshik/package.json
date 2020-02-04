@@ -1,25 +1,71 @@
 {
-    "name": "doshik",
-    "displayName": "doshik",
-    "description": "doshik language syntax colorizing",
-    "version": "0.0.1",
-    "engines": {
-        "vscode": "^1.41.0"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "contributes": {
-        "languages": [{
-            "id": "doshiklang",
-            "aliases": ["Doshik", "doshiklang"],
-            "extensions": [".doshik"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "doshiklang",
-            "scopeName": "source.doshik",
-            "path": "./syntaxes/doshik.tmLanguage"
-        }]
-    }
+	"name": "doshik",
+	"displayName": "doshik",
+	"description": "doshik language",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.41.0"
+	},
+	"categories": [
+		"Programming Languages"
+	],
+	"main": "./extension.js",
+	"activationEvents": [
+		"onLanguage:doshik"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "doshik",
+				"aliases": [
+					"Doshik",
+					"doshik"
+				],
+				"extensions": [
+					".doshik"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "doshik",
+				"scopeName": "source.doshik",
+				"path": "./syntaxes/doshik.tmLanguage"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Doshik configuration",
+			"properties": {
+				"doshikLanguageServer.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"doshikLanguageServer.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		}
+	},
+	"dependencies": {
+		"vscode-languageclient": "^5.2.1"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.41.0",
+		"glob": "^7.1.5",
+		"typescript": "^3.6.4"
+	}
 }
