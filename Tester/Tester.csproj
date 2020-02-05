@@ -36,8 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr4.Runtime.Standard, Version=4.7.2.0, Culture=neutral, PublicKeyToken=e78b2c5abd1fcb3f, processorArchitecture=MSIL">
-      <HintPath>..\packages\Antlr4.Runtime.Standard.4.7.2\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
+    <Reference Include="Antlr4.Runtime.Standard, Version=4.8.0.0, Culture=neutral, PublicKeyToken=e78b2c5abd1fcb3f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.Standard.4.8.0\lib\net35\Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=3.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.Common.3.4.0\lib\netstandard2.0\Microsoft.CodeAnalysis.dll</HintPath>
@@ -94,6 +94,10 @@
     <ProjectReference Include="..\DoshikLangCompiler\DoshikLangCompiler.csproj">
       <Project>{7C698793-04D7-4BD0-A112-6FBA09BAF3BE}</Project>
       <Name>DoshikLangCompiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj">
+      <Project>{aa81bff3-85bc-4160-8d76-e90149839cd6}</Project>
+      <Name>DoshikLangIR</Name>
     </ProjectReference>
     <ProjectReference Include="..\DoshikLangUnityEditorCode\DoshikLangUnityEditorCode.csproj">
       <Project>{c309db49-fecf-4857-8ed2-21dfb9d4ba67}</Project>

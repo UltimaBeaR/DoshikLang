@@ -1,3 +1,4 @@
-event void Test()
+event void Start()
 {
+    int a = 5;
 }

@@ -26,10 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DoshikLangCompiler\DoshikLangCompiler.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Assets\DoshikSDK\Editor\DoshikProgramAsset.cs" />
     <None Include="Assets\DoshikSDK\Editor\ScriptImporter\CreateNewDoshikProgramFileEndNameEditAction.cs" />
     <None Include="Assets\DoshikSDK\Editor\ScriptImporter\DoshikScriptImporter.cs" />
@@ -38,6 +34,10 @@
 
   <ItemGroup>
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj" />
   </ItemGroup>
 
   <ItemGroup>

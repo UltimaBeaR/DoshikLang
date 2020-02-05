@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     <PackageReference Include="Antlr4BuildTasks" Version="1.0.9" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
   </ItemGroup>
@@ -31,7 +31,7 @@
     <Antlr4ToolPath>C:\Program Files\Java\javalib\antlr-4.7.2-complete.jar</Antlr4ToolPath>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikLexer.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParser.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserListener.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseListener.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangCompiler\AntlrGenerated&quot;" />
+    <Exec Command="xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikLexer.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParser.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserListener.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseListener.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;&#xD;&#xA;xcopy &quot;$(ProjectDir)obj\Debug\netcoreapp3.0\DoshikParserBaseVisitor.cs&quot; &quot;$(SolutionDir)DoshikLangIR\AntlrGenerated&quot;" />
   </Target>
 
 </Project>

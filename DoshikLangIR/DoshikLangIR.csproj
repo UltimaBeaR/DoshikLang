@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj" />
+    <Folder Include="AntlrGenerated\" />
   </ItemGroup>
 
 </Project>

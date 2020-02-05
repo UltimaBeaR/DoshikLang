@@ -1,6 +1,5 @@
-﻿using DoshikLangCompiler.Compilation.CodeRepresentation;
-using DoshikLangCompiler.Compilation.CodeRepresentation.Expressions.Tree;
-using DoshikLangCompiler.UAssemblyGeneration;
+﻿using DoshikLangCompiler.UAssemblyGeneration;
+using DoshikLangIR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
