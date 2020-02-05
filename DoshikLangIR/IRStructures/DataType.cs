@@ -1,4 +1,6 @@
-﻿namespace DoshikLangIR
+﻿using Doshik;
+
+namespace DoshikLangIR
 {
     public class DataType
     {

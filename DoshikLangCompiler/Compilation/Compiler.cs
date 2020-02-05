@@ -1,4 +1,5 @@
-﻿using DoshikLangIR;
+﻿using Doshik;
+using DoshikLangIR;
 using System;
 using System.Collections.Generic;
 

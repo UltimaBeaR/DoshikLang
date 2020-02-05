@@ -1,9 +1,8 @@
-﻿using DoshikLangIR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DoshikSDK.ExternalApi
+namespace Doshik
 {
     /// <summary>
     /// Генерирует DoshikExternalApi на основе определений нод для языка графов

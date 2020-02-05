@@ -1,9 +1,9 @@
-﻿using DoshikLangCompiler.Compilation;
-using DoshikSDK.ExternalApi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using VRC.Udon.Common.Interfaces;
 using VRC.Udon.Editor;
+using Doshik;
+using DoshikLangCompiler.Compilation;
 
 namespace DoshikSDK
 {
@@ -18,7 +18,13 @@ namespace DoshikSDK
 
         protected override void DoRefreshProgramActions()
         {
-            if (_externalApi == null)
+            // ToDo: сейчас берет кэш, а если кэша нету, то генерирует новое апи.
+            // Нужно найти какое-то событие эдитора - при первом запуске эдитора делать принудительную генерацию апи и ложить ее в кэш (ну или ставить какой-то глобальный флаг что первое
+            // получение апи надо сделать с помощью генерации)
+            // то есть должна быть гарантия что после перезапуска юнити апи будет пере-генерировано на основе актуального sdk, а не взято из кэша (т.к. там может быть старый sdk)
+
+            var externalApi = DoshikExternalApiCache.GetCachedApi();
+            if (externalApi == null)
             {
                 var generator = new DoshikExternalApiGenerator
                 {
@@ -28,12 +34,16 @@ namespace DoshikSDK
                     }
                 };
 
-                _externalApi = generator.Generate();
+                UnityEngine.Debug.Log("Doshik: Generating external api...");
+
+                externalApi = generator.Generate();
+
+                DoshikExternalApiCache.SetApiToCache(externalApi);
             }
 
             var compiler = new Compiler();
 
-            compiler.ExternalApi = _externalApi;
+            compiler.ExternalApi = externalApi;
 
             compiler.SourceCode = _sourceCode;
 
@@ -139,8 +149,5 @@ namespace DoshikSDK
         }
 
         private string _sourceCode;
-
-        // ToDo: сделать кэширование этого всего через сериализацию (возможно не тут, а где-то отдельно)
-        private static DoshikExternalApi _externalApi;
     }
 }

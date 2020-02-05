@@ -7,12 +7,15 @@
 
   <ItemGroup>
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="OmniSharp.Extensions.LanguageServer" Version="0.14.2" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DoshikExternalApiCache\DoshikExternalApiCache.csproj" />
+    <ProjectReference Include="..\DoshikExternalApi\DoshikExternalApi.csproj" />
     <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj" />
   </ItemGroup>
 

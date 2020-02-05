@@ -5,7 +5,7 @@ using VRC.Udon.EditorBindings;
 using VRC.Udon.Graph.Interfaces;
 using VRC.Udon.UAssembly.Assembler;
 
-namespace DoshikSDK.ExternalApi
+namespace Doshik
 {
     public static class DoshikNodeDefinitionGetter
     {

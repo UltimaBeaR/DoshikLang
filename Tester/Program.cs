@@ -1,8 +1,7 @@
-﻿using DoshikLangCompiler.Compilation;
-using DoshikSDK.ExternalApi;
+﻿using Doshik;
+using DoshikLangCompiler.Compilation;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Tester
 {
@@ -18,17 +17,25 @@ namespace Tester
             Console.WriteLine(source);
             Console.WriteLine();
 
-            var compiler = new Compiler();
-
-            var generator = new DoshikExternalApiGenerator
+            var externalApi = DoshikExternalApiCache.GetCachedApi();
+            if (externalApi == null)
             {
-                LogWarning = (text) => { Console.WriteLine("WARNING! " + text); }
+                var generator = new DoshikExternalApiGenerator
+                {
+                    LogWarning = (text) => { Console.WriteLine("WARNING! " + text); }
+                };
+
+                Console.WriteLine("generating external api...");
+
+                externalApi = generator.Generate();
+
+                DoshikExternalApiCache.SetApiToCache(externalApi);
+            }
+
+            var compiler = new Compiler()
+            {
+                ExternalApi = externalApi
             };
-
-            Console.WriteLine("generating external api...");
-
-            // ToDo: можно засериалазировать сгенерированное апи куда нибудь и присваивать тут результат десериализации из файла, чтобы каждый раз не генерировать его, т.к. это долго
-            compiler.ExternalApi = generator.Generate();
 
             compiler.SourceCode = source;
 

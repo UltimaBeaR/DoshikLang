@@ -36,6 +36,7 @@ namespace DoshikLanguageServer
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<BufferManager>();
+            services.AddSingleton<DoshikExternalApiProvider>();
         }
     }
 }

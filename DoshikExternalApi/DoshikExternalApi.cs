@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace DoshikLangIR
+namespace Doshik
 {
+    // ToDo: dotnet типы нужно сериализировать как строки (в коде есть места где идет сравнивание по dotnet типу - вместо этого можно сравнивать по полному имени типа)
+    // и нельзя зависеть от них в IR проекте, т.к. это будет
+    // Означать зависимость на библиотеки unity и sdk.
+    // однако можно при генерации АПИ на основе этих типов строить дополнительные метаданные и писать сюда. Например информацию о том что тайпкастится во что
+
     /// <summary>
     /// Описание входного апи (Типы и методы, которые можно использовать в коде дошика)
     /// </summary>
@@ -146,23 +150,6 @@ namespace DoshikLangIR
         /// Если не static, значит кроме указанных параметров, первым параметром идет еще "instance" параметр типа Method.Type
         /// </summary>
         public bool IsStatic { get; set; }
-
-        /// <summary>
-        /// Полная сигнатура перегрузки метода (используется для вызова метода в assembly)
-        /// </summary>
-        public string GetFullExternalName()
-        {
-            var sb = new StringBuilder();
-
-            sb.Append(Method.Type.ExternalName);
-            sb.Append(".__");
-            sb.Append(Method.ExternalName);
-            sb.Append("__");
-
-            sb.Append(ExternalName);
-
-            return sb.ToString();
-        }
     }
 
     public class DoshikExternalApiMethodParameter

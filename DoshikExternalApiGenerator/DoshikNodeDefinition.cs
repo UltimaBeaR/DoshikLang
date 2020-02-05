@@ -3,7 +3,7 @@ using System.Linq;
 using VRC.Udon.Graph;
 using VRC.Udon.Graph.Interfaces;
 
-namespace DoshikSDK.ExternalApi
+namespace Doshik
 {
     public class DoshikNodeDefinition
     {

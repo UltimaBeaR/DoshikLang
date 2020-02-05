@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Doshik;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DoshikLangIR

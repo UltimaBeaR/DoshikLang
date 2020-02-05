@@ -1,4 +1,5 @@
-﻿using DoshikLangCompiler.UAssemblyGeneration;
+﻿using Doshik;
+using DoshikLangCompiler.UAssemblyGeneration;
 using DoshikLangIR;
 using System;
 using System.Collections.Generic;

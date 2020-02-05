@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DoshikExternalApi\DoshikExternalApi.csproj" />
     <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj" />
   </ItemGroup>
 

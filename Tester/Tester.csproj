@@ -45,6 +45,9 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=3.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.3.4.0\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
@@ -91,17 +94,21 @@
     <None Include="test.doshik" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DoshikExternalApiCache\DoshikExternalApiCache.csproj">
+      <Project>{6533889a-c0eb-4be9-aa90-b124166f751a}</Project>
+      <Name>DoshikExternalApiCache</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DoshikExternalApiGenerator\DoshikExternalApiGenerator.csproj">
+      <Project>{a27a713e-7735-4c40-b054-06237162fb4f}</Project>
+      <Name>DoshikExternalApiGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DoshikExternalApi\DoshikExternalApi.csproj">
+      <Project>{48fe5976-c6a7-4eb0-bbe1-9c1055dc4497}</Project>
+      <Name>DoshikExternalApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DoshikLangCompiler\DoshikLangCompiler.csproj">
       <Project>{7C698793-04D7-4BD0-A112-6FBA09BAF3BE}</Project>
       <Name>DoshikLangCompiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DoshikLangIR\DoshikLangIR.csproj">
-      <Project>{aa81bff3-85bc-4160-8d76-e90149839cd6}</Project>
-      <Name>DoshikLangIR</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DoshikLangUnityEditorCode\DoshikLangUnityEditorCode.csproj">
-      <Project>{c309db49-fecf-4857-8ed2-21dfb9d4ba67}</Project>
-      <Name>DoshikLangUnityEditorCode</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

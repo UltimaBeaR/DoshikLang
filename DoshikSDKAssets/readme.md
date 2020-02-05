@@ -1,0 +1,1 @@
+DoshikSDK source files for unity project. Before using in unity, external dll's should be provided in ```Assets\DoshikSDK\Editor\ExternalDlls```

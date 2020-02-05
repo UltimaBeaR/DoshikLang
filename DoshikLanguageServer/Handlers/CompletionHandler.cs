@@ -1,6 +1,7 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,10 +9,11 @@ namespace DoshikLanguageServer.Handlers
 {
     internal class CompletionHandler : ICompletionHandler
     {
-        public CompletionHandler(ILanguageServer router, BufferManager bufferManager)
+        public CompletionHandler(ILanguageServer router, BufferManager bufferManager, DoshikExternalApiProvider externalApiProvider)
         {
             _router = router;
             _bufferManager = bufferManager;
+            _externalApiProvider = externalApiProvider;
         }
 
         public void SetCapability(CompletionCapability capability)
@@ -30,6 +32,8 @@ namespace DoshikLanguageServer.Handlers
 
         public Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
         {
+            var externalApi = _externalApiProvider.GetExternalApi();
+
             var documentPath = request.TextDocument.Uri.ToString();
             var buffer = _bufferManager.GetBuffer(documentPath);
 
@@ -38,7 +42,7 @@ namespace DoshikLanguageServer.Handlers
             var result =  new CompletionList(new CompletionItem[] {
                 new CompletionItem
                 {
-                    Label = "UnityEngine::Transform.Rotate(UnityEngine::Vector3 axis, float angle)",
+                    Label = externalApi.Types.First().ExternalName,
                     Kind = CompletionItemKind.Method,
                     TextEdit = new TextEdit
                     {
@@ -63,6 +67,7 @@ namespace DoshikLanguageServer.Handlers
 
         private readonly ILanguageServer _router;
         private readonly BufferManager _bufferManager;
+        private readonly DoshikExternalApiProvider _externalApiProvider;
 
         private readonly DocumentSelector _documentSelector = new DocumentSelector(
             new DocumentFilter()
