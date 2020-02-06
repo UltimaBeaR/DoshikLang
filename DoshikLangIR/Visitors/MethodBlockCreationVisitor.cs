@@ -169,7 +169,7 @@ namespace DoshikLangIR
 
             statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
 
-            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
+            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindByKnownType(KnownType.Boolean))
                 throw _compilationContext.ThrowCompilationError("condition must evaluate to bool value");
 
             statement.TrueStatement = (Statement)Visit(context.trueBody);
@@ -190,7 +190,7 @@ namespace DoshikLangIR
 
             statement.Condition = ExpressionCreationVisitor.Apply(_compilationContext, _currentExpressionParent, context.condition);
 
-            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindTypeByDotnetType(typeof(bool)))
+            if (statement.Condition.RootExpression.ReturnOutputSlot.Type != _compilationContext.TypeLibrary.FindByKnownType(KnownType.Boolean))
                 throw _compilationContext.ThrowCompilationError("condition must evaluate to bool value");
 
             _isInLoopCounter++;

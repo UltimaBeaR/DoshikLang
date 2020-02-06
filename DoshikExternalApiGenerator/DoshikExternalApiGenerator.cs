@@ -152,10 +152,10 @@ namespace Doshik
 
                 apiType.DeclaredAsConstNode = true;
 
-                if (apiType.DotnetType == null)
-                    apiType.DotnetType = node.Type;
+                if (apiType.DotnetTypeString == null)
+                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
 
-                if (apiType.DotnetType != node.Type)
+                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -187,10 +187,10 @@ namespace Doshik
 
                 apiType.DeclaredAsTypeNode = true;
 
-                if (apiType.DotnetType == null)
-                    apiType.DotnetType = node.Type;
+                if (apiType.DotnetTypeString == null)
+                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
 
-                if (apiType.DotnetType != node.Type)
+                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -231,10 +231,10 @@ namespace Doshik
 
                 apiType.DeclaredAsVariableNode = true;
 
-                if (apiType.DotnetType == null)
-                    apiType.DotnetType = node.Type;
+                if (apiType.DotnetTypeString == null)
+                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
 
-                if (apiType.DotnetType != node.Type)
+                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -267,10 +267,10 @@ namespace Doshik
 
                 var apiType = GetOrCreateApiType(api, externalTypeName);
 
-                if (apiType.DotnetType == null)
-                    apiType.DotnetType = node.Type;
+                if (apiType.DotnetTypeString == null)
+                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
 
-                if (apiType.DotnetType != node.Type)
+                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
                     LogWarning?.Invoke("different dotnet types for single node type");
 
                 var apiMethod = GetOrCreateMethod(apiType, externalMethodName);
@@ -403,10 +403,10 @@ namespace Doshik
 
             var apiType = GetOrCreateApiType(api, externalName);
 
-            if (apiType.DotnetType == null)
-                apiType.DotnetType = dotnetType;
+            if (apiType.DotnetTypeString == null)
+                apiType.DotnetTypeString = dotnetType.AssemblyQualifiedName;
 
-            if (apiType.DotnetType != dotnetType)
+            if (apiType.DotnetTypeString != dotnetType.AssemblyQualifiedName)
                 LogWarning?.Invoke("different dotnet types for single node type");
 
             return apiType;

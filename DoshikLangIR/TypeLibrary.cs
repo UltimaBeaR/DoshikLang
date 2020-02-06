@@ -14,15 +14,6 @@ namespace DoshikLangIR
             AllTypes.Add(new DataType { IsVoid = true, ExternalType = null });
         }
 
-        public Dictionary<string, Type> IntrinsicTypes { get; } = new Dictionary<string, Type>()
-        {
-            { "int", typeof(int) },
-            { "float", typeof(float) },
-            { "bool", typeof(bool) },
-            { "string", typeof(string) },
-            { "object", typeof(object) }
-        };
-
         public List<DataType> AllTypes { get; } = new List<DataType>();
 
         public string GetApiTypeFullCodeName(DoshikExternalApiType type)
@@ -43,15 +34,28 @@ namespace DoshikLangIR
             return AllTypes.FirstOrDefault(x => x.ExternalType == externalType);
         }
 
-        public DataType FindTypeByDotnetType(Type dotnetType)
+        public DataType FindByExternalTypeName(string externalTypeName)
         {
-            return AllTypes.FirstOrDefault(x => x.ExternalType != null && x.ExternalType.DotnetType == dotnetType);
+            if (externalTypeName == null)
+                return null;
+
+            return AllTypes.FirstOrDefault(x => x.ExternalType?.ExternalName == externalTypeName);
         }
 
-        public DataType FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName(string[] fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName)
+        public DataType FindByKnownType(KnownType type)
         {
-            if (fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName.Length == 1 && IntrinsicTypes.TryGetValue(fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName[0], out var intrinsicType))
-                return FindTypeByDotnetType(intrinsicType);
+            return FindByExternalTypeName(_intrinsicTypeData[type].ExternalTypeName);
+        }
+
+        public DataType FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsicTypeName(string[] fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName)
+        {
+            if (fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName.Length == 1)
+            {
+                var foundIntrinsicValue = _intrinsicTypeData.Values.FirstOrDefault(x => x.IntrinsicCodeName == fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName[0]);
+
+                if (foundIntrinsicValue != null)
+                    return FindByExternalTypeName(foundIntrinsicValue.ExternalTypeName);
+            }
 
             return AllTypes.FirstOrDefault(x => x.ExternalType != null && Enumerable.SequenceEqual(x.ExternalType.FullyQualifiedCodeName, fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName));
         }
@@ -76,7 +80,7 @@ namespace DoshikLangIR
 
             // ToDo: если появятся using statements то тут надо будет учитывать также то что на уровне файла мог быть определен using какого-нибуль неймспейса
             // и тип тогда надо будет искать не только по type но type с учетом этого namespace
-            var dataType = FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName(codeName);
+            var dataType = FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsicTypeName(codeName);
 
             if (dataType == null)
             {
@@ -241,6 +245,34 @@ namespace DoshikLangIR
             }
         }
 
+        private static Dictionary<KnownType, IntrinsicTypeData> _intrinsicTypeData { get; } = new Dictionary<KnownType, IntrinsicTypeData>()
+        {
+            { KnownType.Int32, new IntrinsicTypeData { IntrinsicCodeName = "int", ExternalTypeName = "SystemInt32" } },
+            { KnownType.Int64, new IntrinsicTypeData { IntrinsicCodeName = null, ExternalTypeName = "SystemInt64" } },
+            { KnownType.Single, new IntrinsicTypeData { IntrinsicCodeName = "float", ExternalTypeName = "SystemSingle" } },
+            { KnownType.Double, new IntrinsicTypeData { IntrinsicCodeName = null, ExternalTypeName = "SystemDouble" } },
+            { KnownType.Boolean, new IntrinsicTypeData { IntrinsicCodeName = "bool", ExternalTypeName = "SystemBoolean" } },
+            { KnownType.String, new IntrinsicTypeData { IntrinsicCodeName = "string", ExternalTypeName = "SystemString" } },
+            { KnownType.Object, new IntrinsicTypeData { IntrinsicCodeName = "object", ExternalTypeName = "SystemObject" } }
+        };
+
+        private class IntrinsicTypeData
+        {
+            public string IntrinsicCodeName { get; set; }
+            public string ExternalTypeName { get; set; }
+        }
+
         private CompilationContext _compilationContext;
+    }
+
+    public enum KnownType
+    {
+        Int32,
+        Int64,
+        Single,
+        Double,
+        Boolean,
+        String,
+        Object
     }
 }

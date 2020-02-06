@@ -93,7 +93,7 @@ namespace DoshikLangIR
         private IExpression HandleLiteralExpressionNode(LiteralExpressionNode node)
         {
             var result = new ConstantValueExpression();
-            Type dotnetType;
+            KnownType knownType;
 
             switch (node.LiteralType)
             {
@@ -103,12 +103,12 @@ namespace DoshikLangIR
 
                         if (int.TryParse(literalValue, NumberStyles.None, CultureInfo.InvariantCulture, out int intResult))
                         {
-                            dotnetType = typeof(int);
+                            knownType = KnownType.Int32;
                             result.DotnetValue = intResult;
                         }
                         else if (long.TryParse(literalValue, NumberStyles.None, CultureInfo.InvariantCulture, out long longResult))
                         {
-                            dotnetType = typeof(long);
+                            knownType = KnownType.Int64;
                             result.DotnetValue = longResult;
                         }
                         else
@@ -122,12 +122,12 @@ namespace DoshikLangIR
 
                         if (int.TryParse(literalValue, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out int intResult))
                         {
-                            dotnetType = typeof(int);
+                            knownType = KnownType.Int32;
                             result.DotnetValue = intResult;
                         }
                         else if (long.TryParse(literalValue, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out long longResult))
                         {
-                            dotnetType = typeof(long);
+                            knownType = KnownType.Int64;
                             result.DotnetValue = longResult;
                         }
                         else
@@ -158,7 +158,7 @@ namespace DoshikLangIR
                         {
                             if (float.TryParse(literalValue, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float floatResult))
                             {
-                                dotnetType = typeof(float);
+                                knownType = KnownType.Single;
                                 result.DotnetValue = floatResult;
 
                             }
@@ -169,7 +169,7 @@ namespace DoshikLangIR
                         {
                             if (double.TryParse(literalValue, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double doubleResult))
                             {
-                                dotnetType = typeof(double);
+                                knownType = KnownType.Double;
                                 result.DotnetValue = doubleResult;
 
                             }
@@ -180,7 +180,7 @@ namespace DoshikLangIR
                     break;
                 case LiteralExpressionNode.LiteralTypeOption.String:
                     {
-                        dotnetType = typeof(string);
+                        knownType = KnownType.String;
 
                         var literalValue = node.LiteralValue;
 
@@ -199,13 +199,13 @@ namespace DoshikLangIR
                     break;
                 case LiteralExpressionNode.LiteralTypeOption.Bool:
                     {
-                        dotnetType = typeof(bool);
+                        knownType = KnownType.Boolean;
                         result.DotnetValue = bool.Parse(node.LiteralValue);
                     }
                     break;
                 case LiteralExpressionNode.LiteralTypeOption.Null:
                     {
-                        dotnetType = typeof(object);
+                        knownType = KnownType.Object;
                         result.DotnetValue = null;
                     }
                     break;
@@ -213,7 +213,7 @@ namespace DoshikLangIR
                     throw new NotImplementedException();
             }
 
-            result.ValueType = _compilationContext.TypeLibrary.FindTypeByDotnetType(dotnetType);
+            result.ValueType = _compilationContext.TypeLibrary.FindByKnownType(knownType);
 
             _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue);
 
