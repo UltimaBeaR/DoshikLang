@@ -1,4 +1,10 @@
 event void Start()
 {
-    float a = 5.0f;
+    bool result;
+    if (bool.TryParse("true", out result))
+        UnityEngine::Debug.Log((object)"parse ok");
+    else
+        UnityEngine::Debug.Log((object)"parse failed");
+
+    UnityEngine::Debug.Log((object)result);
 }

@@ -36,6 +36,8 @@ namespace DoshikLanguageServer.Handlers
         {
             _documentsSourceCode.UpdateDocumentSourceCode(request.TextDocument.Uri.ToString(), new SourceCode { FullSourceCode = request.TextDocument.Text });
 
+            UpdateDiagnostics(request.TextDocument.Uri);
+
             return Unit.Task;
         }
 
@@ -53,7 +55,7 @@ namespace DoshikLanguageServer.Handlers
 
             _documentsSourceCode.UpdateDocumentSourceCode(documentPath, new SourceCode { FullSourceCode = text });
 
-            _server.Window.LogInfo($"Updated buffer for document: {documentPath} text:\n{text}");
+            UpdateDiagnostics(request.TextDocument.Uri);
 
             return Unit.Task;
         }

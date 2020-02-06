@@ -281,11 +281,8 @@ namespace DoshikLangCompiler.Compilation
                 _currentEventBodyEmitter.PUSH_varableName(returnVariableName);
             }
 
-            foreach (var outputSlot in expression.AdditionalOutputSlots)
-            {
-                var outputVariableName = AddTemporaryVariable(outputSlot.Type.ExternalType);
-                _currentEventBodyEmitter.PUSH_varableName(outputVariableName);
-            }
+            // Для out параметров код не генерируем (они также присутствуют в input-е), они просто передаются в инпут как обычные параметры, но после
+            // отработки метода в них, так же как и в return параметр присвоятся новые значения.
 
             _currentEventBodyEmitter.EXTERN_externMethodSignature(expression.MethodOverload.GetFullExternalName());
 
