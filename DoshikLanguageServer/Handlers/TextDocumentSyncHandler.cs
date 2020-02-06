@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DoshikLangIR;
 using MediatR;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
@@ -13,10 +15,11 @@ namespace DoshikLanguageServer.Handlers
 {
     class TextDocumentSyncHandler : ITextDocumentSyncHandler
     {
-        public TextDocumentSyncHandler(ILanguageServer router, BufferManager bufferManager)
+        public TextDocumentSyncHandler(ILanguageServer server, DocumentsSourceCode documentsSourceCode, DoshikExternalApiProvider externalApiProvider)
         {
-            _router = router;
-            _bufferManager = bufferManager;
+            _server = server;
+            _documentsSourceCode = documentsSourceCode;
+            _externalApiProvider = externalApiProvider;
         }
 
         public void SetCapability(SynchronizationCapability capability)
@@ -31,13 +34,15 @@ namespace DoshikLanguageServer.Handlers
 
         public Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken token)
         {
-            _bufferManager.UpdateBuffer(request.TextDocument.Uri.ToString(), new SomeData { Data = request.TextDocument.Text });
+            _documentsSourceCode.UpdateDocumentSourceCode(request.TextDocument.Uri.ToString(), new SourceCode { FullSourceCode = request.TextDocument.Text });
 
             return Unit.Task;
         }
 
         public Task<Unit> Handle(DidCloseTextDocumentParams request, CancellationToken token)
         {
+            UpdateDiagnostics(request.TextDocument.Uri, true);
+
             return Unit.Task;
         }
 
@@ -46,15 +51,17 @@ namespace DoshikLanguageServer.Handlers
             var documentPath = request.TextDocument.Uri.ToString();
             var text = request.ContentChanges.FirstOrDefault()?.Text;
 
-            _bufferManager.UpdateBuffer(documentPath, new SomeData { Data = text });
+            _documentsSourceCode.UpdateDocumentSourceCode(documentPath, new SourceCode { FullSourceCode = text });
 
-            _router.Window.LogInfo($"Updated buffer for document: {documentPath} text:\n{text}");
+            _server.Window.LogInfo($"Updated buffer for document: {documentPath} text:\n{text}");
 
             return Unit.Task;
         }
 
         public Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken token)
         {
+            UpdateDiagnostics(request.TextDocument.Uri);
+
             return Unit.Task;
         }
 
@@ -91,8 +98,41 @@ namespace DoshikLanguageServer.Handlers
             }
         );
 
-        private readonly ILanguageServer _router;
-        private readonly BufferManager _bufferManager;
+        private void UpdateDiagnostics(Uri documentUri, bool clear = false)
+        {
+            var diagnostics = new List<Diagnostic>();
+
+            if (!clear)
+            {
+                var documentPath = documentUri.ToString();
+
+                IRBuilder.BuildCodeRepresentation(
+                    _documentsSourceCode.GetDocumentSourceCode(documentPath).FullSourceCode,
+                    _externalApiProvider.GetExternalApi(),
+                    out var compilationErrors
+                );
+
+                if (compilationErrors != null)
+                {
+                    foreach (var compilationError in compilationErrors)
+                    {
+                        var diagnostic = new Diagnostic();
+
+                        diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range() { Start = new Position(0, 0), End = new Position(0, 0) };
+                        diagnostic.Severity = DiagnosticSeverity.Error;
+                        diagnostic.Message = compilationError;
+
+                        diagnostics.Add(diagnostic);
+                    }
+                }
+            }
+
+            _server.Document.PublishDiagnostics(new PublishDiagnosticsParams() { Uri = documentUri, Diagnostics = new Container<Diagnostic>(diagnostics) });
+        }
+
+        private readonly ILanguageServer _server;
+        private readonly DocumentsSourceCode _documentsSourceCode;
+        private readonly DoshikExternalApiProvider _externalApiProvider;
 
         private SynchronizationCapability _capability;
     }

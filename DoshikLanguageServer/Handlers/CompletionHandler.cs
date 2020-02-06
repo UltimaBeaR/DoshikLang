@@ -9,10 +9,10 @@ namespace DoshikLanguageServer.Handlers
 {
     internal class CompletionHandler : ICompletionHandler
     {
-        public CompletionHandler(ILanguageServer router, BufferManager bufferManager, DoshikExternalApiProvider externalApiProvider)
+        public CompletionHandler(ILanguageServer server, DocumentsSourceCode documentsSourceCode, DoshikExternalApiProvider externalApiProvider)
         {
-            _router = router;
-            _bufferManager = bufferManager;
+            _server = server;
+            _documentsSourceCode = documentsSourceCode;
             _externalApiProvider = externalApiProvider;
         }
 
@@ -35,18 +35,21 @@ namespace DoshikLanguageServer.Handlers
             var externalApi = _externalApiProvider.GetExternalApi();
 
             var documentPath = request.TextDocument.Uri.ToString();
-            var buffer = _bufferManager.GetBuffer(documentPath);
+            var buffer = _documentsSourceCode.GetDocumentSourceCode(documentPath);
 
-            var sourceCode = buffer.Data;
+            var sourceCode = buffer.FullSourceCode;
 
-            var result =  new CompletionList(new CompletionItem[] {
-                new CompletionItem
+            var items = externalApi.Types.Select(type =>
+            {
+                var codeName = string.Join("::", type.FullyQualifiedCodeName);
+
+                return new CompletionItem
                 {
-                    Label = externalApi.Types.First().ExternalName,
-                    Kind = CompletionItemKind.Method,
+                    Label = codeName,
+                    Kind = CompletionItemKind.Class,
                     TextEdit = new TextEdit
                     {
-                        NewText = "Rotate(",
+                        NewText = codeName,
                         Range = new Range(
                             new Position
                             {
@@ -59,14 +62,16 @@ namespace DoshikLanguageServer.Handlers
                             }
                         )
                     }
-                }
-            }, isIncomplete: true);
+                };
+            }).ToArray();
+
+            var result =  new CompletionList(items, isIncomplete: false);
 
             return Task.FromResult(result);
         }
 
-        private readonly ILanguageServer _router;
-        private readonly BufferManager _bufferManager;
+        private readonly ILanguageServer _server;
+        private readonly DocumentsSourceCode _documentsSourceCode;
         private readonly DoshikExternalApiProvider _externalApiProvider;
 
         private readonly DocumentSelector _documentSelector = new DocumentSelector(

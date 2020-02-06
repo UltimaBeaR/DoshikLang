@@ -1,4 +1,4 @@
 event void Start()
 {
-    int a = 5;
+    float a = 5.0f;
 }

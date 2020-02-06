@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DoshikLangIR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Server;
@@ -35,7 +36,7 @@ namespace DoshikLanguageServer
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<BufferManager>();
+            services.AddSingleton<DocumentsSourceCode>();
             services.AddSingleton<DoshikExternalApiProvider>();
         }
     }
