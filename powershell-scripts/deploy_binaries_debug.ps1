@@ -9,10 +9,12 @@ $langServerBinFolder = "../DoshikLanguageServer/bin/Debug/netcoreapp3.1"
 $dependenciesBinFolder = "../Tester/bin/Debug"
 
 $doshikSdkExternalDllsFolder = "../DoshikSDKAssets/Assets/DoshikSDK/Editor/ExternalDlls"
-$vsCodeExtensionsServerFolder = "../vscode-extensions/doshik/server"
+
+$vsCodeExtensionsDoshikFolder = "../vscode-extensions/doshik"
+$vsCodeExtensionsDoshikServerFolder = $vsCodeExtensionsDoshikFolder + "/server"
 
 Remove-Item ($doshikSdkExternalDllsFolder + "/*")
-Remove-Item ($vsCodeExtensionsServerFolder + "/*")
+Remove-Item ($vsCodeExtensionsDoshikServerFolder + "/*")
 
 Copy-Item -Path ($apiBinFolder + "/DoshikExternalApi.dll") -Destination $doshikSdkExternalDllsFolder
 Copy-Item -Path ($apiGeneratorBinFolder + "/DoshikExternalApiGenerator.dll") -Destination $doshikSdkExternalDllsFolder
@@ -23,6 +25,11 @@ Copy-Item -Path ($compilerBinFolder + "/DoshikLangCompiler.dll") -Destination $d
 Copy-Item -Path ($dependenciesBinFolder + "/Antlr4.Runtime.Standard.dll") -Destination $doshikSdkExternalDllsFolder
 Copy-Item -Path ($dependenciesBinFolder + "/Newtonsoft.Json.dll") -Destination $doshikSdkExternalDllsFolder
 
-Copy-Item -Path ($langServerBinFolder + "/*") -Destination $vsCodeExtensionsServerFolder
+Copy-Item -Path ($langServerBinFolder + "/*") -Destination $vsCodeExtensionsDoshikServerFolder
+
+Push-Location
+Set-Location $vsCodeExtensionsDoshikFolder
+npm install
+Pop-Location
 
 Write-Output "END: deploy binaries (debug)"
