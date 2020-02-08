@@ -1,6 +1,7 @@
 event void Start()
 {
     bool result;
+
     if (bool.TryParse("true", out result))
         UnityEngine::Debug.Log((object)"parse ok");
     else

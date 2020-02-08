@@ -1,4 +1,5 @@
-﻿using Doshik;
+﻿using Antlr4.Runtime.Tree;
+using Doshik;
 using System.Collections.Generic;
 
 namespace DoshikLangIR
@@ -13,6 +14,8 @@ namespace DoshikLangIR
         public ICodeHierarchyNode Parent { get; }
 
         public IExpression RootExpression { get; set; }
+
+        public IParseTree AntlrContext { get; set; }
     }
 
     public interface IExpression

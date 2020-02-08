@@ -39,31 +39,35 @@ namespace DoshikLanguageServer.Handlers
 
             var sourceCode = buffer.FullSourceCode;
 
-            var items = externalApi.Types.Select(type =>
-            {
-                var codeName = string.Join("::", type.FullyQualifiedCodeName);
-
-                return new CompletionItem
+            var items = externalApi.Types
+                .Where(type => type.DeclaredAsConstNode || type.DeclaredAsTypeNode || type.DeclaredAsVariableNode)
+                .Select(type =>
                 {
-                    Label = codeName,
-                    Kind = CompletionItemKind.Class,
-                    TextEdit = new TextEdit
+                    var codeName = string.Join("::", type.FullyQualifiedCodeName);
+
+                    return new CompletionItem
                     {
-                        NewText = codeName,
-                        Range = new Range(
-                            new Position
-                            {
-                                Line = request.Position.Line,
-                                Character = request.Position.Character
-                            }, new Position
-                            {
-                                Line = request.Position.Line,
-                                Character = request.Position.Character
-                            }
-                        )
-                    }
-                };
-            }).ToArray();
+                        Label = codeName,
+                        Kind = CompletionItemKind.Class,
+                        TextEdit = new TextEdit
+                        {
+                            NewText = codeName,
+                            Range = new Range(
+                                new Position
+                                {
+                                    Line = request.Position.Line,
+                                    Character = request.Position.Character
+                                }, new Position
+                                {
+                                    Line = request.Position.Line,
+                                    Character = request.Position.Character
+                                }
+                            )
+                        }
+                    };
+                })
+                .OrderBy(x => x.Label)
+                .ToArray();
 
             var result =  new CompletionList(items, isIncomplete: false);
 

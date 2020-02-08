@@ -2,20 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
+using Antlr4.Runtime.Tree;
 
 namespace DoshikLangIR
 {
     public class ExpressionBuilder
     {
-        public ExpressionTree Build(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, ExpressionNodeSequence nodeSequence)
+        public ExpressionTree Build(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, ExpressionNodeSequence nodeSequence, IParseTree wholeExpressionAntlrContext)
         {
             _compilationContext = compilationContext;
 
             _nodeSequence = nodeSequence;
 
             _tree = new ExpressionTree(expressionParent);
+            _tree.AntlrContext = wholeExpressionAntlrContext;
 
             _sequence = new List<IExpression>();
+
+            // ToDo: по хорошему надо еще на каждую конкретную ноду, которая обрабатывается далее устанавливать этот контекст, для этого его можно в них передавать из visitor-а
+            compilationContext.SetParsingAntlrContext(_tree.AntlrContext);
 
             for (int sequenceIndex = 0; sequenceIndex < _nodeSequence.Sequence.Count; sequenceIndex++)
             {
@@ -29,6 +34,8 @@ namespace DoshikLangIR
             _tree.RootExpression = _sequence.LastOrDefault();
 
             (new ExpressionTransformer()).Transform(_compilationContext, _tree);
+
+            compilationContext.SetParsingAntlrContext(null);
 
             return _tree;
         }

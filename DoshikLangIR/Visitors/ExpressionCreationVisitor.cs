@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using System.Collections.Generic;
 
 namespace DoshikLangIR
@@ -10,6 +11,8 @@ namespace DoshikLangIR
         {
             Sequence = new ExpressionNodeSequence();
         }
+
+        public IParseTree WholeExpressonAntlrContext { get; private set; }
 
         public ExpressionNodeSequence Sequence { get; }
 
@@ -25,15 +28,25 @@ namespace DoshikLangIR
 
         private static ExpressionTree ApplyToParseTree(CompilationContext compilationContext, ICodeHierarchyNode expressionParent, Antlr4.Runtime.Tree.IParseTree antlrContext)
         {
+            compilationContext.PushParsingContext();
+
             var visitor = new ExpressionCreationVisitor(compilationContext);
             visitor.Visit(antlrContext);
 
-            return new ExpressionBuilder().Build(compilationContext, expressionParent, visitor.Sequence);
+            compilationContext.SetParsingAntlrContext(null);
+
+            var result = new ExpressionBuilder().Build(compilationContext, expressionParent, visitor.Sequence, visitor.WholeExpressonAntlrContext);
+
+            compilationContext.PopParsingContext();
+
+            return result;
         }
 
         public override object VisitTypeDotExpression([NotNull] DoshikParser.TypeDotExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new TypeDotExpressionNode(context);
 
@@ -59,7 +72,9 @@ namespace DoshikLangIR
 
         public override object VisitDotExpression([NotNull] DoshikParser.DotExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new DotExpressionNode(context);
 
@@ -91,7 +106,9 @@ namespace DoshikLangIR
 
         public override object VisitBracketsExpression([NotNull] DoshikParser.BracketsExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new BracketsExpressionNode(context);
 
@@ -105,7 +122,9 @@ namespace DoshikLangIR
 
         public override object VisitDefaultOfTypeExpression([NotNull] DoshikParser.DefaultOfTypeExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new DefaultOfTypeExpressionNode(context);
 
@@ -120,7 +139,9 @@ namespace DoshikLangIR
 
         public override object VisitMethodCallExpression([NotNull] DoshikParser.MethodCallExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new MethodCallExpressionNode(context);
 
@@ -133,7 +154,9 @@ namespace DoshikLangIR
 
         public override object VisitNewCallExpression([NotNull] DoshikParser.NewCallExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new NewCallExpressionNode(context);
 
@@ -152,7 +175,9 @@ namespace DoshikLangIR
 
         public override object VisitTypecastExpression([NotNull] DoshikParser.TypecastExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new TypecastExpressionNode(context);
 
@@ -169,7 +194,9 @@ namespace DoshikLangIR
 
         public override object VisitUnaryPostfixExpression([NotNull] DoshikParser.UnaryPostfixExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new UnaryPostfixExpressionNode(context);
 
@@ -189,7 +216,9 @@ namespace DoshikLangIR
 
         public override object VisitUnaryPrefixExpression([NotNull] DoshikParser.UnaryPrefixExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new UnaryPrefixExpressionNode(context);
 
@@ -213,7 +242,9 @@ namespace DoshikLangIR
 
         public override object VisitNotExpression([NotNull] DoshikParser.NotExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new NotExpressionNode(context);
 
@@ -226,7 +257,9 @@ namespace DoshikLangIR
 
         public override object VisitMultiplicationExpression([NotNull] DoshikParser.MultiplicationExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new MultiplicationExpressionNode(context);
 
@@ -249,7 +282,9 @@ namespace DoshikLangIR
 
         public override object VisitAdditionExpression([NotNull] DoshikParser.AdditionExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new AdditionExpressionNode(context);
 
@@ -270,7 +305,9 @@ namespace DoshikLangIR
 
         public override object VisitRelativeExpression([NotNull] DoshikParser.RelativeExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new RelativeExpressionNode(context);
 
@@ -295,7 +332,9 @@ namespace DoshikLangIR
 
         public override object VisitEqualsExpression([NotNull] DoshikParser.EqualsExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new EqualsExpressionNode(context);
 
@@ -316,7 +355,9 @@ namespace DoshikLangIR
 
         public override object VisitAndExpression([NotNull] DoshikParser.AndExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new AndExpressionNode(context);
 
@@ -330,7 +371,9 @@ namespace DoshikLangIR
 
         public override object VisitOrExpression([NotNull] DoshikParser.OrExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new OrExpressionNode(context);
 
@@ -344,7 +387,9 @@ namespace DoshikLangIR
 
         public override object VisitIfElseExpression([NotNull] DoshikParser.IfElseExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new IfElseExpressionNode(context);
 
@@ -359,7 +404,9 @@ namespace DoshikLangIR
 
         public override object VisitAssignmentExpression([NotNull] DoshikParser.AssignmentExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new AssignmentExpressionNode(context);
             Sequence.Sequence.Add(node);
@@ -387,7 +434,9 @@ namespace DoshikLangIR
 
         public override object VisitParenthesisExpression([NotNull] DoshikParser.ParenthesisExpressionContext context)
         {
+            SetWholeExpression(context);
             VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
 
             var node = new ParenthesisExpressionNode(context);
             Sequence.Sequence.Add(node);
@@ -399,6 +448,10 @@ namespace DoshikLangIR
 
         public override object VisitLiteralExpression([NotNull] DoshikParser.LiteralExpressionContext context)
         {
+            SetWholeExpression(context);
+            VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
+
             var node = new LiteralExpressionNode(context);
             Sequence.Sequence.Add(node);
 
@@ -443,6 +496,10 @@ namespace DoshikLangIR
 
         public override object VisitIdentifierExpression([NotNull] DoshikParser.IdentifierExpressionContext context)
         {
+            SetWholeExpression(context);
+            VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
+
             var node = new IdentifierExpressionNode(context);
 
             node.Identifier = context.IDENTIFIER().GetText();
@@ -488,6 +545,12 @@ namespace DoshikLangIR
 
                 yield return parameter;
             }
+        }
+
+        private void SetWholeExpression(IParseTree context)
+        {
+            if (WholeExpressonAntlrContext == null)
+                WholeExpressonAntlrContext = context;
         }
     }
 }

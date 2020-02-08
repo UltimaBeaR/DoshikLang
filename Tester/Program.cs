@@ -67,7 +67,7 @@ namespace Tester
 
                 foreach (var error in output.CompilationErrors)
                 {
-                    Console.WriteLine(error);
+                    Console.WriteLine($"{ error.LineIdx + 1 }, { error.CharInLineIdx + 1 }: { error.Message }");
                 }
             }
 

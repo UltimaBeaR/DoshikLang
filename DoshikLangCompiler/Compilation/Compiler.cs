@@ -47,8 +47,6 @@ namespace DoshikLangCompiler.Compilation
                 return output;
             }
         }
-
-
     }
 
     public class CompilerOutput
@@ -63,6 +61,6 @@ namespace DoshikLangCompiler.Compilation
         /// </summary>
         public Dictionary<string, (object value, Type type)> DefaultHeapValues { get; set; }
 
-        public List<string> CompilationErrors { get; set; }
+        public List<CompilationError> CompilationErrors { get; set; }
     }
 }

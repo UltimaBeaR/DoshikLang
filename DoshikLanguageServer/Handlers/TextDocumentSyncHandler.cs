@@ -120,9 +120,18 @@ namespace DoshikLanguageServer.Handlers
                     {
                         var diagnostic = new Diagnostic();
 
-                        diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range() { Start = new Position(0, 0), End = new Position(0, 0) };
                         diagnostic.Severity = DiagnosticSeverity.Error;
-                        diagnostic.Message = compilationError;
+
+                        diagnostic.Message = compilationError.Message;
+
+                        diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range()
+                        {
+                            Start = new Position(compilationError.LineIdx, compilationError.CharInLineIdx),
+                            End = new Position(
+                                compilationError.LineIdxTo == null ? compilationError.LineIdx : compilationError.LineIdxTo.Value,
+                                compilationError.CharInLineIdxTo == null ? compilationError.CharInLineIdx : compilationError.CharInLineIdxTo.Value
+                            )
+                        };
 
                         diagnostics.Add(diagnostic);
                     }

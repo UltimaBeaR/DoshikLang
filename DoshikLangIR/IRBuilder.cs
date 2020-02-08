@@ -7,7 +7,7 @@ namespace DoshikLangIR
 {
     public static class IRBuilder
     {
-        public static CompilationUnit BuildCodeRepresentation(string sourceCode, DoshikExternalApi externalApi, out List<string> compilationErrors)
+        public static CompilationUnit BuildCodeRepresentation(string sourceCode, DoshikExternalApi externalApi, out List<CompilationError> compilationErrors)
         {
             var compilationContext = new CompilationContext()
             {
@@ -16,30 +16,32 @@ namespace DoshikLangIR
 
             try
             {
-                var inputStream = new AntlrInputStream(sourceCode);
-                var lexer = new DoshikLexer(inputStream);
-                var tokenStream = new CommonTokenStream(lexer);
-                var parser = new DoshikParser(tokenStream);
+                compilationContext.InputStream = new AntlrInputStream(sourceCode);
+                compilationContext.Lexer = new DoshikLexer(compilationContext.InputStream);
+                compilationContext.TokenStream = new CommonTokenStream(compilationContext.Lexer);
+                compilationContext.Parser = new DoshikParser(compilationContext.TokenStream);
 
-                lexer.RemoveErrorListeners();
-                parser.RemoveErrorListeners();
+                compilationContext.Lexer.RemoveErrorListeners();
+                compilationContext.Parser.RemoveErrorListeners();
 
                 var lexerErrorListener = new LexerErrorListener();
                 var parserErrorListener = new ParserErrorListener();
 
-                lexer.AddErrorListener(lexerErrorListener);
-                parser.AddErrorListener(parserErrorListener);
+                compilationContext.Lexer.AddErrorListener(lexerErrorListener);
+                compilationContext.Parser.AddErrorListener(parserErrorListener);
 
-                var antlrCompilationUnit = parser.compilationUnit();
+                var antlrCompilationUnit = compilationContext.Parser.compilationUnit();
 
                 if (lexerErrorListener.Errors.Count > 0)
                 {
-                    throw compilationContext.ThrowCompilationError($"Error in lexer: { lexerErrorListener.Errors.First() }");
+                    var error = lexerErrorListener.Errors.First();
+                    throw compilationContext.ThrowCompilationErrorForKnownRange($"SYNTAX: { error.Message }", error.LineIdx, error.CharInLineIdx, null, null);
                 }
 
                 if (parserErrorListener.Errors.Count > 0)
                 {
-                    throw compilationContext.ThrowCompilationError($"Error in parser: { parserErrorListener.Errors.First() }");
+                    var error = parserErrorListener.Errors.First();
+                    throw compilationContext.ThrowCompilationErrorForKnownRange($"SYNTAX: { error.Message }", error.LineIdx, error.CharInLineIdx, null, null);
                 }
 
                 // Высокоуровневая обработка - создается корневая струкура CompilationUnit и заполняются объявления (declarations) на уровне CompilationUnit - то есть

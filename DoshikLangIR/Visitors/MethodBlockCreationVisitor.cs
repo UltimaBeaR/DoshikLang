@@ -13,14 +13,20 @@ namespace DoshikLangIR
 
         public static void Apply(CompilationContext compilationContext, MethodDeclaration methodDeclaration)
         {
+            compilationContext.PushParsingContext();
+
             methodDeclaration.BodyBlock = (BlockOfStatements)methodDeclaration.AntlrBody.Accept(
                 new MethodBlockCreationVisitor(compilationContext, methodDeclaration, methodDeclaration.Parameters.Scope)
             );
+
+            compilationContext.PopParsingContext();
         }
 
         // возвращает BlockOfStatements
         public override object VisitBlock([NotNull] DoshikParser.BlockContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var block = new BlockOfStatements(_currentNode, _currentScope);
 
             // Помечаем текущий блок и заходим в его scope
@@ -44,6 +50,8 @@ namespace DoshikLangIR
         // возвращает Statement
         public override object VisitStatementInBlock([NotNull] DoshikParser.StatementInBlockContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var localVariableDeclarationCtx = context.localVariableDeclaration();
             var statementCtx = context.statement();
             if (localVariableDeclarationCtx != null)
@@ -57,6 +65,8 @@ namespace DoshikLangIR
         // возвращает LocalVariableDeclarationStatement
         public override object VisitLocalVariableDeclaration([NotNull] DoshikParser.LocalVariableDeclarationContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var statement = new LocalVariableDeclarationStatement(_currentNode);
 
             statement.Variable = new Variable(statement);
@@ -100,6 +110,8 @@ namespace DoshikLangIR
         // возвращает ExpressionStatement
         public override object VisitExpressionStatement([NotNull] DoshikParser.ExpressionStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var statement = new ExpressionStatement(_currentNode);
 
             statement.Expression = ExpressionCreationVisitor.Apply(_compilationContext, statement, context.expression());
@@ -110,6 +122,8 @@ namespace DoshikLangIR
         // Ничего не возвращает, просто инициализирует _declaringVariable и _declaringVariableInitializerExpression
         public override object VisitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             _declaringVariable.Name = context.variableName.Text;
 
             // ToDo: Тут надо искать переменную не везде а только в текущем scope плюс в родительях, исключая все что выше определения метода.
@@ -139,6 +153,8 @@ namespace DoshikLangIR
         // Возвращает ExpressionTree
         public override object VisitVariableInitializer([NotNull] DoshikParser.VariableInitializerContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var expressionCtx = context.expression();
 
             if (expressionCtx != null)
@@ -157,12 +173,16 @@ namespace DoshikLangIR
         // возвращает Statement (BlockOfStatements)
         public override object VisitSubBlockStatement([NotNull] DoshikParser.SubBlockStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             return Visit(context.block());
         }
 
         // возвращает Statement (IfStatement)
         public override object VisitIfStatement([NotNull] DoshikParser.IfStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var statement = new IfStatement(_currentNode);
 
             _currentExpressionParent = statement;
@@ -184,6 +204,8 @@ namespace DoshikLangIR
 
         public override object VisitWhileLoopStatement([NotNull] DoshikParser.WhileLoopStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var statement = new WhileStatement(_currentNode);
 
             _currentExpressionParent = statement;
@@ -204,6 +226,8 @@ namespace DoshikLangIR
 
         public override object VisitBreakStatement([NotNull] DoshikParser.BreakStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             if (!IsInsideOfLoop())
                 throw _compilationContext.ThrowCompilationError("break operator can be used only inside of loop body");
 
@@ -212,6 +236,8 @@ namespace DoshikLangIR
 
         public override object VisitContinueStatement([NotNull] DoshikParser.ContinueStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             if (!IsInsideOfLoop())
                 throw _compilationContext.ThrowCompilationError("continue operator can be used only inside of loop body");
 
@@ -220,6 +246,8 @@ namespace DoshikLangIR
 
         public override object VisitNopStatement([NotNull] DoshikParser.NopStatementContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             return new EmptyStatement(_currentNode);
         }
 

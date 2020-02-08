@@ -32,6 +32,8 @@ namespace DoshikLangIR
 
         public override object VisitMemberDeclaration([NotNull] DoshikParser.MemberDeclarationContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             if (context.fieldDeclaration() != null)
                 Visit(context.fieldDeclaration());
 
@@ -43,6 +45,8 @@ namespace DoshikLangIR
 
         public override object VisitFieldDeclaration([NotNull] DoshikParser.FieldDeclarationContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var scope = _compilationContext.CompilationUnit.Scope;
 
             var variable = new CompilationUnitVariable(_compilationContext.CompilationUnit);
@@ -79,6 +83,8 @@ namespace DoshikLangIR
         // возвращает (string variableName, DoshikParser.VariableInitializerContext variableInitializer)
         public override object VisitVariableDeclarator([NotNull] DoshikParser.VariableDeclaratorContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var variableName = context.variableName.Text;
             var variableInitializer = context.variableInitializer();
 
@@ -87,6 +93,8 @@ namespace DoshikLangIR
 
         public override object VisitMethodDeclaration([NotNull] DoshikParser.MethodDeclarationContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var isEvent = context.EVENT() != null;
 
             // Пока не поддерживаю кастомные функции (не ивенты)
@@ -167,6 +175,8 @@ namespace DoshikLangIR
         // возвращает List<MethodDeclarationParameter>
         public override object VisitFormalParameters([NotNull] DoshikParser.FormalParametersContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var parameterList = context.formalParameterList();
 
             if (parameterList == null)
@@ -178,6 +188,8 @@ namespace DoshikLangIR
         // возвращает List<MethodDeclarationParameter>
         public override object VisitFormalParameterList([NotNull] DoshikParser.FormalParameterListContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var formalParameters = context.formalParameter();
 
             return formalParameters.Select(x => (MethodDeclarationParameter)Visit(x)).ToList();
@@ -186,6 +198,8 @@ namespace DoshikLangIR
         // возвращает MethodDeclarationParameter
         public override object VisitFormalParameter([NotNull] DoshikParser.FormalParameterContext context)
         {
+            _compilationContext.SetParsingAntlrContext(context);
+
             var parameter = new MethodDeclarationParameter(_currentMethodDeclaration.Parameters);
 
             var scope = parameter.Parent.Scope;
