@@ -17,9 +17,9 @@ To run compiler outside of Unity3D editor, you can use Tester project. It compil
 
 # Build & Requirments
 
-*) Node.js and NPM (try current LTS version) has to be installed. It is for building vs code extension's dependencies
-*) Powershell Core (6) has to be installed. It is for running deploy scripts (or you can just do it all manually)
-*) Visual studio 2019 with some basic packages has to be installed. I only tested it with this setup, but i'm sure 2017, or even VS Code + some dotnet sdk will do
+* Node.js and NPM (try current LTS version) has to be installed. It is for building vs code extension's dependencies
+* Powershell Core (6) has to be installed. It is for running deploy scripts (or you can just do it all manually)
+* Visual studio 2019 with some basic packages has to be installed. I only tested it with this setup, but i'm sure 2017, or even VS Code + some dotnet sdk will do
 
 Put Unity3D (couple of dll's from unity editor), Udon (Udon SDK) and VRCSDK (VRCHAT SDK 3) folders to ```ExternalDlls``` folder (navigate to ```ExternalDlls``` folder to see readme).
 These have to be set in order to compile udon api generator library.
@@ -28,8 +28,8 @@ When it's all done, you can now rebuild whole solution file ```DoshikLang.sln```
 If it all compiles, you can now deploy it or run Tester project to see how it works on sample ```test.doshik``` file.
 
 notes:
-*) DoshikLangAntlr project doesn't need to be compiled until language syntax is changed (it's excluded from solution build). Project purpose is to keep language syntax files (.g4) and generate ```/DoshikLangCompiler/AntlrGenerated/**``` files which are get commited. Compilation from .g4 to generated files is done by use of AntlrVSIX visual studio 2019 extension
-*) vs code extension javascript thing has to be build separetely (for now it's just running ```npm install``` on it (it's being called from deploy script), but maby i'll change it to typescipt and it would require another ts => js build step).
+* DoshikLangAntlr project doesn't need to be compiled until language syntax is changed (it's excluded from solution build). Project purpose is to keep language syntax files (.g4) and generate ```/DoshikLangCompiler/AntlrGenerated/**``` files which are get commited. Compilation from .g4 to generated files is done by use of AntlrVSIX visual studio 2019 extension
+* vs code extension javascript thing has to be build separetely (for now it's just running ```npm install``` on it (it's being called from deploy script), but maby i'll change it to typescipt and it would require another ts => js build step).
 
 # Deployment
 
@@ -44,5 +44,7 @@ For deploy_unity_project.bat and deploy_all.bat you'll also have to set environm
 To ultimately deploy everything - it's enough to just run ```deploy_all.bat```. It's recommended to close VS Code and Unity3D project before deployment of any of this, as it changes files being used by them.
 
 I personally use ```Tools/external tools``` visual studio feature to run deploy_all.bat after whole project rebuild. Here is how i setup it:
+
 ![External tools setup](readme-resources/external-tools-deploy-all.png)
+
 red underline is path to solution directory (where deployment .bat files are)
