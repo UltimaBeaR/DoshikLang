@@ -1,0 +1,245 @@
+########################################
+## Header
+########################################
+
+name                    = doshik
+file_extensions []      = doshik;
+
+########################################
+## Constants
+########################################
+
+// Keywords
+
+__DEFAULT \= default
+__NEW \= new
+__EVENT \= event
+__PRIVATE \= private
+__PUBLIC \= public
+__OUT \= out
+__IF \= if
+__ELSE \= else
+__WHILE \= while
+__FOR \= for
+__BREAK \= break
+__CONTINUE \= continue
+__RETURN \= return
+
+// Simple type keywords
+
+__BOOL \= bool
+__BYTE \= byte
+__SBYTE \= sbyte
+__CHAR \= char
+__DECIMAL \= decimal
+__DOUBLE \= double
+__FLOAT \= float
+__INT \= int
+__UINT \= uint
+__LONG \= long
+__ULONG \= ulong
+__SHORT \= short
+__USHORT \= ushort
+
+__OBJECT \= object
+__STRING \= string
+
+__VOID \= void
+
+// Literals
+
+__INT_LITERAL \= $${__Digits}
+__INT_HEX_LITERAL \= 0[xX](?:$${__HexDigits})
+__FLOAT_LITERAL \= (?:$${__Digits})\.(?:$${__Digits})(?:$${__FloatLiteralPostfix})?
+__BOOL_LITERAL \= true|false
+__NULL_LITERAL \= null
+
+// Separators
+
+__SCOPE_RESOLUTION \= \:\:
+__DOT \= \.
+__SEMICOLON \= \;
+__COMMA \= \,
+__OPEN_PARENTHESIS \= \(
+__CLOSE_PARENTHESIS \= \)
+__OPEN_BRACE \= \{
+__CLOSE_BRACE \= \}
+__OPEN_BRACKET \= \[
+__CLOSE_BRACKET \= \]
+
+// Operators
+
+__ASSIGN \= \=
+__ADD_ASSIGN \= \+\=
+__SUB_ASSIGN \= \-\=
+__MUL_ASSIGN \= \*\=
+__DIV_ASSIGN \= \/\=
+__MOD_ASSIGN \= \%\=
+
+__GT \= \>
+__LT \= \<
+__BANG \= \!
+__QUESTION \= \?
+__COLON \= \:
+__EQUAL \= \=\=
+__LE \= \<\=
+__GE \= \>\=
+__NOTEQUAL \= \!\=
+__AND \= \&\&
+__OR \= \|\|
+__INC \= \+\+
+__DEC \= \-\-
+__ADD \= \+
+__SUB \= \-
+__MUL \= \*
+__DIV \= \/
+__MOD \= \%
+
+########################################
+## Fragments
+########################################
+
+__Whitespace \= [ \t\r\n\u000C]+
+
+__IdentifierLetter \= [a-zA-Z_]
+
+__FloatLiteralPostfix \= [fd]
+
+__Digits \= (?:$${__Digit})+
+__HexDigits \= (?:$${__HexDigit})+
+
+__Digit \= [0-9]
+__HexDigit \= [0-9a-fA-F]
+
+
+########################################
+## Other constants
+########################################
+
+__identifier \= (?:$${__IdentifierLetter})(?:(?:$${__IdentifierLetter})|(?:$${__Digit}))*
+
+########################################
+## Contexts
+########################################
+
+contexts[] {
+   main : context {
+      : include "multi_line_comment";
+   
+      // single-line comment
+      : pattern {
+         regex \= (//.*)
+         styles[] = .single_line_comment;
+      }
+      
+      // string literal
+      : inline_push {
+         regex \= (")
+         styles[] = .quoted_text;
+         default_style = .quoted_text
+         : pop {
+             regex   \= (")
+             styles[] = .quoted_text;
+         }
+      }
+   
+      // keywords
+      : pattern {
+         regex   \= ($${__DEFAULT}|$${__NEW}|$${__EVENT}|$${__PRIVATE}|$${__PUBLIC}|$${__OUT}|$${__IF}|$${__ELSE}|$${__WHILE}|$${__FOR}|$${__BREAK}|$${__CONTINUE}|$${__RETURN})
+         styles[] = .keyword;
+      }
+
+      // built-in type keywords
+      : pattern {
+         regex   \= ($${__BOOL}|$${__BYTE}|$${__SBYTE}|$${__CHAR}|$${__DECIMAL}|$${__DOUBLE}|$${__FLOAT}|$${__INT}|$${__UINT}|$${__LONG}|$${__ULONG}|$${__SHORT}|$${__USHORT}|$${__OBJECT}|$${__STRING}|$${__VOID})
+         styles[] = .type_keyword;
+      }
+      
+      // literal keywords
+      : pattern {
+         regex   \= ($${__BOOL_LITERAL}|$${__NULL_LITERAL})
+         styles[] = .keyword;
+      }
+      
+      // number literals
+      : pattern {
+         regex   \= ($${__INT_HEX_LITERAL})
+         styles[] = .number_literals;
+      }
+      : pattern {
+         regex   \= ($${__FLOAT_LITERAL})
+         styles[] = .number_literals;
+      }
+      : pattern {
+         regex   \= ($${__INT_LITERAL})
+         styles[] = .number_literals;
+      }
+
+      // punctuation
+      : pattern {
+         regex   \= ((?:$${__SCOPE_RESOLUTION})|(?:$${__DOT})|(?:$${__SEMICOLON})|(?:$${__COMMA})|(?:$${__OPEN_PARENTHESIS})|(?:$${__CLOSE_PARENTHESIS})|(?:$${__OPEN_BRACE})|(?:$${__CLOSE_BRACE})|(?:$${__OPEN_BRACKET})|(?:$${__CLOSE_BRACKET}))
+         styles[] = .punctuation;
+      }
+      
+      // ids: names of variables, functions and also typename parts (with namespace)
+      : pattern {
+         regex \= ($${__identifier})
+         styles[] = .id;
+      }
+   }
+   
+   multi_line_comment : context {
+      : inline_push {
+         regex          \= (/\*)
+         styles []       = .multi_line_comment;
+         default_style   = .multi_line_comment
+         : pop {
+            regex       \= (\*/)
+            styles []    = .multi_line_comment;
+         }
+      }
+   }
+}
+
+########################################
+## Styles
+########################################
+
+styles[] {
+   .id : style {
+      color = light_green
+      textmate_scope = variable.other
+   }
+   .keyword : style {
+      color = blue
+      textmate_scope = keyword.other
+   }
+   .type_keyword : style {
+      color = green
+      textmate_scope = keyword.other
+   }
+   .punctuation : style {
+      color = red
+      textmate_scope = punctuation
+   }
+   .quoted_text : style {
+      color = purple
+      textmate_scope = string.quoted.double
+   }
+   .single_line_comment : style {
+      color = grey
+      textmate_scope = comment.line.double-slash
+   }
+   .multi_line_comment : style {
+      color = grey
+      textmate_scope = comment.block
+   }
+   .number_literals : style {
+      color = brown
+      textmate_scope = constant.numeric
+   }
+   .function_name : style {
+      color = orange
+      textmate_scope = entity.name.function
+   }
+}
