@@ -16,13 +16,25 @@ BREAK: 'break';
 CONTINUE: 'continue';
 RETURN: 'return';
 
-// simple type keywords
+// Simple type keywords
 
-INT: 'int';
-FLOAT: 'float';
 BOOL: 'bool';
-STRING: 'string';
+BYTE: 'byte';
+SBYTE: 'sbyte';
+CHAR: 'char';
+DECIMAL: 'decimal';
+DOUBLE: 'double';
+FLOAT: 'float';
+INT: 'int';
+UINT: 'uint';
+LONG: 'long';
+ULONG: 'ulong';
+SHORT: 'short';
+USHORT: 'ushort';
+
 OBJECT: 'object';
+STRING: 'string';
+
 VOID: 'void';
 
 // Literals
@@ -35,7 +47,6 @@ STRING_LITERAL: '"' (~["\r\n])* '"';
 NULL_LITERAL: 'null';
 
 // Separators
-
 
 SCOPE_RESOLUTION: '::';
 DOT: '.';

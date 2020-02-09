@@ -392,8 +392,7 @@ namespace DoshikLangIR
                 case MultiplicationExpressionNode.OperatorOption.Divide:
                     return CreateStaticMethodCallExpressionForBinaryOperator("op_Division", node.Left, node.Right);
                 case MultiplicationExpressionNode.OperatorOption.Mod:
-                    // ToDo: пока не нашел метода для этого, однако на feedback.vrchat.com есть выполненный тикет где написано что добавили какой то метод remainer - вроде как это оно и есть
-                    throw _compilationContext.ThrowCompilationError("mod operator is not implemented yet");
+                    return CreateStaticMethodCallExpressionForBinaryOperator("op_Remainder", node.Left, node.Right);
                 default:
                     throw new NotImplementedException();
             }

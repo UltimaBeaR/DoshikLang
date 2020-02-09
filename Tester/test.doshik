@@ -1,3 +1,19 @@
+public bool boolA;
+public byte byteA;
+public sbyte sbyteA;
+public char charA;
+public decimal decimalA;
+public double doubleA;
+public float floatA;
+public int intA;
+public uint uintA;
+public long longA;
+public ulong ulongA;
+public short shortA;
+public ushort ushortA;
+public object objectA;
+public string stringA;
+
 event void Start()
 {
 }

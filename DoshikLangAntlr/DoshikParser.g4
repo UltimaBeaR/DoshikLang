@@ -167,13 +167,23 @@ typeType
     ;
 
 primitiveType
-    : INT
+    : BOOL
+    | BYTE
+    | SBYTE
+    | CHAR
+    | DECIMAL
+    | DOUBLE
     | FLOAT
-    | BOOL
-    | STRING
+    | INT
+    | UINT
+    | LONG
+    | ULONG
+    | SHORT
+    | USHORT
     | OBJECT
+    | STRING
     ;
-
+    
 typeArguments
     : '<' typeArgument (',' typeArgument)* '>'
     ;

@@ -247,13 +247,21 @@ namespace DoshikLangIR
 
         private static Dictionary<KnownType, IntrinsicTypeData> _intrinsicTypeData { get; } = new Dictionary<KnownType, IntrinsicTypeData>()
         {
-            { KnownType.Int32, new IntrinsicTypeData { IntrinsicCodeName = "int", ExternalTypeName = "SystemInt32" } },
-            { KnownType.Int64, new IntrinsicTypeData { IntrinsicCodeName = null, ExternalTypeName = "SystemInt64" } },
-            { KnownType.Single, new IntrinsicTypeData { IntrinsicCodeName = "float", ExternalTypeName = "SystemSingle" } },
-            { KnownType.Double, new IntrinsicTypeData { IntrinsicCodeName = null, ExternalTypeName = "SystemDouble" } },
             { KnownType.Boolean, new IntrinsicTypeData { IntrinsicCodeName = "bool", ExternalTypeName = "SystemBoolean" } },
-            { KnownType.String, new IntrinsicTypeData { IntrinsicCodeName = "string", ExternalTypeName = "SystemString" } },
-            { KnownType.Object, new IntrinsicTypeData { IntrinsicCodeName = "object", ExternalTypeName = "SystemObject" } }
+            { KnownType.Byte, new IntrinsicTypeData { IntrinsicCodeName = "byte", ExternalTypeName = "SystemByte" } },
+            { KnownType.SByte, new IntrinsicTypeData { IntrinsicCodeName = "sbyte", ExternalTypeName = "SystemSByte" } },
+            { KnownType.Char, new IntrinsicTypeData { IntrinsicCodeName = "char", ExternalTypeName = "SystemChar" } },
+            { KnownType.Decimal, new IntrinsicTypeData { IntrinsicCodeName = "decimal", ExternalTypeName = "SystemDecimal" } },
+            { KnownType.Double, new IntrinsicTypeData { IntrinsicCodeName = "double", ExternalTypeName = "SystemDouble" } },
+            { KnownType.Single, new IntrinsicTypeData { IntrinsicCodeName = "float", ExternalTypeName = "SystemSingle" } },
+            { KnownType.Int32, new IntrinsicTypeData { IntrinsicCodeName = "int", ExternalTypeName = "SystemInt32" } },
+            { KnownType.UInt32, new IntrinsicTypeData { IntrinsicCodeName = "uint", ExternalTypeName = "SystemUInt32" } },
+            { KnownType.Int64, new IntrinsicTypeData { IntrinsicCodeName = "long", ExternalTypeName = "SystemInt64" } },
+            { KnownType.UInt64, new IntrinsicTypeData { IntrinsicCodeName = "ulong", ExternalTypeName = "SystemUInt64" } },
+            { KnownType.Int16, new IntrinsicTypeData { IntrinsicCodeName = "short", ExternalTypeName = "SystemInt16" } },
+            { KnownType.UInt16, new IntrinsicTypeData { IntrinsicCodeName = "ushort", ExternalTypeName = "SystemUInt16" } },
+            { KnownType.Object, new IntrinsicTypeData { IntrinsicCodeName = "object", ExternalTypeName = "SystemObject" } },
+            { KnownType.String, new IntrinsicTypeData { IntrinsicCodeName = "string", ExternalTypeName = "SystemString" } }
         };
 
         private class IntrinsicTypeData
@@ -267,12 +275,20 @@ namespace DoshikLangIR
 
     public enum KnownType
     {
-        Int32,
-        Int64,
-        Single,
-        Double,
         Boolean,
-        String,
-        Object
+        Byte,
+        SByte,
+        Char,
+        Decimal,
+        Double,
+        Single,
+        Int32,
+        UInt32,
+        Int64,
+        UInt64,
+        Int16,
+        UInt16,
+        Object,
+        String
     }
 }
