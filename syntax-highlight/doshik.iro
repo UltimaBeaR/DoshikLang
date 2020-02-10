@@ -145,13 +145,13 @@ contexts[] {
    
       // keywords
       : pattern {
-         regex   \= ($${__DEFAULT}|$${__NEW}|$${__EVENT}|$${__PRIVATE}|$${__PUBLIC}|$${__OUT}|$${__IF}|$${__ELSE}|$${__WHILE}|$${__FOR}|$${__BREAK}|$${__CONTINUE}|$${__RETURN})
+         regex   \= ($${__DEFAULT}|$${__NEW}|$${__EVENT}|$${__PRIVATE}|$${__PUBLIC}|$${__OUT}|$${__IF}|$${__ELSE}|$${__WHILE}|$${__FOR}|$${__BREAK}|$${__CONTINUE}|$${__RETURN})(?:[^a-zA-Z0-9_])
          styles[] = .keyword;
       }
 
       // built-in type keywords
       : pattern {
-         regex   \= ($${__BOOL}|$${__BYTE}|$${__SBYTE}|$${__CHAR}|$${__DECIMAL}|$${__DOUBLE}|$${__FLOAT}|$${__INT}|$${__UINT}|$${__LONG}|$${__ULONG}|$${__SHORT}|$${__USHORT}|$${__OBJECT}|$${__STRING}|$${__VOID})
+         regex   \= ($${__BOOL}|$${__BYTE}|$${__SBYTE}|$${__CHAR}|$${__DECIMAL}|$${__DOUBLE}|$${__FLOAT}|$${__INT}|$${__UINT}|$${__LONG}|$${__ULONG}|$${__SHORT}|$${__USHORT}|$${__OBJECT}|$${__STRING}|$${__VOID})(?:[^a-zA-Z0-9_])
          styles[] = .type_keyword;
       }
       

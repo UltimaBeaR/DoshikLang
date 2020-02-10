@@ -62,13 +62,13 @@
         </dict>
         <dict>
           <key>match</key>
-          <string>(default|new|event|private|public|out|if|else|while|for|break|continue|return)</string>
+          <string>(default|new|event|private|public|out|if|else|while|for|break|continue|return)(?:[^a-zA-Z0-9_])</string>
           <key>name</key>
           <string>keyword.other.doshik</string>
         </dict>
         <dict>
           <key>match</key>
-          <string>(bool|byte|sbyte|char|decimal|double|float|int|uint|long|ulong|short|ushort|object|string|void)</string>
+          <string>(bool|byte|sbyte|char|decimal|double|float|int|uint|long|ulong|short|ushort|object|string|void)(?:[^a-zA-Z0-9_])</string>
           <key>name</key>
           <string>keyword.other.doshik</string>
         </dict>

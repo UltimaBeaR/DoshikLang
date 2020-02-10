@@ -19,6 +19,16 @@ namespace DoshikLangCompiler.Compilation
         {
             _assemblyBuilder = new UAssemblyBuilder();
 
+            // Добавляем переменные, заданные для ивентов в список зарезервированных, некоторые из них могут использоваться, некоторые могут
+            // не использоваться, но они должны быть зарезервированы, чтобы эти имена не занял никто кроме параметров ивентов
+            foreach (var eventHandler in _compilationUnit.ExternalApi.Events)
+            {
+                foreach (var eventParameter in eventHandler.InParameters)
+                {
+                    _reservedVariableNames.Add(MakeEventParameterVariableName(eventHandler.ExternalName, eventParameter.Name));
+                }
+            }
+
             for (int constantIdx = 0; constantIdx < _compilationUnit.Constants.Count; constantIdx++)
             {
                 var constant = _compilationUnit.Constants[constantIdx];
@@ -27,6 +37,24 @@ namespace DoshikLangCompiler.Compilation
 
                 _constantNames.Add((constant, name));
                 _assemblyBuilder.AddVariable(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue, constant.IsThis);
+            }
+
+            // Объявляем переменные для всех используемых ивентов
+            foreach (var eventHandler in _compilationUnit.Events.Values.Where(x => !x.IsCustom))
+            {
+                if (eventHandler.ExternalEvent.InParameters.Count != eventHandler.Parameters.Parameters.Count)
+                    throw new Exception("external event params doesn't match actual event params");
+
+                for (var paramIdx = 0; paramIdx < eventHandler.ExternalEvent.InParameters.Count; paramIdx++)
+                {
+                    var externalParameter = eventHandler.ExternalEvent.InParameters[paramIdx];
+                    var parameter = eventHandler.Parameters.Parameters[paramIdx];
+
+                    var name = MakeEventParameterVariableName(eventHandler.ExternalEvent.ExternalName, externalParameter.Name);
+
+                    _variableNames.Add(parameter.Variable, name);
+                    _assemblyBuilder.AddVariable(false, name, parameter.Variable.Type.ExternalType.ExternalName);
+                }
             }
 
             foreach (var variable in _compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().Where(x => x.IsPublic).OrderBy(x => x.Name))
@@ -335,7 +363,7 @@ namespace DoshikLangCompiler.Compilation
 
             if (tryUseWithoutNumber)
             {
-                if (!_constantNames.Any(x => x.name == prefix) && !_variableNames.Values.Contains(prefix) && !_temporaryVariableNames.Any(x => x == prefix))
+                if (!IsVariableNameRegistered(prefix))
                     return prefix;
             }
 
@@ -345,7 +373,7 @@ namespace DoshikLangCompiler.Compilation
             {
                 name = prefix + index;
 
-                if (!_constantNames.Any(x => x.name == name) && !_variableNames.Values.Contains(name) && !_temporaryVariableNames.Any(x => x == name))
+                if (!IsVariableNameRegistered(name))
                     return name;
 
                 index++;
@@ -391,6 +419,15 @@ namespace DoshikLangCompiler.Compilation
             return "var_";
         }
 
+        private bool IsVariableNameRegistered(string variableName)
+        {
+            return
+                _constantNames.Any(x => x.name == variableName) ||
+                _variableNames.Values.Contains(variableName) ||
+                _temporaryVariableNames.IndexOf(variableName) >= 0 ||
+                _reservedVariableNames.IndexOf(variableName) >= 0;
+        }
+
         private string GetUniqueGlobalLabelPostfix()
         {
             var result = "_" + _globalLabelUniqueCounter.ToString();
@@ -414,6 +451,26 @@ namespace DoshikLangCompiler.Compilation
             return _breakContinueJumpLabels.Peek();
         }
 
+        private string MakeEventParameterVariableName(string eventExternalName, string parameterName)
+        {
+            // remove first "_"
+            string name = eventExternalName.Remove(0, 1);
+
+            name += FirstLetterToUpperCase(parameterName);
+
+            return name;
+        }
+
+        private static string FirstLetterToUpperCase(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
+            char[] chars = str.ToCharArray();
+            chars[0] = char.ToUpperInvariant(chars[0]);
+            return new string(chars);
+        }
+
         // уникальные имена для констант. constant значения нельзя сравнивать по ссылке. Нужно вызывать Equals
         private List<(Constant constant, string name)> _constantNames = new List<(Constant constant, string name)>();
 
@@ -422,6 +479,9 @@ namespace DoshikLangCompiler.Compilation
 
         // Временные переменные
         private List<string> _temporaryVariableNames = new List<string>();
+
+        // Список зарезервированных имен переменных (используется щас как минимум под параметры встроенных ивентов)
+        private List<string> _reservedVariableNames = new List<string>();
 
         // Используется для генерации уникальных имен меток для JUMP-ов
         private int _globalLabelUniqueCounter = 0;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Doshik;
+using System.Collections.Generic;
 
 // В итоге компиляции должно получиться дерево из разных элементов где в корне будет CompilationUnit
 // Нужно везде внедрить как минимум возможность иметь parent-а, чтобы можно было обходить дерево сверху вниз
@@ -16,14 +17,18 @@ namespace DoshikLangIR
     {
         // Variable type = CompilationUnitVariable
 
-        public CompilationUnit()
+        public CompilationUnit(DoshikExternalApi externalApi)
         {
             // parent scope = null, так как это рут в иерархии scope-ов
             Scope = new Scope(this, null);
+
+            ExternalApi = externalApi;
         }
 
         ICodeHierarchyNode ICodeHierarchyNode.Parent => null;
         public Scope Scope { get; private set; }
+
+        public DoshikExternalApi ExternalApi { get; private set; }
 
         public Dictionary<string, EventDeclaration> Events { get; } = new Dictionary<string, EventDeclaration>();
 

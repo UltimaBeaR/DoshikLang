@@ -18,7 +18,7 @@ namespace DoshikLangIR
 
         public override object VisitCompilationUnit([NotNull] DoshikParser.CompilationUnitContext context)
         {
-            _compilationContext.CompilationUnit = new CompilationUnit();
+            _compilationContext.CompilationUnit = new CompilationUnit(_compilationContext.ExternalApi);
 
             var memberDeclarations = context.memberDeclaration();
 

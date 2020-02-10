@@ -42,9 +42,37 @@ namespace DoshikLanguageServer.Handlers
 
             var sourceCode = source.FullSourceCode;
 
-            var typeName = FindTypeNameReverse(source.PositionToCharIdx(request.Position), source.FullSourceCode);
+            var typedEventName = FindSourceCodeReverse(source.PositionToCharIdx(request.Position), source.FullSourceCode, _eventNameRegex);
 
-            var items = externalApi.Types
+            var eventItems = externalApi.Events
+                .Select(eventHandler =>
+                {
+                    return new CompletionItem
+                    {
+                        Label = eventHandler.CodeName,
+                        Kind = CompletionItemKind.Event,
+                        TextEdit = new TextEdit
+                        {
+                            NewText = MakeEventDeclaration(eventHandler),
+                            Range = new Range(
+                                new Position
+                                {
+                                    Line = request.Position.Line,
+                                    Character = request.Position.Character - typedEventName.Length
+                                }, new Position
+                                {
+                                    Line = request.Position.Line,
+                                    Character = request.Position.Character
+                                }
+                            )
+                        }
+                    };
+                })
+                .ToArray();
+
+            var typedTypeName = FindSourceCodeReverse(source.PositionToCharIdx(request.Position), source.FullSourceCode, _typeNameRegex);
+
+            var typeItems = externalApi.Types
                 .Where(type => type.DeclaredAsConstNode || type.DeclaredAsTypeNode || type.DeclaredAsVariableNode)
                 .Select(type => (label: MakeTypeCodename(type), methodCount: type.Methods.Count, type: type))
                 .OrderByDescending(x => x.methodCount)
@@ -62,7 +90,7 @@ namespace DoshikLanguageServer.Handlers
                                 new Position
                                 {
                                     Line = request.Position.Line,
-                                    Character = request.Position.Character - typeName.Length
+                                    Character = request.Position.Character - typedTypeName.Length
                                 }, new Position
                                 {
                                     Line = request.Position.Line,
@@ -74,12 +102,12 @@ namespace DoshikLanguageServer.Handlers
                 })
                 .ToArray();
 
-            var result =  new CompletionList(items, isIncomplete: items.Length == 0);
+            var result =  new CompletionList(eventItems.Concat(typeItems).ToArray(), isIncomplete: typeItems.Length == 0);
 
             return Task.FromResult(result);
         }
 
-        private string FindTypeNameReverse(int charIdx, string sourceCode)
+        private static string FindSourceCodeReverse(int charIdx, string sourceCode, Regex validSymbolsRegex)
         {
             if (charIdx < 0)
                 return "";
@@ -93,7 +121,7 @@ namespace DoshikLanguageServer.Handlers
                 if (currentCharIdx == -1)
                     break;
 
-                if (!_typeNameRegex.IsMatch(sourceCode[currentCharIdx].ToString()))
+                if (!validSymbolsRegex.IsMatch(sourceCode[currentCharIdx].ToString()))
                     break;
 
                 sb.Append(sourceCode[currentCharIdx].ToString());
@@ -102,6 +130,27 @@ namespace DoshikLanguageServer.Handlers
             }
 
             return new string(sb.ToString().Reverse().ToArray());
+        }
+
+        private string MakeEventDeclaration(Doshik.DoshikExternalApiEvent eventHandler)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("event void " + eventHandler.CodeName + "(");
+
+            var parameters = new List<string>();
+
+            foreach (var parameter in eventHandler.InParameters)
+            {
+                parameters.Add(MakeTypeCodename(parameter.Type) + " " + (parameter.Name ?? "[noname]"));
+            }
+
+            sb.AppendLine(string.Join(", ", parameters) + ")");
+
+            sb.AppendLine("{");
+            sb.Append("}");
+
+            return sb.ToString();
         }
 
         private string MakeMethodsComment(Doshik.DoshikExternalApiType type)
@@ -186,6 +235,7 @@ namespace DoshikLanguageServer.Handlers
             }
         );
 
+        private readonly static Regex _eventNameRegex = new Regex("[_0-9a-zA-Z]{1}", RegexOptions.Compiled);
         private readonly static Regex _typeNameRegex = new Regex("[_0-9a-zA-Z:]{1}", RegexOptions.Compiled);
 
         private CompletionCapability _capability;
