@@ -301,7 +301,8 @@ namespace DoshikLangIR
                 if (
                     type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::GameObject").DataType &&
                     type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Transform").DataType &&
-                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Object").DataType //< UdonBehaviour
+                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("UnityEngine::Object").DataType && //< UdonBehaviour
+                    type != _compilationContext.TypeLibrary.FindTypeByCodeNameString("VRCUdon::UdonBehaviour").DataType //< UdonBehaviour
                 )
                 {
                     throw _compilationContext.ThrowCompilationError("Type argument for GetThis<T>() must be GameObject, Transform, or UdonBehaviour (UnityEngine::Object)");

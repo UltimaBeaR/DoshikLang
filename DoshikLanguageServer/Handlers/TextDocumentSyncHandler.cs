@@ -106,35 +106,56 @@ namespace DoshikLanguageServer.Handlers
 
             if (!clear)
             {
-                var documentPath = documentUri.ToString();
+                var externalApi = _externalApiProvider.GetExternalApi();
 
-                IRBuilder.BuildCodeRepresentation(
-                    _documentsSourceCode.GetDocumentSourceCode(documentPath).FullSourceCode,
-                    _externalApiProvider.GetExternalApi(),
-                    out var compilationErrors
-                );
-
-                if (compilationErrors != null)
+                if (externalApi != null)
                 {
-                    foreach (var compilationError in compilationErrors)
+                    var documentPath = documentUri.ToString();
+
+                    IRBuilder.BuildCodeRepresentation(
+                        _documentsSourceCode.GetDocumentSourceCode(documentPath).FullSourceCode,
+                        externalApi,
+                        out var compilationErrors
+                    );
+
+                    if (compilationErrors != null)
                     {
-                        var diagnostic = new Diagnostic();
-
-                        diagnostic.Severity = DiagnosticSeverity.Error;
-
-                        diagnostic.Message = compilationError.Message;
-
-                        diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range()
+                        foreach (var compilationError in compilationErrors)
                         {
-                            Start = new Position(compilationError.LineIdx, compilationError.CharInLineIdx),
-                            End = new Position(
-                                compilationError.LineIdxTo == null ? compilationError.LineIdx : compilationError.LineIdxTo.Value,
-                                compilationError.CharInLineIdxTo == null ? compilationError.CharInLineIdx : compilationError.CharInLineIdxTo.Value
-                            )
-                        };
+                            var diagnostic = new Diagnostic();
 
-                        diagnostics.Add(diagnostic);
+                            diagnostic.Severity = DiagnosticSeverity.Error;
+
+                            diagnostic.Message = compilationError.Message;
+
+                            diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range()
+                            {
+                                Start = new Position(compilationError.LineIdx, compilationError.CharInLineIdx),
+                                End = new Position(
+                                    compilationError.LineIdxTo == null ? compilationError.LineIdx : compilationError.LineIdxTo.Value,
+                                    compilationError.CharInLineIdxTo == null ? compilationError.CharInLineIdx : compilationError.CharInLineIdxTo.Value
+                                )
+                            };
+
+                            diagnostics.Add(diagnostic);
+                        }
                     }
+                }
+                else
+                {
+                    var diagnostic = new Diagnostic();
+
+                    diagnostic.Severity = DiagnosticSeverity.Error;
+
+                    diagnostic.Message = "Doshik external Api cache was not found. Try to update doshik script from unity3d, that shoud rebuild cache";
+
+                    diagnostic.Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range()
+                    {
+                        Start = new Position(0, 0),
+                        End = new Position(0, 0)
+                    };
+
+                    diagnostics.Add(diagnostic);   
                 }
             }
 

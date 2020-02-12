@@ -89,7 +89,7 @@ namespace Doshik
                 if (!handled)
                     handled = TryHandleTypePrefix("VRCSDKBase", "VRCSDKBase", ref firstNamespaceSegment, ref name);
                 if (!handled)
-                    handled = TryHandleTypePrefix("VRCUdonCommonInterfaces", "VRCUdonCommonInterfaces", ref firstNamespaceSegment, ref name);
+                    handled = TryHandleTypePrefix("VRCUdon", "VRCUdon", ref firstNamespaceSegment, ref name);
 
                 if (firstNamespaceSegment == null)
                 {
@@ -276,7 +276,8 @@ namespace Doshik
                 var apiMethod = GetOrCreateMethod(apiType, externalMethodName);
 
                 bool methodOverloadCreated;
-                var apiMethodOverload = GetOrCreateMethodOverload(apiMethod, externalMethodSignatureName, out methodOverloadCreated);
+                // externalTypeName в данном случае не всегда будет равно apiType.ExternalName
+                var apiMethodOverload = GetOrCreateMethodOverload(apiMethod, externalTypeName, externalMethodSignatureName, out methodOverloadCreated);
 
                 if (!methodOverloadCreated)
                 {
@@ -289,10 +290,21 @@ namespace Doshik
                 for (var nodeInputParameterIdx = 0; nodeInputParameterIdx < node.InputParameters.Length; nodeInputParameterIdx++)
                 {
                     var nodeParameter = node.InputParameters[nodeInputParameterIdx];
-
+                     
                     var parameterApiType = GetOrCreateApiType(api, nodeParameter.Type);
 
-                    var isInstanceParameter = nodeInputParameterIdx == 0 && nodeParameter.Name == "instance" && apiType == parameterApiType;
+                    var isInstanceParameter = false;
+                    
+                    if (nodeInputParameterIdx == 0 && nodeParameter.Name == "instance")
+                    {
+                        // ToDo: раньше я проверял еще на apiType == parameterApiType для того чтобы уточнить что это именно instance метод,
+                        // но для интерфейсов, которые имплементятся в udonbehaviour-е почему-то первый параметр имеет тип UnityEngine.Object,
+                        // а не тип интерфейса (который указан в текущем apiType), по этому я оставляю только проверку по имени первого параметра
+                        // есть еще варианты с проверкой по extern-сигнатуры, т.к. для instance методов в ней не указывается instance параметр,
+                        // но там вроде тоже конвенция нестабильно соблюдается, так что не хочется на нее опираться.
+
+                        isInstanceParameter = true;
+                    }
 
                     if (isInstanceParameter)
                     {
@@ -386,11 +398,23 @@ namespace Doshik
             if (externalName.EndsWith("Ref"))
                 externalName = externalName.Remove(externalName.Length - "Ref".Length, "Ref".Length);
 
+            // хз почему так, но видимо так надо (по другому не работает). В коде графов видел похожие замены
+            switch (externalName)
+            {
+                case "VRCUdonCommonInterfacesIUdonEventReceiver": externalName = "VRCUdonUdonBehaviour"; break;
+                case "VRCUdonCommonInterfacesIUdonEventReceiverArray": externalName = "VRCUdonUdonBehaviourArray"; break;
+            }
+
             var apiType = api.Types.Find(x => x.ExternalName == externalName);
 
             if (apiType == null)
             {
-                apiType = new DoshikExternalApiType { ExternalName = externalName, Methods = new List<DoshikExternalApiTypeMethod>() };
+                apiType = new DoshikExternalApiType
+                {
+                    ExternalName = externalName,
+                    Methods = new List<DoshikExternalApiTypeMethod>()
+                };
+
                 api.Types.Add(apiType);
             }
 
@@ -425,7 +449,7 @@ namespace Doshik
             return apiMethod;
         }
 
-        private static DoshikExternalApiTypeMethodOverload GetOrCreateMethodOverload(DoshikExternalApiTypeMethod apiMethod, string externalName, out bool created)
+        private static DoshikExternalApiTypeMethodOverload GetOrCreateMethodOverload(DoshikExternalApiTypeMethod apiMethod, string externalTypeName, string externalName, out bool created)
         {
             created = false;
 
@@ -436,6 +460,7 @@ namespace Doshik
                 apiMethodOverload = new DoshikExternalApiTypeMethodOverload
                 {
                     Method = apiMethod,
+                    ExternalTypeName = externalTypeName,
                     ExternalName = externalName,
                     InParameters = new List<DoshikExternalApiMethodParameter>(),
                     ExtraOutParameters = new List<DoshikExternalApiMethodParameter>()

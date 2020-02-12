@@ -9,6 +9,9 @@ namespace DoshikLangIR
     {
         public static CompilationUnit BuildCodeRepresentation(string sourceCode, DoshikExternalApi externalApi, out List<CompilationError> compilationErrors)
         {
+            if (externalApi == null)
+                throw new System.ArgumentNullException("external api is null");
+
             var compilationContext = new CompilationContext()
             {
                 ExternalApi = externalApi

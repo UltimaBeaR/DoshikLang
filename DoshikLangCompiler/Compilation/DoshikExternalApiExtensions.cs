@@ -12,7 +12,9 @@ namespace DoshikLangCompiler.Compilation
         {
             var sb = new StringBuilder();
 
-            sb.Append(overload.Method.Type.ExternalName);
+            //sb.Append(overload.Method.Type.ExternalName);
+            sb.Append(overload.ExternalTypeName);
+
             sb.Append(".__");
             sb.Append(overload.Method.ExternalName);
             sb.Append("__");

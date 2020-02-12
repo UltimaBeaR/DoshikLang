@@ -36,6 +36,8 @@ namespace DoshikLanguageServer.Handlers
         public Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
         {
             var externalApi = _externalApiProvider.GetExternalApi();
+            if (externalApi == null)
+                return Task.FromResult<CompletionList>(null);
 
             var documentPath = request.TextDocument.Uri.ToString();
             var source = _documentsSourceCode.GetDocumentSourceCode(documentPath);

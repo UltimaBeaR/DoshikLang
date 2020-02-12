@@ -1,5 +1,4 @@
-event void OnRenderImage(UnityEngine::RenderTexture one, UnityEngine::RenderTexture two)
+event void Start()
 {
-    UnityEngine::Debug.Log((object)one);
-    UnityEngine::Debug.Log((object)two);
+    UnityEngine::Debug.Log((object)GetThis<VRCUdon::UdonBehaviour>());
 }
