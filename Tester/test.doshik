@@ -1,9 +1,9 @@
-event void Start()
+event void OnAnimatorIK(System::Int32 layerIndex)
 {
-    VRCUdon::UdonBehaviour thisBehaviour1 = GetThis<VRCUdon::UdonBehaviour>();
+}
 
-    UnityEngine::Component thisBehaviour2 = GetThis<UnityEngine::GameObject>()
-        .GetComponent(typeof(VRCUdon::UdonBehaviour));
-
-    UnityEngine::Debug.Log((object)((object)thisBehaviour1 == (object)thisBehaviour2));
+event void sdfsd()
+{
+    int a = 5;
+    UnityEngine::Debug.Log((object)a);
 }

@@ -54,6 +54,9 @@ namespace DoshikLangIR
 
             if (leftSideExpression is VariableReferenceExpression variableReferenceExpression)
             {
+                if (variableReferenceExpression.Variable.Type != rightSideExpression.ReturnOutputSlot.Type)
+                    throw _compilationContext.ThrowCompilationError("left side variable type differs from right side assignment type");
+
                 var setVariableExpression = new SetVariableExpression();
                 setVariableExpression.Variable = variableReferenceExpression.Variable;
 
@@ -63,6 +66,7 @@ namespace DoshikLangIR
 
                 setVariableExpression.ReturnOutputSlot = assignmentExpression.ReturnOutputSlot;
                 setVariableExpression.ReturnOutputSlot.OutputSideExpression = setVariableExpression;
+
                 if (_expressionTree.RootExpression == assignmentExpression)
                     _expressionTree.RootExpression = setVariableExpression;
             }

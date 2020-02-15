@@ -95,81 +95,105 @@ namespace DoshikLangIR
         {
             _compilationContext.SetParsingAntlrContext(context);
 
-            var isEvent = context.EVENT() != null;
+            var methodIsEvent = context.EVENT() != null;
+            var methodReturnTypeCtx = context.typeTypeOrVoid();
+            var methodCodeName = context.methodName.Text;
+            var methodParemtersCtx = context.formalParameters();
+            var methodBodyCtx = context.block();
 
             // Пока не поддерживаю кастомные функции (не ивенты)
-            if (!isEvent)
+            if (!methodIsEvent)
                 throw _compilationContext.ThrowCompilationError($"custom functions is not supported yet");
 
             // Если это event
 
+            HandleEventDeclaration(methodReturnTypeCtx, methodCodeName, methodParemtersCtx, methodBodyCtx);
+
+            return null;
+        }
+
+        private void HandleEventDeclaration(
+            DoshikParser.TypeTypeOrVoidContext eventReturnTypeCtx,
+            string eventCodeName,
+            DoshikParser.FormalParametersContext eventParametersCtx,
+            DoshikParser.BlockContext eventBodyCtx
+        )
+        {
             var eventDeclaration = new EventDeclaration(_compilationContext.CompilationUnit);
             eventDeclaration.Parameters = new MethodDeclarationParameters(eventDeclaration, _compilationContext.CompilationUnit.Scope);
 
             _currentMethodDeclaration = eventDeclaration;
 
-            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeTypeOrVoid());
+            eventDeclaration.Name = eventCodeName;
+
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, eventReturnTypeCtx);
             foundType.ThrowIfNotFound(_compilationContext);
             eventDeclaration.ReturnTypeOrVoid = foundType.DataType;
 
+            eventDeclaration.ExternalEvent = _compilationContext.FindExternalApiEventByCodeName(eventDeclaration.Name);
+
+            if (_compilationContext.CompilationUnit.Events.ContainsKey(eventDeclaration.Name))
+                throw _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
+
+            eventDeclaration.Parameters.Parameters.AddRange((List<MethodDeclarationParameter>)Visit(eventParametersCtx));
+
+            eventDeclaration.AntlrBody = eventBodyCtx;
+
+            if (eventDeclaration.IsCustom)
+                ValidateCustomEvent(eventDeclaration);
+            else
+                ValidateBuiltInEvent(eventDeclaration);
+
+            _compilationContext.CompilationUnit.Events[eventDeclaration.Name] = eventDeclaration;
+        }
+
+        private void ValidateCustomEvent(EventDeclaration eventDeclaration)
+        {
+            // Кастомные события (во всяком случае сейчас) не должны иметь параметров и возвращаемый тип должен быть void
+            // также кастомные события не могут называться так же как external имена стандартных событий, т.к. при экспорте будут использоваться codename этих событий
+            // в отлчиии от стандартных, у которых при экспорте используются externalname
+
+            var externalEvent = _compilationContext.FindExternalApiEventByExternalName(eventDeclaration.Name);
+
+            if (externalEvent != null)
+                throw _compilationContext.ThrowCompilationError($"custom event name cannot match to internal built-in event name. if you are looking for built-in event, it should be named " + externalEvent.CodeName + ", not " + externalEvent.ExternalName);
+
+            if (!eventDeclaration.ReturnTypeOrVoid.IsVoid || eventDeclaration.Parameters.Parameters.Count > 0)
+                throw _compilationContext.ThrowCompilationError($"custom events should not have any parameters and output type must be void");
+        }
+
+        private void ValidateBuiltInEvent(EventDeclaration eventDeclaration)
+        {
             // Не знаю, бывают ли случаи когда событие может что-то возвращать.
             // Если увижу пример - сниму это ограничение (тогда в этом месте надо будет проверять что возвращаемый тип конкретного события является тем что описан в апи)
             // Вообще в апи там есть ивенты с output параметрами но похоже что это не возвращаемое значение, а out params
             if (!eventDeclaration.ReturnTypeOrVoid.IsVoid)
                 throw _compilationContext.ThrowCompilationError($"event's return type must be void, but declared as { eventDeclaration.ReturnTypeOrVoid }");
 
-            eventDeclaration.Name = context.methodName.Text;
+            // проверяем что параметры соответствуют указанным в external api
 
-            // сделал на всяких случай, чтобы не было неоднозначностей при генерировании итогового assembly, т.к. похоже что _ это зарезервировано для
-            // имен встроенных ивентов. Из кода дошика же я зарезервированные имена ивентов преобразовываю в те, которые начинаются НЕ с _
-            if (eventDeclaration.Name.StartsWith("_"))
+            var declarationParamsAreOk =
+                eventDeclaration.ExternalEvent.InParameters.Count == eventDeclaration.Parameters.Parameters.Count
+                && !eventDeclaration.Parameters.Parameters.Any(x => x.IsOutput); //< don't support out params for built-in events yet
+
+            if (declarationParamsAreOk)
             {
-                throw _compilationContext.ThrowCompilationError($"event names cannot start from \"_\" symbol");
-            }
-
-            eventDeclaration.ExternalEvent = _compilationContext.FindExternalApiEvent(eventDeclaration.Name);
-
-            if (eventDeclaration.IsCustom)
-                throw _compilationContext.ThrowCompilationError($"custom events is not supported yet. event name must be one of predefined names");
-
-            if (_compilationContext.CompilationUnit.Events.ContainsKey(eventDeclaration.Name))
-                throw _compilationContext.ThrowCompilationError($"event handler { eventDeclaration.Name } is already defined");
-
-            eventDeclaration.Parameters.Parameters.AddRange((List<MethodDeclarationParameter>)Visit(context.formalParameters()));
-
-            if (!eventDeclaration.IsCustom)
-            {
-                // Если ивент не кастомный, проверяем что параметры соответствуют указанным в external api
-
-                var declarationParamsAreOk =
-                    eventDeclaration.ExternalEvent.InParameters.Count == eventDeclaration.Parameters.Parameters.Count
-                    && !eventDeclaration.Parameters.Parameters.Any(x => x.IsOutput); //< don't support out params for built-in events yet
-
-                if (declarationParamsAreOk)
+                for (int paramIdx = 0; paramIdx < eventDeclaration.ExternalEvent.InParameters.Count; paramIdx++)
                 {
-                    for (int paramIdx = 0; paramIdx < eventDeclaration.ExternalEvent.InParameters.Count; paramIdx++)
-                    {
-                        var externalApiParam = eventDeclaration.ExternalEvent.InParameters[paramIdx];
-                        var declarationParam = eventDeclaration.Parameters.Parameters[paramIdx];
+                    var externalApiParam = eventDeclaration.ExternalEvent.InParameters[paramIdx];
+                    var declarationParam = eventDeclaration.Parameters.Parameters[paramIdx];
 
-                        // Проверяем только типы, название параметров может отличаться от заданного в api
-                        if (declarationParam.Variable.Type.ExternalType.ExternalName != externalApiParam.Type.ExternalName)
-                        {
-                            declarationParamsAreOk = false;
-                            break;
-                        }
+                    // Проверяем только типы, название параметров может отличаться от заданного в api
+                    if (declarationParam.Variable.Type.ExternalType.ExternalName != externalApiParam.Type.ExternalName)
+                    {
+                        declarationParamsAreOk = false;
+                        break;
                     }
                 }
-
-                if (!declarationParamsAreOk)
-                    throw _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event signature");
             }
 
-            eventDeclaration.AntlrBody = context.block();
-
-            _compilationContext.CompilationUnit.Events[eventDeclaration.Name] = eventDeclaration;
-
-            return null;
+            if (!declarationParamsAreOk)
+                throw _compilationContext.ThrowCompilationError($"declared event parameters doesn't match to predefined built-in event signature");
         }
 
         // возвращает List<MethodDeclarationParameter>

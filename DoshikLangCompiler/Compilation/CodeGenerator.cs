@@ -45,7 +45,7 @@ namespace DoshikLangCompiler.Compilation
                     _assemblyBuilder.AddVariableAsDefaultValue(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue);
             }
 
-            // Объявляем переменные для всех используемых ивентов
+            // Объявляем переменные для всех используемых built-in ивентов
             foreach (var eventHandler in _compilationUnit.Events.Values.Where(x => !x.IsCustom))
             {
                 if (eventHandler.ExternalEvent.InParameters.Count != eventHandler.Parameters.Parameters.Count)
@@ -80,17 +80,15 @@ namespace DoshikLangCompiler.Compilation
             }
 
             // Сначала просто добавляем все ивенты, чтобы было их определение
-            foreach (var eventHandler in _compilationUnit.Events.Values.OrderBy(x => x.ExternalEvent.ExternalName))
+            foreach (var eventHandler in _compilationUnit.Events.Values.OrderBy(x => x.Name).ThenBy(x => x.IsCustom))
             {
-                _assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
+                _assemblyBuilder.AddOrGetEvent(GetEventAssemblyName(eventHandler));
             }
 
             // Генерируем код внутри каждого из предопределенных ивентов, попутно генерируя переменные
-            foreach (var eventHandler in _compilationUnit.Events.Values.Where(x => !x.IsCustom).OrderBy(x => x.ExternalEvent.ExternalName))
+            foreach (var eventHandler in _compilationUnit.Events.Values)
             {
-                _currentEventBodyEmitter = _assemblyBuilder.AddOrGetEvent(eventHandler.ExternalEvent.ExternalName);
-
-                // ToDo: как-то обработать параметры в методе. Вроде как под них есть захардкоженные названия переменных, которые нужно объявить?
+                _currentEventBodyEmitter = _assemblyBuilder.AddOrGetEvent(GetEventAssemblyName(eventHandler));
 
                 GenerateCodeForBlockOfStatements(eventHandler.BodyBlock);
 
@@ -98,6 +96,13 @@ namespace DoshikLangCompiler.Compilation
             }
 
             return _assemblyBuilder.MakeCode(_humanReadable);
+        }
+
+        private string GetEventAssemblyName(EventDeclaration eventDeclaration)
+        {
+            return eventDeclaration.IsCustom
+                ? eventDeclaration.Name
+                : eventDeclaration.ExternalEvent.ExternalName;
         }
 
         private void GenerateCodeForStatement(Statement statement)

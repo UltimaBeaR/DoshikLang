@@ -54,11 +54,6 @@ namespace DoshikLangIR
             throw ThrowCompilationErrorForKnownRange(message, 0, 0, null, null);
         }
 
-        public DoshikExternalApiEvent FindExternalApiEvent(string eventCodeName)
-        {
-            return ExternalApi.Events.FirstOrDefault(x => x.CodeName == eventCodeName);
-        }
-
         /// <summary>
         /// Устанавливает текущее поддерево anlr-а которое парсится в данный момент.
         /// Используется для того чтобы установить область в которой произошла ошибка, при генерации ошибки
@@ -83,6 +78,16 @@ namespace DoshikLangIR
         public void PopParsingContext()
         {
             _parsingAntlrContext = _reservedParsingAntlrContextStack.Pop();
+        }
+
+        public DoshikExternalApiEvent FindExternalApiEventByCodeName(string eventCodeName)
+        {
+            return ExternalApi.Events.FirstOrDefault(x => x.CodeName == eventCodeName);
+        }
+
+        public DoshikExternalApiEvent FindExternalApiEventByExternalName(string externalName)
+        {
+            return ExternalApi.Events.FirstOrDefault(x => x.ExternalName == externalName);
         }
 
         private IParseTree _parsingAntlrContext = null;

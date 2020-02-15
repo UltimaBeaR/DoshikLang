@@ -497,6 +497,7 @@ namespace DoshikLangIR
             var result = new AssignmentExpression();
             result.Operator = node.Operator;
 
+            // ToDo: не помню почему тут void разрешен, но вроде просто для того чтобы отсрочить првоерку на следующий этап (а по сути тут не может быть void)
             result.Left = FindExpressionByExpressionNode(node.Left, true).ReturnOutputSlot;
             result.Left.InputSideExpression = result;
             result.InputSlots.Add(result.Left);
