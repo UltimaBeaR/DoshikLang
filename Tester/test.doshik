@@ -1,4 +1,9 @@
 event void Start()
 {
-    UnityEngine::Debug.Log((object)GetThis<VRCUdon::UdonBehaviour>());
+    VRCUdon::UdonBehaviour thisBehaviour1 = GetThis<VRCUdon::UdonBehaviour>();
+
+    UnityEngine::Component thisBehaviour2 = GetThis<UnityEngine::GameObject>()
+        .GetComponent(typeof(VRCUdon::UdonBehaviour));
+
+    UnityEngine::Debug.Log((object)((object)thisBehaviour1 == (object)thisBehaviour2));
 }

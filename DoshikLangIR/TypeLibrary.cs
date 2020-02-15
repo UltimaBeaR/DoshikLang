@@ -44,14 +44,14 @@ namespace DoshikLangIR
 
         public DataType FindByKnownType(KnownType type)
         {
-            return FindByExternalTypeName(_intrinsicTypeData[type].ExternalTypeName);
+            return FindByExternalTypeName(_knownTypeData[type].ExternalTypeName);
         }
 
         public DataType FindTypeByFullyQualifiedExternalTypeCodeNameOrIntrinsicTypeName(string[] fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName)
         {
             if (fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName.Length == 1)
             {
-                var foundIntrinsicValue = _intrinsicTypeData.Values.FirstOrDefault(x => x.IntrinsicCodeName == fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName[0]);
+                var foundIntrinsicValue = _knownTypeData.Values.FirstOrDefault(x => x.IntrinsicCodeName == fullyQualifiedExternalTypeCodeNameOrIntrinsiTypeName[0]);
 
                 if (foundIntrinsicValue != null)
                     return FindByExternalTypeName(foundIntrinsicValue.ExternalTypeName);
@@ -245,7 +245,7 @@ namespace DoshikLangIR
             }
         }
 
-        private static Dictionary<KnownType, IntrinsicTypeData> _intrinsicTypeData { get; } = new Dictionary<KnownType, IntrinsicTypeData>()
+        private static Dictionary<KnownType, IntrinsicTypeData> _knownTypeData { get; } = new Dictionary<KnownType, IntrinsicTypeData>()
         {
             { KnownType.Boolean, new IntrinsicTypeData { IntrinsicCodeName = "bool", ExternalTypeName = "SystemBoolean" } },
             { KnownType.Byte, new IntrinsicTypeData { IntrinsicCodeName = "byte", ExternalTypeName = "SystemByte" } },
@@ -261,7 +261,9 @@ namespace DoshikLangIR
             { KnownType.Int16, new IntrinsicTypeData { IntrinsicCodeName = "short", ExternalTypeName = "SystemInt16" } },
             { KnownType.UInt16, new IntrinsicTypeData { IntrinsicCodeName = "ushort", ExternalTypeName = "SystemUInt16" } },
             { KnownType.Object, new IntrinsicTypeData { IntrinsicCodeName = "object", ExternalTypeName = "SystemObject" } },
-            { KnownType.String, new IntrinsicTypeData { IntrinsicCodeName = "string", ExternalTypeName = "SystemString" } }
+            { KnownType.String, new IntrinsicTypeData { IntrinsicCodeName = "string", ExternalTypeName = "SystemString" } },
+
+            { KnownType.Type, new IntrinsicTypeData { IntrinsicCodeName = null, ExternalTypeName = "SystemType" } },
         };
 
         private class IntrinsicTypeData
@@ -289,6 +291,8 @@ namespace DoshikLangIR
         Int16,
         UInt16,
         Object,
-        String
+        String,
+
+        Type
     }
 }

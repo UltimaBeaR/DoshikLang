@@ -4,6 +4,7 @@ using VRC.Udon.Common.Interfaces;
 using VRC.Udon.Editor;
 using Doshik;
 using DoshikLangCompiler.Compilation;
+using System.Linq;
 
 namespace DoshikSDK
 {
@@ -66,7 +67,7 @@ namespace DoshikSDK
                     {
                         base.DoRefreshProgramActions();
 
-                        ApplyDefaultValuesToHeap(output.DefaultHeapValues);
+                        ApplyDefaultValuesToHeap(TranslateDefaultValues(output.DefaultHeapValues));
                     }
                 }
                 else
@@ -89,7 +90,24 @@ namespace DoshikSDK
             }
         }
 
-        protected void ApplyDefaultValuesToHeap(Dictionary<string, (object value, Type type)> heapDefaultValues)
+        private Dictionary<string, (object value, Type type)> TranslateDefaultValues(Dictionary<string, DoshikLangCompiler.DefaultHeapValue> defaultValues)
+        {
+            return defaultValues.ToDictionary(x => x.Key, x =>
+            {
+                if (x.Value is DoshikLangCompiler.ConcreteValueDefaultHeapValue concreteValue)
+                {
+                    return (concreteValue.Value, concreteValue.Type);
+                }
+                else if (x.Value is DoshikLangCompiler.TypeAsStringDefaultHeapValue typeAsString)
+                {
+                    return (Type.GetType(typeAsString.TypeAsString), typeof(Type));
+                }
+                else
+                    throw new NotImplementedException();
+            });
+        }
+
+        private void ApplyDefaultValuesToHeap(Dictionary<string, (object value, Type type)> heapDefaultValues)
         {
             IUdonSymbolTable symbolTable = program?.SymbolTable;
             IUdonHeap heap = program?.Heap;

@@ -39,12 +39,35 @@ namespace DoshikLangCompiler.UAssemblyGeneration
             return eventBody;
         }
 
-        public void AddVariable(bool isPublic, string name, string type, object defaultValue = null, bool isThisDefaultValue = false)
+        public void AddVariableAsThisDefaultValue(bool isPublic, string name, string type)
+        {
+            AddVariable(isPublic, name, type, null, true, null);
+        }
+
+        public void AddVariableAsTypeDefaultValue(bool isPublic, string name, string type, string defaultValueAsTypeAsString)
+        {
+            AddVariable(isPublic, name, type, null, false, defaultValueAsTypeAsString);
+        }
+
+        public void AddVariableAsDefaultValue(bool isPublic, string name, string type, object defaultValue)
+        {
+            AddVariable(isPublic, name, type, defaultValue, false, null);
+        }
+
+        private void AddVariable(bool isPublic, string name, string type, object defaultValue, bool isThisDefaultValue, string defaultValueAsTypeAsString)
         {
             if (_variables.ContainsKey(name))
                 throw new Exception("variable with such name already exists");
 
-            _variables[name] = new Variable() { IsPublic = isPublic, Name = name, Type = type, DefaultValue = defaultValue, IsThisDefaultValue = isThisDefaultValue };
+            _variables[name] = new Variable()
+            {
+                IsPublic = isPublic,
+                Name = name,
+                Type = type,
+                DefaultValue = defaultValue,
+                IsThisDefaultValue = isThisDefaultValue,
+                DefaultValueAsTypeString = defaultValueAsTypeAsString
+            };
         }
 
         private PreparedToCodeGenerationData PrepareToCodeGeneration()
@@ -245,15 +268,19 @@ namespace DoshikLangCompiler.UAssemblyGeneration
             return sb.ToString();
         }
 
-        private Dictionary<string, (object value, Type type)> MakeDefaultHeapValues()
+        private Dictionary<string, DefaultHeapValue> MakeDefaultHeapValues()
         {
-            var result = new Dictionary<string, (object value, Type type)>();
+            var result = new Dictionary<string, DefaultHeapValue>();
             foreach (var variable in _variables.Values)
             {
-                if (variable.IsThisDefaultValue || variable.DefaultValue == null)
+                if (variable.IsThisDefaultValue)
                     continue;
 
-                result.Add(variable.Name, (variable.DefaultValue, variable.DefaultValue.GetType()));
+                if (variable.DefaultValueAsTypeString != null)
+                    result.Add(variable.Name, new TypeAsStringDefaultHeapValue { TypeAsString = variable.DefaultValueAsTypeString });
+
+                if (variable.DefaultValue != null)
+                    result.Add(variable.Name, new ConcreteValueDefaultHeapValue { Value = variable.DefaultValue, Type = variable.DefaultValue.GetType() });
             }
 
             return result;
@@ -271,6 +298,8 @@ namespace DoshikLangCompiler.UAssemblyGeneration
             public object DefaultValue { get; set; }
 
             public bool IsThisDefaultValue { get; set; }
+
+            public string DefaultValueAsTypeString { get; set; }
 
             public bool IsPublic { get; set; }
         }

@@ -55,6 +55,16 @@ namespace DoshikLangIR
         public DataType Type { get; set; }
     }
 
+    public class TypeOfExpressionNode : ExpressionNode<DoshikParser.TypeOfExpressionContext>
+    {
+        public TypeOfExpressionNode(DoshikParser.TypeOfExpressionContext antlrContext)
+            : base(antlrContext)
+        {
+        }
+
+        public DataType Type { get; set; }
+    }
+
     public class MethodCallExpressionNode : ExpressionNode<DoshikParser.MethodCallExpressionContext>
     {
         public MethodCallExpressionNode(DoshikParser.MethodCallExpressionContext antlrContext)

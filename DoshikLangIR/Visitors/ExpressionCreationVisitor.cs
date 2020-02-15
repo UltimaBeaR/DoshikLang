@@ -137,6 +137,23 @@ namespace DoshikLangIR
             return null;
         }
 
+        public override object VisitTypeOfExpression([NotNull] DoshikParser.TypeOfExpressionContext context)
+        {
+            SetWholeExpression(context);
+            VisitChildren(context);
+            _compilationContext.SetParsingAntlrContext(context);
+
+            var node = new TypeOfExpressionNode(context);
+
+            var foundType = GetTypeNameVisitor.Apply(_compilationContext, context.typeOf().typeType());
+            foundType.ThrowIfNotFound(_compilationContext);
+            node.Type = foundType.DataType;
+
+            Sequence.Sequence.Add(node);
+
+            return null;
+        }
+
         public override object VisitMethodCallExpression([NotNull] DoshikParser.MethodCallExpressionContext context)
         {
             SetWholeExpression(context);

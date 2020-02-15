@@ -1,6 +1,5 @@
 ﻿using Doshik;
 using DoshikLangIR;
-using System;
 using System.Collections.Generic;
 
 namespace DoshikLangCompiler.Compilation
@@ -59,7 +58,7 @@ namespace DoshikLangCompiler.Compilation
         /// <summary>
         /// Начальные значения переменных, объявленных в heap. Во всяком случае сейчас их невозможно объявить в коде, только извне.
         /// </summary>
-        public Dictionary<string, (object value, Type type)> DefaultHeapValues { get; set; }
+        public Dictionary<string, DefaultHeapValue> DefaultHeapValues { get; set; }
 
         public List<CompilationError> CompilationErrors { get; set; }
     }

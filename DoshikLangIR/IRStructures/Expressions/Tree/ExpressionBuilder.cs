@@ -64,6 +64,8 @@ namespace DoshikLangIR
                 return HandleDotExpressionNode(dotExpressionNode);
             else if (node is DefaultOfTypeExpressionNode defaultOfTypeExpressionNode)
                 return HandleDefaultOfTypeExpressionNode(defaultOfTypeExpressionNode);
+            else if (node is TypeOfExpressionNode typeOfExpressionNode)
+                return HandleTypeOfExpressionNode(typeOfExpressionNode);
             else if (node is MethodCallExpressionNode methodCallExpressionNode)
                 return HandleMethodCallExpressionNode(methodCallExpressionNode);
             else if (node is NewCallExpressionNode newCallExpressionNode)
@@ -222,7 +224,7 @@ namespace DoshikLangIR
 
             result.ValueType = _compilationContext.TypeLibrary.FindByKnownType(knownType);
 
-            _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue);
+            _compilationContext.CompilationUnit.AddConstant(Constant.CreateAsDotnetValue(result.ValueType, result.DotnetValue));
 
             // Определяем выходное значение
             result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
@@ -287,6 +289,25 @@ namespace DoshikLangIR
             return CreateDefaultOfTypeExpression(_compilationContext, node.Type);
         }
 
+        private IExpression HandleTypeOfExpressionNode(TypeOfExpressionNode node)
+        {
+            if (!node.Type.ExternalType.DeclaredAsTypeNode)
+                throw _compilationContext.ThrowCompilationError("specified type cannot be used in typeof() operator");
+
+            var result = new ConstantValueExpression();
+
+            var constant = Constant.CreateAsDotnetTypeString(node.Type.ExternalType.DotnetTypeString, _compilationContext.TypeLibrary);
+
+            result.ValueType = constant.Type;
+            result.DotnetTypeString = constant.DotnetTypeString;
+
+            _compilationContext.CompilationUnit.AddConstant(constant);
+
+            result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
+
+            return result;
+        }
+
         private IExpression HandleMethodCallExpressionNode(MethodCallExpressionNode node)
         {
             // Встроенные функции:
@@ -309,11 +330,11 @@ namespace DoshikLangIR
 
                 var result = new ConstantValueExpression();
 
-                result.DotnetValue = null;
-                result.IsThis = true;
                 result.ValueType = type;
 
-                _compilationContext.CompilationUnit.AddConstant(result.ValueType, result.DotnetValue, true);
+                result.IsThis = true;
+
+                _compilationContext.CompilationUnit.AddConstant(Constant.CreateAsThis(type));
 
                 // Определяем выходное значение
                 result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);
@@ -501,7 +522,7 @@ namespace DoshikLangIR
             // ToDo: надо удостовериться что все дефолтные значения безопасны для копирования.
             // То есть проверить что не будет такого что дефолтное значение это какая нибудь ссылка с готовым объектом
             // (тогда можно будет изменить его через вызов метода и это сломает константу для всех мест где ее используют)
-            compilationContext.CompilationUnit.AddConstant(result.ValueType, null);
+            compilationContext.CompilationUnit.AddConstant(Constant.CreateAsDotnetValue(result.ValueType, null));
 
             // Определяем выходное значение
             result.ReturnOutputSlot = new ExpressionSlot(result.ValueType, result);

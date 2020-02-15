@@ -153,9 +153,11 @@ namespace Doshik
                 apiType.DeclaredAsConstNode = true;
 
                 if (apiType.DotnetTypeString == null)
-                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
+                {
+                    apiType.DotnetTypeString = GetDotnetTypeAsString(apiType, node);
+                }
 
-                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
+                if (apiType.DotnetTypeString != GetDotnetTypeAsString(apiType, node))
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -188,9 +190,9 @@ namespace Doshik
                 apiType.DeclaredAsTypeNode = true;
 
                 if (apiType.DotnetTypeString == null)
-                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
+                    apiType.DotnetTypeString = GetDotnetTypeAsString(apiType, node);
 
-                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
+                if (apiType.DotnetTypeString != GetDotnetTypeAsString(apiType, node))
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -232,9 +234,9 @@ namespace Doshik
                 apiType.DeclaredAsVariableNode = true;
 
                 if (apiType.DotnetTypeString == null)
-                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
+                    apiType.DotnetTypeString = GetDotnetTypeAsString(apiType, node);
 
-                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
+                if (apiType.DotnetTypeString != GetDotnetTypeAsString(apiType, node))
                     LogWarning?.Invoke("different dotnet types for single node type");
             }
         }
@@ -268,9 +270,9 @@ namespace Doshik
                 var apiType = GetOrCreateApiType(api, externalTypeName);
 
                 if (apiType.DotnetTypeString == null)
-                    apiType.DotnetTypeString = node.Type.AssemblyQualifiedName;
+                    apiType.DotnetTypeString = GetDotnetTypeAsString(apiType, node);
 
-                if (apiType.DotnetTypeString != node.Type.AssemblyQualifiedName)
+                if (apiType.DotnetTypeString != GetDotnetTypeAsString(apiType, node))
                     LogWarning?.Invoke("different dotnet types for single node type");
 
                 var apiMethod = GetOrCreateMethod(apiType, externalMethodName);
@@ -428,9 +430,9 @@ namespace Doshik
             var apiType = GetOrCreateApiType(api, externalName);
 
             if (apiType.DotnetTypeString == null)
-                apiType.DotnetTypeString = dotnetType.AssemblyQualifiedName;
+                apiType.DotnetTypeString = GetDotnetTypeAsString(dotnetType);
 
-            if (apiType.DotnetTypeString != dotnetType.AssemblyQualifiedName)
+            if (apiType.DotnetTypeString != GetDotnetTypeAsString(dotnetType))
                 LogWarning?.Invoke("different dotnet types for single node type");
 
             return apiType;
@@ -526,6 +528,21 @@ namespace Doshik
             if (t == (Type)null)
                 t = typeof(object);
             return t.FullName != null ? t.FullName.Replace(".", "").Replace("+", "") : "null";
+        }
+
+        private static string GetDotnetTypeAsString(DoshikExternalApiType apiType, DoshikNodeDefinition node)
+        {
+            if (apiType.ExternalName == "VRCUdonUdonBehaviour")
+                return "VRC.Udon.UdonBehaviour, VRC.Udon";
+            else if (apiType.ExternalName == "VRCUdonUdonBehaviourArray")
+                return "VRC.Udon.UdonBehaviour[], VRC.Udon";
+
+            return GetDotnetTypeAsString(node.Type);
+        }
+
+        private static string GetDotnetTypeAsString(Type type)
+        {
+            return type.AssemblyQualifiedName;
         }
     }
 }

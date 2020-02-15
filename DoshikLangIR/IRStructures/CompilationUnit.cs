@@ -1,4 +1,5 @@
 ﻿using Doshik;
+using System;
 using System.Collections.Generic;
 
 // В итоге компиляции должно получиться дерево из разных элементов где в корне будет CompilationUnit
@@ -34,43 +35,81 @@ namespace DoshikLangIR
 
         public List<Constant> Constants { get; } = new List<Constant>();
 
-        public void AddConstant(DataType type, object dotnetValue, bool isThis = false)
+        public void AddConstant(Constant constant)
         {
-            if (Constants.Find(x => x.Equals(type, dotnetValue, isThis)) == null)
-            {
-                Constants.Add(
-                    new Constant
-                    {
-                        Type = type,
-                        DotnetValue = isThis ? null : dotnetValue,
-                        IsThis = isThis
-                    }
-                );
-            }
+            if (Constants.Find(x => Constant.Equals(x, constant)) == null)
+                Constants.Add(constant);
         }
     }
 
     public class Constant
     {
+        // Тип константы
         public DataType Type { get; set; }
-        public object DotnetValue { get; set; }
+
+        // Если установлено в true, значит значением является ключевое слово "this"
         public bool IsThis { get; set; }
 
-        public bool Equals(DataType type, object dotnetValue, bool isThis)
+        // В другом случае и если DotnetTypeString != null, значит значением ялвяется dotnet тип (при этом Type будет ссылаться на System.Type)
+        public string DotnetTypeString { get; set; }
+
+        // В другом случае значением является конкретное значение (object)
+        public object DotnetValue { get; set; }
+
+        public static Constant CreateAsDotnetTypeString(string dotnetTypeString, TypeLibrary typeLibrary)
         {
-            if (Type != type)
+            return new Constant
+            {
+                Type = typeLibrary.FindByKnownType(KnownType.Type),
+                IsThis = false,
+                DotnetTypeString = dotnetTypeString,
+                DotnetValue = null
+            };
+        }
+
+        public static Constant CreateAsThis(DataType type)
+        {
+            return new Constant
+            {
+                Type = type,
+                IsThis = true,
+                DotnetTypeString = null,
+                DotnetValue = null
+            };
+        }
+
+        public static Constant CreateAsDotnetValue(DataType type, object dotnetValue)
+        {
+            return new Constant
+            {
+                Type = type,
+                IsThis = false,
+                DotnetTypeString = null,
+                DotnetValue = dotnetValue
+            };
+        }
+
+        public static bool Equals(Constant left, Constant right)
+        {
+            if (left == null || right == null)
+                throw new ArgumentNullException();
+
+            if (left.Type != right.Type)
                 return false;
 
-            if (IsThis && isThis)
+            if (left.IsThis || right.IsThis)
+                return left.IsThis == right.IsThis;
+
+            if (left.DotnetTypeString != null || right.DotnetTypeString != null)
+                return left.DotnetTypeString == right.DotnetTypeString;
+
+            if (left.DotnetValue == null && right.DotnetValue == null)
                 return true;
 
-            if (DotnetValue == null && dotnetValue == null)
-                return true;
-
-            if (DotnetValue == null || dotnetValue == null)
+            if (left.DotnetValue == null || right.DotnetValue == null)
                 return false;
 
-            return DotnetValue.Equals(dotnetValue);
+            return left.DotnetValue.Equals(right.DotnetValue);
         }
     }
 

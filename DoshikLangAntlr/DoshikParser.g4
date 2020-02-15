@@ -119,6 +119,8 @@ expressionList
 
 defaultOfType: DEFAULT '(' typeType ')';
 
+typeOf: TYPEOF '(' typeType ')';
+
 methodCall: methodName=IDENTIFIER typeArguments? '(' methodCallParams? ')';
 
 methodCallParams
@@ -140,6 +142,7 @@ expression
     | left=expression '[' right=expression ']'                                                              # bracketsExpression
 
     | defaultOfType                                                                                         # defaultOfTypeExpression
+    | typeOf                                                                                                # typeOfExpression
     | methodCall                                                                                            # methodCallExpression
     | newCall                                                                                               # newCallExpression
     | '(' typeType ')' expression                                                                           # typecastExpression

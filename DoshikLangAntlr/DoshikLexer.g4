@@ -3,6 +3,7 @@ lexer grammar DoshikLexer;
 // Keywords
 
 DEFAULT: 'default';
+TYPEOF: 'typeof';
 NEW: 'new';
 EVENT: 'event';
 PRIVATE: 'private';

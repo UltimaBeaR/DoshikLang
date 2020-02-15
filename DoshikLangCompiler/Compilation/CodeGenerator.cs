@@ -36,7 +36,13 @@ namespace DoshikLangCompiler.Compilation
                 var name = "constant_" + constantIdx.ToString();
 
                 _constantNames.Add((constant, name));
-                _assemblyBuilder.AddVariable(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue, constant.IsThis);
+
+                if (constant.IsThis)
+                    _assemblyBuilder.AddVariableAsThisDefaultValue(false, name, constant.Type.ExternalType.ExternalName);
+                else if (constant.DotnetTypeString != null)
+                    _assemblyBuilder.AddVariableAsTypeDefaultValue(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetTypeString);
+                else
+                    _assemblyBuilder.AddVariableAsDefaultValue(false, name, constant.Type.ExternalType.ExternalName, constant.DotnetValue);
             }
 
             // Объявляем переменные для всех используемых ивентов
@@ -53,7 +59,7 @@ namespace DoshikLangCompiler.Compilation
                     var name = MakeEventParameterVariableName(eventHandler.ExternalEvent.ExternalName, externalParameter.Name);
 
                     _variableNames.Add(parameter.Variable, name);
-                    _assemblyBuilder.AddVariable(false, name, parameter.Variable.Type.ExternalType.ExternalName);
+                    _assemblyBuilder.AddVariableAsDefaultValue(false, name, parameter.Variable.Type.ExternalType.ExternalName, null);
                 }
             }
 
@@ -62,7 +68,7 @@ namespace DoshikLangCompiler.Compilation
                 var name = MakeVariableName(variable, _compilationUnit);
 
                 _variableNames.Add(variable, name);
-                _assemblyBuilder.AddVariable(true, name, variable.Type.ExternalType.ExternalName);
+                _assemblyBuilder.AddVariableAsDefaultValue(true, name, variable.Type.ExternalType.ExternalName, null);
             }
 
             foreach (var variable in _compilationUnit.Scope.Variables.Values.Cast<CompilationUnitVariable>().Where(x => !x.IsPublic).OrderBy(x => x.Name))
@@ -70,7 +76,7 @@ namespace DoshikLangCompiler.Compilation
                 var name = MakeVariableName(variable, _compilationUnit);
 
                 _variableNames.Add(variable, name);
-                _assemblyBuilder.AddVariable(false, name, variable.Type.ExternalType.ExternalName);
+                _assemblyBuilder.AddVariableAsDefaultValue(false, name, variable.Type.ExternalType.ExternalName, null);
             }
 
             // Сначала просто добавляем все ивенты, чтобы было их определение
@@ -123,7 +129,7 @@ namespace DoshikLangCompiler.Compilation
             var name = MakeVariableName(statement.Variable, statement);
 
             _variableNames.Add(statement.Variable, name);
-            _assemblyBuilder.AddVariable(false, name, statement.Variable.Type.ExternalType.ExternalName);
+            _assemblyBuilder.AddVariableAsDefaultValue(false, name, statement.Variable.Type.ExternalType.ExternalName, null);
 
             // В случае если у объявления переменной присутствует инициализирующее выражение (его может и не быть)
             if (statement.Initializer != null)
@@ -287,7 +293,15 @@ namespace DoshikLangCompiler.Compilation
 
         private void GenerateCodeForConstantValueExpression(ConstantValueExpression expression)
         {
-            var name = _constantNames.First(x => x.constant.Equals(expression.ValueType, expression.DotnetValue, expression.IsThis)).name;
+            var constant = new Constant()
+            {
+                Type = expression.ValueType,
+                IsThis = expression.IsThis,
+                DotnetTypeString = expression.DotnetTypeString,
+                DotnetValue = expression.DotnetValue
+            };
+
+            var name = _constantNames.First(x => Constant.Equals(x.constant, constant)).name;
 
             _currentEventBodyEmitter.PUSH_varableName(name);
         }
@@ -349,7 +363,7 @@ namespace DoshikLangCompiler.Compilation
             var name = MakeVariableName();
 
             _temporaryVariableNames.Add(name);
-            _assemblyBuilder.AddVariable(false, name, externalType.ExternalName);
+            _assemblyBuilder.AddVariableAsDefaultValue(false, name, externalType.ExternalName, null);
 
             return name;
         }
