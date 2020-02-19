@@ -10,8 +10,29 @@ namespace Doshik
     public class DoshikExternalApiGenerator
     {
         public Action<string> LogWarning { get; set; }
+        public Action<string> LogInfo { get; set; }
 
-        public DoshikExternalApi Generate()
+        public DoshikExternalApi GetOrGenerateCache(string externalApiVersion)
+        {
+            // Пытаемся получить апи из кэша
+            var externalApi = DoshikExternalApiCache.GetCachedApi();
+
+            // Если кэш не найден или версия не соответствует текущей (версия структуры + версия внешних библиотек) - генерируем апи из библиотек и записываем новый кэш
+            if (externalApi == null || externalApi.ExternalVersion != externalApiVersion)
+            {
+                LogInfo?.Invoke("generating external api...");
+
+                externalApi = Generate(externalApiVersion);
+
+                DoshikExternalApiCache.SetApiToCache(externalApi);
+
+                LogInfo?.Invoke("external api generated and saved to cache");
+            }
+
+            return externalApi;
+        }
+
+        public DoshikExternalApi Generate(string externalApiVersion)
         {
             // Получаем все ноды (типы нод), которые можно использовать в языке графов
             var allNodes = DoshikNodeDefinitionGetter.GetAllNodeDefinitions(new Dictionary<string, Type> { /*{ "VRCUdonUdonBehaviour", typeof(UdonBehaviour) }*/ })
@@ -42,6 +63,8 @@ namespace Doshik
 
             var api = new DoshikExternalApi
             {
+                ExternalVersion = externalApiVersion,
+
                 Types = new List<DoshikExternalApiType>(),
                 Events = new List<DoshikExternalApiEvent>()
             };

@@ -7,6 +7,19 @@ namespace Doshik
     /// </summary>
     public class DoshikExternalApi
     {
+        /// <summary>
+        /// Версия структуры данных.
+        /// Если меняется что-либо, связанное со структурой данных в АПИ, либо они по другому воспринимаются, то нужно перестраивать кэш АПИ
+        /// </summary>
+        public const string dataStructuresVersion = "1";
+
+        public string DataStructuresVersion => dataStructuresVersion;
+
+        /// <summary>
+        /// Совокупная версия Udon SDK + VRChat SDK, задается при формировании апи на основе внешних библиотек (по сути это версия этих внешних библиотек)
+        /// </summary>
+        public string ExternalVersion { get; set; }
+
         public List<DoshikExternalApiType> Types { get; set; }
 
         public List<DoshikExternalApiEvent> Events { get; set; }

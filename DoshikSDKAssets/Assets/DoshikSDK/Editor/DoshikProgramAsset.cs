@@ -24,23 +24,15 @@ namespace DoshikSDK
             // получение апи надо сделать с помощью генерации)
             // то есть должна быть гарантия что после перезапуска юнити апи будет пере-генерировано на основе актуального sdk, а не взято из кэша (т.к. там может быть старый sdk)
 
-            var externalApi = DoshikExternalApiCache.GetCachedApi();
-            if (externalApi == null)
+            var externalApiVersion = VRC.Core.SDKClientUtilities.GetSDKVersionDate();
+
+            var generator = new DoshikExternalApiGenerator
             {
-                var generator = new DoshikExternalApiGenerator
-                {
-                    LogWarning = (text) =>
-                    {
-                        UnityEngine.Debug.LogWarning("Doshik: Generate Udon API: " + text);
-                    }
-                };
+                LogWarning = (text) => { UnityEngine.Debug.LogWarning("Doshik: Generate Udon API: " + text); },
+                LogInfo = (text) => { UnityEngine.Debug.Log("Doshik: Generate Udon API: " + text); }
+            };
 
-                UnityEngine.Debug.Log("Doshik: Generating external api...");
-
-                externalApi = generator.Generate();
-
-                DoshikExternalApiCache.SetApiToCache(externalApi);
-            }
+            var externalApi = generator.GetOrGenerateCache(externalApiVersion);
 
             var compiler = new Compiler();
 

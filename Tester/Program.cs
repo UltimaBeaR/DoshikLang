@@ -18,20 +18,13 @@ namespace Tester
             Console.WriteLine(source);
             Console.WriteLine();
 
-            var externalApi = DoshikExternalApiCache.GetCachedApi();
-            if (externalApi == null)
+            var generator = new DoshikExternalApiGenerator
             {
-                var generator = new DoshikExternalApiGenerator
-                {
-                    LogWarning = (text) => { Console.WriteLine("WARNING! " + text); }
-                };
+                LogWarning = (text) => { Console.WriteLine("WARNING: " + text); },
+                LogInfo = (text) => { Console.WriteLine("INFO: " + text); }
+            };
 
-                Console.WriteLine("generating external api...");
-
-                externalApi = generator.Generate();
-
-                DoshikExternalApiCache.SetApiToCache(externalApi);
-            }
+            var externalApi = generator.GetOrGenerateCache("test");
 
             var compiler = new Compiler()
             {

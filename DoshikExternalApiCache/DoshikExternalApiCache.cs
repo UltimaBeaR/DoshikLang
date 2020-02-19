@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 
@@ -23,7 +24,21 @@ namespace Doshik
 
             var apiJson = File.ReadAllText(fileName);
 
-            _memoryCachedApi = JsonConvert.DeserializeObject<DoshikExternalApi>(apiJson);
+            try
+            {
+                var dataStructuresVersion = JObject.Parse(apiJson).GetValue("DataStructuresVersion").ToString();
+
+                // Если версия структуры данных отличается от текущей - парсить такое нельзя. считаем что кэша нет совсем.
+                if (dataStructuresVersion != DoshikExternalApi.dataStructuresVersion)
+                    return null;
+
+                _memoryCachedApi = JsonConvert.DeserializeObject<DoshikExternalApi>(apiJson);
+            }
+            catch
+            {
+                // Если были какие-то проблемы при десериализации - считаем что кэша нет
+                return null;
+            }
 
             return _memoryCachedApi;
         }
@@ -45,6 +60,8 @@ namespace Doshik
             var apiJson = JsonConvert.SerializeObject(api, formatting, settings);
 
             File.WriteAllText(fileName, apiJson);
+
+            _memoryCachedApi = api;
         }
 
         private static string GetCacheFolder()
